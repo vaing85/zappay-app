@@ -1,0 +1,8 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="64" fill="#F59E0B"/>
+  <rect x="64" y="64" width="384" height="384" rx="48" fill="#FEF3C7"/>
+  <path d="M256 128L320 192H288V320H224V192H192L256 128Z" fill="#F59E0B"/>
+  <path d="M256 384L192 320H224V192H288V320H320L256 384Z" fill="#EA580C"/>
+  <circle cx="256" cy="256" r="24" fill="#F59E0B"/>
+  <text x="256" y="420" text-anchor="middle" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="#F59E0B">ZapCash</text>
+</svg>

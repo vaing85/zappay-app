@@ -1,0 +1,8 @@
+<svg width="192" height="192" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="192" height="192" rx="24" fill="#F59E0B"/>
+  <rect x="24" y="24" width="144" height="144" rx="16" fill="#FEF3C7"/>
+  <path d="M96 48L120 72H108V120H84V72H72L96 48Z" fill="#F59E0B"/>
+  <path d="M96 144L72 120H84V72H108V120H120L96 144Z" fill="#EA580C"/>
+  <circle cx="96" cy="96" r="8" fill="#F59E0B"/>
+  <text x="96" y="160" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#F59E0B">ZapCash</text>
+</svg>
