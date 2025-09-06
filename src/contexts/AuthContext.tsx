@@ -51,8 +51,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Create a new user for demo purposes
       const newUser: User = {
         id: (mockUsers.length + 1).toString(),
-        name: email.split('@')[0],
+        firstName: email.split('@')[0],
+        lastName: 'User',
         email: email,
+        phoneNumber: '+1 (555) 000-0000',
         balance: 100.00,
         createdAt: new Date().toISOString(),
       };
