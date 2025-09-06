@@ -74,10 +74,10 @@ const Navbar: React.FC = () => {
           </div>
 
           {/* Desktop Navigation and User Controls */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-1">
             {user ? (
               <>
-                {/* Main Navigation Links */}
+                {/* Main Navigation Links - More Compact */}
                 <div className="hidden lg:flex items-center space-x-1">
                   <Link
                     to="/dashboard"
@@ -94,59 +94,38 @@ const Navbar: React.FC = () => {
                   <Link
                     to="/qr"
                     className="text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 px-2 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-1"
+                    title="QR Pay"
                   >
                     <QrCodeIcon className="w-4 h-4" />
-                    <span className="hidden xl:inline">QR Pay</span>
-                  </Link>
-                  <Link
-                    to="/profile"
-                    className="text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 px-2 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-1"
-                  >
-                    <UserIcon className="w-4 h-4" />
-                    <span className="hidden xl:inline">Profile</span>
+                    <span className="hidden 2xl:inline">QR</span>
                   </Link>
                   <Link
                     to="/analytics"
                     className="text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 px-2 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-1"
+                    title="Analytics"
                   >
                     <ChartBarIcon className="w-4 h-4" />
-                    <span className="hidden xl:inline">Analytics</span>
+                    <span className="hidden 2xl:inline">Analytics</span>
                   </Link>
                   <Link
                     to="/groups"
                     className="text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 px-2 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-1"
+                    title="Groups"
                   >
                     <UserGroupIcon className="w-4 h-4" />
-                    <span className="hidden xl:inline">Groups</span>
+                    <span className="hidden 2xl:inline">Groups</span>
                   </Link>
                   <Link
                     to="/budget"
                     className="text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 px-2 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-1"
+                    title="Budget"
                   >
                     <CurrencyDollarIcon className="w-4 h-4" />
-                    <span className="hidden xl:inline">Budget</span>
+                    <span className="hidden 2xl:inline">Budget</span>
                   </Link>
                 </div>
 
-                {/* Security Links - Dropdown or Collapsed */}
-                <div className="hidden lg:flex items-center space-x-1">
-                  <Link
-                    to="/security"
-                    className="text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 px-2 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-1"
-                  >
-                    <ShieldCheckIcon className="w-4 h-4" />
-                    <span className="hidden xl:inline">Security</span>
-                  </Link>
-                  <Link
-                    to="/payment-settings"
-                    className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-2 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-1"
-                  >
-                    <CreditCardIcon className="w-4 h-4" />
-                    <span className="hidden xl:inline">Payments</span>
-                  </Link>
-                </div>
-
-                {/* User Controls */}
+                {/* User Controls - More Compact */}
                 <div className="flex items-center space-x-1">
                   <PWAStatus />
                   <RealtimeNotificationCenter />
@@ -158,7 +137,7 @@ const Navbar: React.FC = () => {
                     title="Logout"
                   >
                     <ArrowRightOnRectangleIcon className="w-4 h-4" />
-                    <span className="hidden xl:inline">Logout</span>
+                    <span className="hidden 2xl:inline">Logout</span>
                   </button>
                 </div>
               </>
@@ -170,7 +149,7 @@ const Navbar: React.FC = () => {
           </div>
 
           {/* Mobile menu button */}
-          <div className="md:hidden flex items-center">
+          <div className="lg:hidden flex items-center">
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 focus:outline-none focus:text-orange-600 dark:focus:text-orange-400"
@@ -190,7 +169,7 @@ const Navbar: React.FC = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden"
+            className="lg:hidden"
           >
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-gray-50 dark:bg-gray-700 rounded-lg mt-2">
               {user ? (
