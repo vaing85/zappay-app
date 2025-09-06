@@ -125,7 +125,7 @@ const Dashboard: React.FC = memo(() => {
         className="bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 rounded-2xl p-8 text-white mb-8 shadow-xl"
       >
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-medium" id="balance-label">ZapCash Balance</h2>
+          <h2 className="text-lg font-medium" id="balance-label">ZapPay Balance</h2>
           <BoltIcon className="w-8 h-8 animate-pulse" aria-hidden="true" />
         </div>
         <div className="text-white">

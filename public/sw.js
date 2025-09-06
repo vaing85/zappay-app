@@ -1,5 +1,5 @@
-// Service Worker for ZapCash PWA
-const CACHE_NAME = 'zapcash-v1';
+// Service Worker for ZapPay PWA
+const CACHE_NAME = 'zappay-v1';
 const urlsToCache = [
   '/',
   '/static/js/bundle.js',
@@ -65,7 +65,7 @@ self.addEventListener('push', (event) => {
   console.log('Push event received:', event);
 
   let notificationData = {
-    title: 'ZapCash',
+    title: 'ZapPay',
     body: 'You have a new notification',
     icon: '/favicon.ico',
     badge: '/favicon.ico',

@@ -90,7 +90,7 @@ const AnalyticsDashboard: React.FC = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `zapcash-report-${selectedYear}-${selectedMonth}.${format}`;
+    a.download = `zappay-report-${selectedYear}-${selectedMonth}.${format}`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

@@ -208,7 +208,7 @@ export const BudgetProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       const updatedSettings = { ...budgetSettings, ...settings };
       setBudgetSettings(updatedSettings);
       // In a real app, this would save to the server
-      localStorage.setItem('zapcash_budget_settings', JSON.stringify(updatedSettings));
+      localStorage.setItem('zappay_budget_settings', JSON.stringify(updatedSettings));
     }
   }, [budgetSettings]);
 

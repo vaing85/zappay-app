@@ -15,7 +15,7 @@ const InstallPrompt: React.FC = () => {
 
   // Check if user previously dismissed
   useEffect(() => {
-    const dismissed = localStorage.getItem('zapcash-install-dismissed');
+    const dismissed = localStorage.getItem('zappay-install-dismissed');
     if (dismissed === 'true') {
       setIsDismissed(true);
     }
@@ -37,7 +37,7 @@ const InstallPrompt: React.FC = () => {
   const handleDismiss = () => {
     setIsDismissed(true);
     // Store dismissal in localStorage
-    localStorage.setItem('zapcash-install-dismissed', 'true');
+    localStorage.setItem('zappay-install-dismissed', 'true');
   };
 
   return (
@@ -58,7 +58,7 @@ const InstallPrompt: React.FC = () => {
             
             <div className="flex-1 min-w-0">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Install ZapCash
+                Install ZapPay
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
                 Get the full app experience with offline access and push notifications.

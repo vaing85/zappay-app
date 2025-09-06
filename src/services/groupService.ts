@@ -36,7 +36,7 @@ class GroupService {
           {
             id: '1',
             userId: '1',
-            email: 'john@zapcash.com',
+            email: 'john@zappay.com',
             firstName: 'John',
             lastName: 'Doe',
             profilePicture: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
@@ -50,7 +50,7 @@ class GroupService {
           {
             id: '2',
             userId: '2',
-            email: 'sarah@zapcash.com',
+            email: 'sarah@zappay.com',
             firstName: 'Sarah',
             lastName: 'Wilson',
             profilePicture: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
@@ -91,7 +91,7 @@ class GroupService {
           {
             id: '3',
             userId: '1',
-            email: 'john@zapcash.com',
+            email: 'john@zappay.com',
             firstName: 'John',
             lastName: 'Doe',
             profilePicture: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
@@ -105,7 +105,7 @@ class GroupService {
           {
             id: '4',
             userId: '3',
-            email: 'mike@zapcash.com',
+            email: 'mike@zappay.com',
             firstName: 'Mike',
             lastName: 'Johnson',
             profilePicture: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',

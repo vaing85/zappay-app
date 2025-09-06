@@ -1,4 +1,4 @@
-// Accessibility utilities for ZapCash
+// Accessibility utilities for ZapPay
 
 export const announceToScreenReader = (message: string) => {
   const announcement = document.createElement('div');

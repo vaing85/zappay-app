@@ -147,7 +147,7 @@ export const simulateRealTimeNotifications = (userId: string, addNotification: (
     createPaymentRequestNotification(userId, 15.00, 'Mike Johnson', 'req_456'),
     createSplitBillNotification(userId, 'Dinner at Restaurant', 120.00, 'Emma Davis', 'bill_789'),
     createQRScanNotification(userId, 10.00, 'Alex Brown'),
-    createSystemNotification(userId, 'Welcome to ZapCash!', 'Your account is now fully set up and ready to use.'),
+    createSystemNotification(userId, 'Welcome to ZapPay!', 'Your account is now fully set up and ready to use.'),
   ];
 
   // Add notifications with delays to simulate real-time

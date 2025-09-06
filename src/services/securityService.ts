@@ -46,7 +46,7 @@ export const mockTwoFactorMethods: TwoFactorMethod[] = [
     id: '2fa_2',
     userId: 'user_1',
     type: 'email',
-    value: 'john@zapcash.com',
+    value: 'john@zappay.com',
     isPrimary: false,
     isVerified: true,
     createdAt: '2024-01-01T00:00:00Z'
@@ -91,10 +91,10 @@ export const mockSecurityEvents: SecurityEvent[] = [
     userId: 'user_1',
     type: 'transaction',
     severity: 'medium',
-    description: 'Large transaction: $500.00 to jane@zapcash.com',
+    description: 'Large transaction: $500.00 to jane@zappay.com',
     ipAddress: '192.168.1.100',
     userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-    metadata: { amount: 500, recipient: 'jane@zapcash.com' },
+    metadata: { amount: 500, recipient: 'jane@zappay.com' },
     createdAt: '2024-01-15T09:15:00Z',
     isResolved: true
   },

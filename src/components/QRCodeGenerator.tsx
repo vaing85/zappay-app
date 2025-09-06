@@ -21,12 +21,12 @@ const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = ({ userEmail, amount, no
       
       // Create payment data object
       const paymentData = {
-        type: 'zapcash_payment',
+        type: 'zappay_payment',
         recipient: userEmail,
         amount: amount || 0,
         note: note || '',
         timestamp: new Date().toISOString(),
-        app: 'ZapCash'
+        app: 'ZapPay'
       };
 
       // Generate QR code
@@ -56,12 +56,12 @@ const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = ({ userEmail, amount, no
   const copyToClipboard = async () => {
     try {
       const paymentData = {
-        type: 'zapcash_payment',
+        type: 'zappay_payment',
         recipient: userEmail,
         amount: amount || 0,
         note: note || '',
         timestamp: new Date().toISOString(),
-        app: 'ZapCash'
+        app: 'ZapPay'
       };
       
       await navigator.clipboard.writeText(JSON.stringify(paymentData));
@@ -77,7 +77,7 @@ const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = ({ userEmail, amount, no
   const downloadQRCode = () => {
     if (qrCodeDataURL) {
       const link = document.createElement('a');
-      link.download = `zapcash-payment-${userEmail}-${Date.now()}.png`;
+      link.download = `zappay-payment-${userEmail}-${Date.now()}.png`;
       link.href = qrCodeDataURL;
       link.click();
     }
@@ -149,7 +149,7 @@ const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = ({ userEmail, amount, no
 
       <div className="mt-4 p-3 bg-yellow-50 rounded-lg">
         <p className="text-sm text-yellow-800 text-center">
-          💡 <strong>Tip:</strong> Others can scan this QR code with ZapCash to send you money instantly!
+          💡 <strong>Tip:</strong> Others can scan this QR code with ZapPay to send you money instantly!
         </p>
       </div>
     </div>

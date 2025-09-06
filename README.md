@@ -1,6 +1,6 @@
-# ⚡ ZapCash - Lightning Fast Payments
+# ⚡ ZapPay - Lightning Fast Payments
 
-ZapCash is a modern, lightning-fast peer-to-peer payment application built with React, TypeScript, and Tailwind CSS. Send money instantly with the power of a lightning bolt!
+ZapPay is a modern, lightning-fast peer-to-peer payment application built with React, TypeScript, and Tailwind CSS. Send money instantly with the power of a lightning bolt!
 
 ## 🚀 Features
 
@@ -26,7 +26,7 @@ ZapCash is a modern, lightning-fast peer-to-peer payment application built with 
 
 1. **Navigate to the project directory**
    ```bash
-   cd "C:\Users\Villa\Cashapp Clone\zapcash-app"
+   cd "C:\Users\Villa\Cashapp Clone\zappay-app"
    ```
 
 2. **Install dependencies**
@@ -54,7 +54,7 @@ ZapCash is a modern, lightning-fast peer-to-peer payment application built with 
 ## 📱 Pages & Features
 
 ### 🏠 Home Page
-- Hero section with ZapCash branding
+- Hero section with ZapPay branding
 - Feature highlights
 - Call-to-action buttons
 
@@ -84,7 +84,7 @@ ZapCash is a modern, lightning-fast peer-to-peer payment application built with 
 
 ## 🎨 Branding & Design
 
-ZapCash uses a vibrant yellow-to-orange gradient theme representing speed and energy:
+ZapPay uses a vibrant yellow-to-orange gradient theme representing speed and energy:
 
 - **Primary Colors**: Yellow (#f59e0b) to Orange (#f97316)
 - **Font**: Inter (Google Fonts)
@@ -152,4 +152,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-**⚡ Start zapping payments today with ZapCash!**
+**⚡ Start zapping payments today with ZapPay!**

@@ -67,12 +67,12 @@ const QRCodeScanner: React.FC<QRCodeScannerProps> = ({ onScan, onClose }) => {
         setTimeout(() => {
           // Simulate QR code data
           const mockQRData = {
-            type: 'zapcash_payment',
-            recipient: 'john@zapcash.com',
+            type: 'zappay_payment',
+            recipient: 'john@zappay.com',
             amount: 25.00,
             note: 'Coffee payment',
             timestamp: new Date().toISOString(),
-            app: 'ZapCash'
+            app: 'ZapPay'
           };
           
           onScan(mockQRData);

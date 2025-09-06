@@ -50,7 +50,7 @@ const Register: React.FC = () => {
         phoneNumber: formData.phoneNumber,
         password: formData.password,
       });
-      toast.success('Welcome to ZapCash! ⚡ Your account has been created.');
+      toast.success('Welcome to ZapPay! ⚡ Your account has been created.');
       navigate('/dashboard');
     } catch (error) {
       toast.error('Registration failed. Please try again.');
@@ -238,7 +238,7 @@ const Register: React.FC = () => {
                 to="/login"
                 className="font-medium text-orange-600 hover:text-orange-500 transition-colors"
               >
-                Sign in to ZapCash
+                Sign in to ZapPay
               </Link>
             </p>
           </div>

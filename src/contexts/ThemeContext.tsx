@@ -21,7 +21,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   useEffect(() => {
     // Check for saved theme preference or default to light mode
-    const savedTheme = localStorage.getItem('zapcash_theme');
+    const savedTheme = localStorage.getItem('zappay_theme');
     if (savedTheme === 'dark') {
       setIsDarkMode(true);
     } else if (savedTheme === 'light') {
@@ -35,7 +35,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   useEffect(() => {
     // Save theme preference
-    localStorage.setItem('zapcash_theme', isDarkMode ? 'dark' : 'light');
+    localStorage.setItem('zappay_theme', isDarkMode ? 'dark' : 'light');
     
     // Update document class for global styling
     if (isDarkMode) {

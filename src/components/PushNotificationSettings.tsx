@@ -67,7 +67,7 @@ const PushNotificationSettings: React.FC<PushNotificationSettingsProps> = ({ cla
   const handleTestNotification = async () => {
     try {
       await showLocalNotification('Test Notification', {
-        body: 'This is a test notification from ZapCash!',
+        body: 'This is a test notification from ZapPay!',
         icon: '/favicon.ico',
         badge: '/favicon.ico'
       });

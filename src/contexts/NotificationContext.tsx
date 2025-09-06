@@ -32,8 +32,8 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   // Load notifications and settings from localStorage
   useEffect(() => {
-    const savedNotifications = localStorage.getItem('zapcash_notifications');
-    const savedSettings = localStorage.getItem('zapcash_notification_settings');
+    const savedNotifications = localStorage.getItem('zappay_notifications');
+    const savedSettings = localStorage.getItem('zappay_notification_settings');
     
     if (savedNotifications) {
       setNotifications(JSON.parse(savedNotifications));
@@ -67,13 +67,13 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   // Save notifications to localStorage
   useEffect(() => {
-    localStorage.setItem('zapcash_notifications', JSON.stringify(notifications));
+    localStorage.setItem('zappay_notifications', JSON.stringify(notifications));
   }, [notifications]);
 
   // Save settings to localStorage
   useEffect(() => {
     if (settings) {
-      localStorage.setItem('zapcash_notification_settings', JSON.stringify(settings));
+      localStorage.setItem('zappay_notification_settings', JSON.stringify(settings));
     }
   }, [settings]);
 

@@ -77,7 +77,7 @@ const Profile: React.FC = () => {
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
           Profile Settings
         </h1>
-        <p className="text-gray-600">Manage your ZapCash account information</p>
+        <p className="text-gray-600">Manage your ZapPay account information</p>
       </motion.div>
 
       {/* Profile Header */}
@@ -113,7 +113,7 @@ const Profile: React.FC = () => {
                 {user.occupation} {user.company && `at ${user.company}`}
               </p>
               <p className="text-yellow-100 text-sm">
-                ZapCash Member since {formatDate(user.createdAt)}
+                ZapPay Member since {formatDate(user.createdAt)}
               </p>
               {user.bio && (
                 <p className="text-yellow-100 text-sm mt-2 italic">

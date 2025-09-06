@@ -29,7 +29,7 @@ const Login: React.FC = () => {
 
     try {
       await login(formData.email, formData.password);
-      toast.success('Welcome back to ZapCash! ⚡');
+      toast.success('Welcome back to ZapPay! ⚡');
       navigate('/dashboard');
     } catch (error) {
       toast.error('Invalid credentials. Please try again.');
@@ -137,7 +137,7 @@ const Login: React.FC = () => {
                 to="/register"
                 className="font-medium text-orange-600 hover:text-orange-500 transition-colors"
               >
-                Sign up for ZapCash
+                Sign up for ZapPay
               </Link>
             </p>
           </div>

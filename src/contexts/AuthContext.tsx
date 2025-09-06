@@ -29,7 +29,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     // Check for existing session
-    const savedUser = localStorage.getItem('zapcash_user');
+    const savedUser = localStorage.getItem('zappay_user');
     if (savedUser) {
       try {
         const parsedUser = JSON.parse(savedUser);
@@ -48,16 +48,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const mockUser = getUserByEmail(email);
       if (mockUser) {
         setUser(mockUser);
-        localStorage.setItem('zapcash_user', JSON.stringify(mockUser));
+        localStorage.setItem('zappay_user', JSON.stringify(mockUser));
         return;
       }
     }
     
     // For any other email/password combination, use John Doe as default
-    const defaultUser = getUserByEmail('john@zapcash.com');
+    const defaultUser = getUserByEmail('john@zappay.com');
     if (defaultUser) {
       setUser(defaultUser);
-      localStorage.setItem('zapcash_user', JSON.stringify(defaultUser));
+      localStorage.setItem('zappay_user', JSON.stringify(defaultUser));
     }
   };
 
@@ -74,25 +74,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     mockUsers.push(newUser);
     
     setUser(newUser);
-    localStorage.setItem('zapcash_user', JSON.stringify(newUser));
+    localStorage.setItem('zappay_user', JSON.stringify(newUser));
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('zapcash_user');
+    localStorage.removeItem('zappay_user');
   };
 
   const switchUser = (email: string) => {
     const mockUser = getUserByEmail(email);
     if (mockUser) {
       setUser(mockUser);
-      localStorage.setItem('zapcash_user', JSON.stringify(mockUser));
+      localStorage.setItem('zappay_user', JSON.stringify(mockUser));
     }
   };
 
   const updateUser = (updatedUser: User) => {
     setUser(updatedUser);
-    localStorage.setItem('zapcash_user', JSON.stringify(updatedUser));
+    localStorage.setItem('zappay_user', JSON.stringify(updatedUser));
   };
 
   return (

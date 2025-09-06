@@ -32,7 +32,6 @@ const QRPayment = lazy(() => import('./pages/QRPayment'));
 const AdvancedPayments = lazy(() => import('./pages/AdvancedPayments'));
 const SplitBills = lazy(() => import('./pages/SplitBills'));
 const PaymentRequests = lazy(() => import('./pages/PaymentRequests'));
-const NotificationDemo = lazy(() => import('./pages/NotificationDemo'));
 const Analytics = lazy(() => import('./pages/Analytics'));
 const Groups = lazy(() => import('./pages/Groups'));
 const Budget = lazy(() => import('./pages/Budget'));
@@ -70,7 +69,6 @@ function App() {
                           <Route path="/advanced" element={<AdvancedPayments />} />
                           <Route path="/split-bills" element={<SplitBills />} />
                           <Route path="/payment-requests" element={<PaymentRequests />} />
-                          <Route path="/notifications" element={<NotificationDemo />} />
                           <Route path="/analytics" element={<Analytics />} />
                           <Route path="/groups" element={<Groups />} />
                           <Route path="/budget" element={<Budget />} />

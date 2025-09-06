@@ -1,7 +1,7 @@
 {
-  "short_name": "ZapCash",
-  "name": "ZapCash - Lightning Fast Payments",
-  "description": "Send, receive, and manage money instantly with ZapCash. Fast, secure, and easy peer-to-peer payments.",
+  "short_name": "ZapPay",
+  "name": "ZapPay - Lightning Fast Payments",
+  "description": "Send, receive, and manage money instantly with ZapPay. Fast, secure, and easy peer-to-peer payments.",
   "icons": [
     {
       "src": "favicon.svg",

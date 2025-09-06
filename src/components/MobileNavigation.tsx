@@ -85,7 +85,7 @@ const MobileNavigation: React.FC = () => {
             >
               <div className="p-6 pt-20">
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-8">
-                  ⚡ ZapCash
+                  ⚡ ZapPay
                 </h2>
                 
                 <nav className="space-y-2">

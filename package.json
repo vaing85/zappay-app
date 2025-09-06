@@ -1,7 +1,7 @@
 {
-  "name": "zapcash-app",
+  "name": "zappay-app",
   "version": "1.0.0",
-  "description": "ZapCash - Lightning fast peer-to-peer payment application",
+  "description": "ZapPay - Lightning fast peer-to-peer payment application",
   "private": true,
   "dependencies": {
     "@heroicons/react": "^2.0.18",

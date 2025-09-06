@@ -13,7 +13,7 @@ export const stripeOptions = {
   appearance: {
     theme: 'stripe' as const,
     variables: {
-      colorPrimary: '#f59e0b', // Yellow-500 to match ZapCash theme
+      colorPrimary: '#f59e0b', // Yellow-500 to match ZapPay theme
       colorBackground: '#ffffff',
       colorText: '#1f2937',
       colorDanger: '#ef4444',

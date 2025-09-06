@@ -53,7 +53,7 @@ const TransactionHistory: React.FC = () => {
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
           Transaction History
         </h1>
-        <p className="text-gray-600 dark:text-gray-300">View all your ZapCash transactions</p>
+        <p className="text-gray-600 dark:text-gray-300">View all your ZapPay transactions</p>
       </motion.div>
 
       {/* Search and Filter */}

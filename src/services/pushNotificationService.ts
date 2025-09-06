@@ -247,7 +247,7 @@ class PushNotificationService {
   private handlePushData(data: any): void {
     const { title, body, icon, badge, data: notificationData } = data;
     
-    this.registration?.showNotification(title || 'ZapCash Notification', {
+    this.registration?.showNotification(title || 'ZapPay Notification', {
       body: body || 'You have a new notification',
       icon: icon || '/favicon.ico',
       badge: badge || '/favicon.ico',
@@ -270,7 +270,7 @@ class PushNotificationService {
   }
 
   private showDefaultNotification(): void {
-    this.registration?.showNotification('ZapCash', {
+    this.registration?.showNotification('ZapPay', {
       body: 'You have a new notification',
       icon: '/favicon.ico',
       badge: '/favicon.ico',
