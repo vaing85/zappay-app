@@ -78,7 +78,7 @@ const Navbar: React.FC = () => {
             {user ? (
               <>
                 {/* Main Navigation Links - More Compact */}
-                <div className="hidden lg:flex items-center space-x-1">
+                <div className="hidden md:flex items-center space-x-1">
                   <Link
                     to="/dashboard"
                     className="text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 px-2 py-2 rounded-md text-sm font-medium transition-colors"
@@ -149,7 +149,7 @@ const Navbar: React.FC = () => {
           </div>
 
           {/* Mobile menu button */}
-          <div className="lg:hidden flex items-center">
+          <div className="md:hidden flex items-center">
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 focus:outline-none focus:text-orange-600 dark:focus:text-orange-400"
@@ -169,7 +169,7 @@ const Navbar: React.FC = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden"
+            className="md:hidden"
           >
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-gray-50 dark:bg-gray-700 rounded-lg mt-2">
               {user ? (
