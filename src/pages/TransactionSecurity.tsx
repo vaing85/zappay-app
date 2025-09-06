@@ -5,10 +5,7 @@ import {
   ExclamationTriangleIcon,
   ChartBarIcon,
   CogIcon,
-  BellIcon,
-  DevicePhoneMobileIcon,
-  GlobeAltIcon,
-  ClockIcon
+  DevicePhoneMobileIcon
 } from '@heroicons/react/24/outline';
 import { useTransactionSecurity } from '../contexts/TransactionSecurityContext';
 import TransactionRiskIndicator from '../components/security/TransactionRiskIndicator';
@@ -17,7 +14,6 @@ import TransactionSecuritySettings from '../components/security/TransactionSecur
 
 const TransactionSecurity: React.FC = () => {
   const {
-    settings,
     alerts,
     securityEvents,
     trustedDevices,

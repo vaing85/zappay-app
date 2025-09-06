@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
-  ShieldCheckIcon,
   KeyIcon,
   LockClosedIcon,
-  EyeIcon,
-  ExclamationTriangleIcon,
   ChartBarIcon,
   CogIcon,
   DocumentTextIcon,
@@ -25,7 +22,6 @@ const DataEncryption: React.FC = () => {
     dataClassifications,
     loading,
     encrypting,
-    decrypting,
     encryptData,
     generateKeyPair,
     rotateKeys,

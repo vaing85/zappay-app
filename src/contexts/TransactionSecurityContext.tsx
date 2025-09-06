@@ -21,7 +21,6 @@ import {
   updateSecuritySettings as updateSecuritySettingsService,
   addTrustedDevice,
   removeTrustedDevice,
-  generateDeviceFingerprint
 } from '../services/transactionSecurityService';
 import { useAuth } from './AuthContext';
 
@@ -53,14 +52,7 @@ export const TransactionSecurityProvider: React.FC<TransactionSecurityProviderPr
   const [loading, setLoading] = useState(false);
   const [validating, setValidating] = useState(false);
 
-  // Load initial data
-  useEffect(() => {
-    if (user) {
-      loadInitialData();
-    }
-  }, [user]);
-
-  const loadInitialData = async () => {
+  const loadInitialData = useCallback(async () => {
     if (!user) return;
     
     setLoading(true);
@@ -89,7 +81,14 @@ export const TransactionSecurityProvider: React.FC<TransactionSecurityProviderPr
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  // Load initial data
+  useEffect(() => {
+    if (user) {
+      loadInitialData();
+    }
+  }, [user, loadInitialData]);
 
   const validateTransaction = useCallback(async (transaction: any): Promise<TransactionRiskScore> => {
     if (!user) throw new Error('User not authenticated');
@@ -207,10 +206,6 @@ export const TransactionSecurityProvider: React.FC<TransactionSecurityProviderPr
     }
   }, [user]);
 
-  // Generate device fingerprint for current device
-  const generateCurrentDeviceFingerprint = useCallback(() => {
-    return generateDeviceFingerprint();
-  }, []);
 
   const value: TransactionSecurityContextType = {
     currentTransaction,

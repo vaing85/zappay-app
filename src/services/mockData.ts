@@ -3,7 +3,7 @@ import { User, Transaction } from '../types/User';
 // Enhanced test users with different profiles
 export const mockUsers: User[] = [
   {
-    id: '1',
+    id: '1', 
     firstName: 'John',
     lastName: 'Doe',
     email: 'john@zapcash.com',
@@ -42,7 +42,7 @@ export const mockUsers: User[] = [
     }
   },
   {
-    id: '2',
+    id: '1', 
     firstName: 'Sarah',
     lastName: 'Wilson',
     email: 'sarah@zapcash.com',
@@ -81,7 +81,7 @@ export const mockUsers: User[] = [
     }
   },
   {
-    id: '3',
+    id: '1', 
     firstName: 'Mike',
     lastName: 'Johnson',
     email: 'mike@zapcash.com',
@@ -120,7 +120,7 @@ export const mockUsers: User[] = [
     }
   },
   {
-    id: '4',
+    id: '1', 
     firstName: 'Emma',
     lastName: 'Davis',
     email: 'emma@zapcash.com',
@@ -159,7 +159,7 @@ export const mockUsers: User[] = [
     }
   },
   {
-    id: '5',
+    id: '1', 
     firstName: 'Alex',
     lastName: 'Brown',
     email: 'alex@zapcash.com',
@@ -203,7 +203,8 @@ export const mockUsers: User[] = [
 export const mockTransactions: Transaction[] = [
   // John Doe's transactions
   {
-    id: '1',
+    id: '1', 
+    userId: '1', 
     type: 'send',
     amount: 50.00,
     recipient: 'Sarah Wilson',
@@ -212,7 +213,8 @@ export const mockTransactions: Transaction[] = [
     status: 'completed',
   },
   {
-    id: '2',
+    id: '1', 
+    userId: '1', 
     type: 'receive',
     amount: 25.00,
     sender: 'Mike Johnson',
@@ -221,7 +223,8 @@ export const mockTransactions: Transaction[] = [
     status: 'completed',
   },
   {
-    id: '3',
+    id: '1', 
+    userId: '1', 
     type: 'send',
     amount: 100.00,
     recipient: 'Emma Davis',
@@ -230,7 +233,8 @@ export const mockTransactions: Transaction[] = [
     status: 'completed',
   },
   {
-    id: '4',
+    id: '1', 
+    userId: '1', 
     type: 'receive',
     amount: 15.50,
     sender: 'Alex Brown',
@@ -239,7 +243,8 @@ export const mockTransactions: Transaction[] = [
     status: 'completed',
   },
   {
-    id: '5',
+    id: '1', 
+    userId: '1', 
     type: 'send',
     amount: 75.00,
     recipient: 'Sarah Wilson',
@@ -248,7 +253,8 @@ export const mockTransactions: Transaction[] = [
     status: 'completed',
   },
   {
-    id: '6',
+    id: '1', 
+    userId: '1', 
     type: 'receive',
     amount: 200.00,
     sender: 'Emma Davis',
@@ -257,7 +263,8 @@ export const mockTransactions: Transaction[] = [
     status: 'completed',
   },
   {
-    id: '7',
+    id: '1', 
+    userId: '1', 
     type: 'send',
     amount: 30.00,
     recipient: 'Mike Johnson',
@@ -267,6 +274,7 @@ export const mockTransactions: Transaction[] = [
   },
   {
     id: '8',
+    userId: '1',
     type: 'receive',
     amount: 45.00,
     sender: 'Alex Brown',
@@ -276,6 +284,7 @@ export const mockTransactions: Transaction[] = [
   },
   {
     id: '9',
+    userId: '1',
     type: 'send',
     amount: 120.00,
     recipient: 'Sarah Wilson',
@@ -285,6 +294,7 @@ export const mockTransactions: Transaction[] = [
   },
   {
     id: '10',
+    userId: '1',
     type: 'receive',
     amount: 85.00,
     sender: 'Emma Davis',
@@ -295,6 +305,7 @@ export const mockTransactions: Transaction[] = [
   // Additional transactions for variety
   {
     id: '11',
+    userId: '1',
     type: 'send',
     amount: 40.00,
     recipient: 'Mike Johnson',
@@ -304,6 +315,7 @@ export const mockTransactions: Transaction[] = [
   },
   {
     id: '12',
+    userId: '1',
     type: 'receive',
     amount: 60.00,
     sender: 'Alex Brown',
@@ -313,6 +325,7 @@ export const mockTransactions: Transaction[] = [
   },
   {
     id: '13',
+    userId: '1',
     type: 'send',
     amount: 90.00,
     recipient: 'Sarah Wilson',
@@ -322,6 +335,7 @@ export const mockTransactions: Transaction[] = [
   },
   {
     id: '14',
+    userId: '1',
     type: 'receive',
     amount: 35.00,
     sender: 'Emma Davis',
@@ -331,6 +345,7 @@ export const mockTransactions: Transaction[] = [
   },
   {
     id: '15',
+    userId: '1',
     type: 'send',
     amount: 55.00,
     recipient: 'Mike Johnson',

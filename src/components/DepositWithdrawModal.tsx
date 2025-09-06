@@ -1,0 +1,213 @@
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { XMarkIcon, ArrowDownTrayIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline';
+import { useAuth } from '../contexts/AuthContext';
+import { usePayment } from '../contexts/PaymentContext';
+import { toast } from 'react-toastify';
+
+interface DepositWithdrawModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  type: 'deposit' | 'withdraw';
+}
+
+const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({ 
+  isOpen, 
+  onClose, 
+  type 
+}) => {
+  const { user, updateUser } = useAuth();
+  const { paymentMethods } = usePayment();
+  const [amount, setAmount] = useState('');
+  const [selectedMethod, setSelectedMethod] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [notes, setNotes] = useState('');
+
+  const isDeposit = type === 'deposit';
+  const title = isDeposit ? 'Add Money' : 'Withdraw Money';
+  const icon = isDeposit ? ArrowDownTrayIcon : ArrowUpTrayIcon;
+  const Icon = icon;
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!amount || !selectedMethod) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    const transactionAmount = parseFloat(amount);
+    if (transactionAmount <= 0) {
+      toast.error('Amount must be greater than 0');
+      return;
+    }
+
+    if (!isDeposit && transactionAmount > (user?.balance || 0)) {
+      toast.error('Insufficient funds');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      // Update user balance
+      const newBalance = isDeposit 
+        ? (user?.balance || 0) + transactionAmount
+        : (user?.balance || 0) - transactionAmount;
+
+      updateUser({
+        ...user!,
+        balance: newBalance
+      });
+
+      // Show success message
+      toast.success(
+        `$${transactionAmount.toFixed(2)} ${isDeposit ? 'added to' : 'withdrawn from'} your account`
+      );
+
+      // Reset form
+      setAmount('');
+      setSelectedMethod('');
+      setNotes('');
+      onClose();
+    } catch (error) {
+      toast.error(`${isDeposit ? 'Deposit' : 'Withdrawal'} failed. Please try again.`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        className="bg-white dark:bg-gray-800 rounded-2xl p-6 w-full max-w-md"
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center space-x-3">
+            <div className={`p-2 rounded-lg ${isDeposit ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
+              <Icon className="w-6 h-6" />
+            </div>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              {title}
+            </h2>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+          >
+            <XMarkIcon className="w-6 h-6" />
+          </button>
+        </div>
+
+        {/* Current Balance */}
+        <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+          <p className="text-sm text-gray-600 dark:text-gray-400">Current Balance</p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-white">
+            ${user?.balance?.toFixed(2) || '0.00'}
+          </p>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Amount
+            </label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+              <input
+                type="number"
+                step="0.01"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                className="w-full pl-8 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                placeholder="0.00"
+                required
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Payment Method
+            </label>
+            {paymentMethods.length === 0 ? (
+              <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <p className="text-sm text-yellow-800">
+                  No payment methods available. Please add a payment method first.
+                </p>
+              </div>
+            ) : (
+              <select
+                value={selectedMethod}
+                onChange={(e) => setSelectedMethod(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                required
+              >
+                <option value="">Select payment method</option>
+                {paymentMethods.map((method) => (
+                  <option key={method.id} value={method.id}>
+                    {method.name} {method.last4 ? `(****${method.last4})` : ''}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Notes (Optional)
+            </label>
+            <input
+              type="text"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              placeholder={`${isDeposit ? 'Add' : 'Withdraw'} money ${isDeposit ? 'to' : 'from'} account`}
+            />
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex space-x-3 pt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 px-4 py-3 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={loading || !amount || !selectedMethod}
+              className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors ${
+                isDeposit
+                  ? 'bg-green-500 hover:bg-green-600 text-white disabled:bg-gray-400'
+                  : 'bg-red-500 hover:bg-red-600 text-white disabled:bg-gray-400'
+              } disabled:cursor-not-allowed`}
+            >
+              {loading ? (
+                <div className="flex items-center justify-center space-x-2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  <span>Processing...</span>
+                </div>
+              ) : (
+                `${isDeposit ? 'Add' : 'Withdraw'} $${amount || '0.00'}`
+              )}
+            </button>
+          </div>
+        </form>
+      </motion.div>
+    </div>
+  );
+};
+
+export default DepositWithdrawModal;

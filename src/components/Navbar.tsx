@@ -5,6 +5,8 @@ import { useAuth } from '../contexts/AuthContext';
 import ThemeToggle from './ThemeToggle';
 import PWAStatus from './PWAStatus';
 import NotificationCenter from './NotificationCenter';
+import RealtimeNotificationCenter from './RealtimeNotificationCenter';
+import RealtimeBalanceIndicator from './RealtimeBalanceIndicator';
 import UserSwitcher from './UserSwitcher';
 import {
   Bars3Icon,
@@ -16,8 +18,10 @@ import {
   CurrencyDollarIcon,
   ShieldCheckIcon,
   LockClosedIcon,
+  CreditCardIcon,
   ArrowRightOnRectangleIcon,
   UserIcon,
+  UserGroupIcon,
 } from '@heroicons/react/24/outline';
 
 const Navbar: React.FC = () => {
@@ -109,6 +113,13 @@ const Navbar: React.FC = () => {
                     <span className="hidden xl:inline">Analytics</span>
                   </Link>
                   <Link
+                    to="/groups"
+                    className="text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 px-2 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-1"
+                  >
+                    <UserGroupIcon className="w-4 h-4" />
+                    <span className="hidden xl:inline">Groups</span>
+                  </Link>
+                  <Link
                     to="/budget"
                     className="text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 px-2 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-1"
                   >
@@ -126,12 +137,19 @@ const Navbar: React.FC = () => {
                     <ShieldCheckIcon className="w-4 h-4" />
                     <span className="hidden xl:inline">Security</span>
                   </Link>
+                  <Link
+                    to="/payment-settings"
+                    className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-2 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-1"
+                  >
+                    <CreditCardIcon className="w-4 h-4" />
+                    <span className="hidden xl:inline">Payments</span>
+                  </Link>
                 </div>
 
                 {/* User Controls */}
                 <div className="flex items-center space-x-1">
                   <PWAStatus />
-                  <NotificationCenter />
+                  <RealtimeNotificationCenter />
                   <ThemeToggle />
                   <UserSwitcher />
                   <button
@@ -146,18 +164,6 @@ const Navbar: React.FC = () => {
               </>
             ) : (
               <>
-                <Link
-                  to="/login"
-                  className="text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                >
-                  Sign In
-                </Link>
-                <Link
-                  to="/register"
-                  className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-2 rounded-full text-sm font-semibold hover:from-yellow-600 hover:to-orange-600 transition-all transform hover:scale-105"
-                >
-                  ⚡ Get Started
-                </Link>
                 <ThemeToggle />
               </>
             )}
@@ -235,6 +241,14 @@ const Navbar: React.FC = () => {
                     <span>Analytics</span>
                   </Link>
                   <Link
+                    to="/groups"
+                    className="text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 block px-3 py-2 rounded-md text-base font-medium flex items-center space-x-2"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <UserGroupIcon className="w-5 h-5" />
+                    <span>Groups</span>
+                  </Link>
+                  <Link
                     to="/budget"
                     className="text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 block px-3 py-2 rounded-md text-base font-medium flex items-center space-x-2"
                     onClick={() => setIsOpen(false)}
@@ -287,20 +301,6 @@ const Navbar: React.FC = () => {
                 </>
               ) : (
                 <>
-                  <Link
-                    to="/login"
-                    className="text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 block px-3 py-2 rounded-md text-base font-medium"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    Sign In
-                  </Link>
-                  <Link
-                    to="/register"
-                    className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white block px-3 py-2 rounded-md text-base font-medium text-center"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    ⚡ Get Started
-                  </Link>
                   <div className="flex items-center justify-between px-3 py-2">
                     <span className="text-gray-700 dark:text-gray-300 text-sm font-medium">Theme:</span>
                     <ThemeToggle />

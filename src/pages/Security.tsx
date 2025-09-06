@@ -15,6 +15,7 @@ import {
 import SecurityAlertCard from '../components/security/SecurityAlertCard';
 import TwoFactorSetup from '../components/security/TwoFactorSetup';
 import PasswordStrengthMeter from '../components/security/PasswordStrengthMeter';
+import FraudDetectionDashboard from '../components/FraudDetectionDashboard';
 import SecurityErrorBoundary from '../components/SecurityErrorBoundary';
 import { TwoFactorMethod } from '../types/Security';
 
@@ -514,6 +515,16 @@ const Security: React.FC = () => {
             </div>
           )}
         </div>
+      </motion.div>
+
+      {/* Fraud Detection Dashboard */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.4 }}
+        className="mt-8"
+      >
+        <FraudDetectionDashboard />
       </motion.div>
       </div>
     </SecurityErrorBoundary>

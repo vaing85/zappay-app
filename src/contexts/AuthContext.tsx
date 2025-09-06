@@ -10,6 +10,7 @@ interface AuthContextType {
   loading: boolean;
   switchUser: (email: string) => void;
   availableUsers: typeof testCredentials;
+  updateUser: (updatedUser: User) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -89,6 +90,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const updateUser = (updatedUser: User) => {
+    setUser(updatedUser);
+    localStorage.setItem('zapcash_user', JSON.stringify(updatedUser));
+  };
+
   return (
     <AuthContext.Provider value={{ 
       user, 
@@ -97,7 +103,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       logout, 
       loading, 
       switchUser,
-      availableUsers: testCredentials 
+      availableUsers: testCredentials,
+      updateUser
     }}>
       {children}
     </AuthContext.Provider>

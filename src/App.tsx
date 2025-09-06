@@ -1,55 +1,63 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
 import { store } from './store/store';
-import { AuthProvider } from './contexts/AuthContext';
-import { ThemeProvider } from './contexts/ThemeContext';
-import { NotificationProvider } from './contexts/NotificationContext';
-import { PWAProvider } from './contexts/PWAContext';
-import { BudgetProvider } from './contexts/BudgetContext';
-import { SecurityProvider } from './contexts/SecurityContext';
-import { TransactionSecurityProvider } from './contexts/TransactionSecurityContext';
-import { DataEncryptionProvider } from './contexts/DataEncryptionContext';
+import AppProviders from './components/AppProviders';
+import { WebSocketProvider } from './contexts/WebSocketContext';
+import { RealtimeNotificationProvider } from './contexts/RealtimeNotificationContext';
+import { RealtimeBalanceProvider } from './contexts/RealtimeBalanceContext';
+import { PushNotificationProvider } from './contexts/PushNotificationContext';
+import { AIInsightsProvider } from './contexts/AIInsightsContext';
+import { PaymentProvider } from './contexts/PaymentContext';
+import { GroupProvider } from './contexts/GroupContext';
 import Navbar from './components/Navbar';
-import Home from './pages/Home';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
-import SendMoney from './pages/SendMoney';
-import TransactionHistory from './pages/TransactionHistory';
-import Profile from './pages/Profile';
-import QRPayment from './pages/QRPayment';
-import AdvancedPayments from './pages/AdvancedPayments';
-import SplitBills from './pages/SplitBills';
-import PaymentRequests from './pages/PaymentRequests';
-import NotificationDemo from './pages/NotificationDemo';
-import Analytics from './pages/Analytics';
-import Budget from './pages/Budget';
-import Security from './pages/Security';
-import TransactionSecurity from './pages/TransactionSecurity';
-import DataEncryption from './pages/DataEncryption';
 import InstallPrompt from './components/InstallPrompt';
 import OfflineIndicator from './components/OfflineIndicator';
 import UpdateAvailable from './components/UpdateAvailable';
+import LoadingSpinner from './components/LoadingSpinner';
+import ErrorBoundary from './components/ErrorBoundary';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
+
+// Lazy load pages for better performance
+const Home = lazy(() => import('./pages/Home'));
+const Login = lazy(() => import('./pages/Login'));
+const Register = lazy(() => import('./pages/Register'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const SendMoney = lazy(() => import('./pages/SendMoney'));
+const TransactionHistory = lazy(() => import('./pages/TransactionHistory'));
+const Profile = lazy(() => import('./pages/Profile'));
+const QRPayment = lazy(() => import('./pages/QRPayment'));
+const AdvancedPayments = lazy(() => import('./pages/AdvancedPayments'));
+const SplitBills = lazy(() => import('./pages/SplitBills'));
+const PaymentRequests = lazy(() => import('./pages/PaymentRequests'));
+const NotificationDemo = lazy(() => import('./pages/NotificationDemo'));
+const Analytics = lazy(() => import('./pages/Analytics'));
+const Groups = lazy(() => import('./pages/Groups'));
+const Budget = lazy(() => import('./pages/Budget'));
+const Security = lazy(() => import('./pages/Security'));
+const TransactionSecurity = lazy(() => import('./pages/TransactionSecurity'));
+const DataEncryption = lazy(() => import('./pages/DataEncryption'));
+const PaymentSettings = lazy(() => import('./pages/PaymentSettings'));
 
 function App() {
   return (
     <Provider store={store}>
-      <ThemeProvider>
-        <NotificationProvider>
-          <PWAProvider>
-            <AuthProvider>
-              <SecurityProvider>
-                <BudgetProvider>
-                  <TransactionSecurityProvider>
-                    <DataEncryptionProvider>
-                  <Router>
-                    <div className="App min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-                      <Navbar />
-                      <main className="container mx-auto px-4 py-8">
+      <AppProviders>
+        <WebSocketProvider>
+          <RealtimeNotificationProvider>
+            <RealtimeBalanceProvider>
+              <PushNotificationProvider>
+                <AIInsightsProvider>
+                  <PaymentProvider>
+                    <GroupProvider>
+              <Router>
+                <ErrorBoundary>
+                  <div className="App min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+                    <Navbar />
+                    <main className="container mx-auto px-4 py-8">
+                      <Suspense fallback={<LoadingSpinner />}>
                         <Routes>
                           <Route path="/" element={<Home />} />
                           <Route path="/login" element={<Login />} />
@@ -64,39 +72,43 @@ function App() {
                           <Route path="/payment-requests" element={<PaymentRequests />} />
                           <Route path="/notifications" element={<NotificationDemo />} />
                           <Route path="/analytics" element={<Analytics />} />
+                          <Route path="/groups" element={<Groups />} />
                           <Route path="/budget" element={<Budget />} />
                           <Route path="/security" element={<Security />} />
                           <Route path="/transaction-security" element={<TransactionSecurity />} />
                           <Route path="/data-encryption" element={<DataEncryption />} />
+                          <Route path="/payment-settings" element={<PaymentSettings />} />
                         </Routes>
-                      </main>
-                      <ToastContainer
-                        position="top-right"
-                        autoClose={3000}
-                        hideProgressBar={false}
-                        newestOnTop={false}
-                        closeOnClick
-                        rtl={false}
-                        pauseOnFocusLoss
-                        draggable
-                        pauseOnHover
-                        theme="colored"
-                      />
-                      
-                      {/* PWA Components */}
-                      <InstallPrompt />
-                      <OfflineIndicator />
-                      <UpdateAvailable />
-                    </div>
-                  </Router>
-                    </DataEncryptionProvider>
-                  </TransactionSecurityProvider>
-                </BudgetProvider>
-              </SecurityProvider>
-            </AuthProvider>
-          </PWAProvider>
-        </NotificationProvider>
-      </ThemeProvider>
+                      </Suspense>
+                    </main>
+                    <ToastContainer
+                      position="top-right"
+                      autoClose={3000}
+                      hideProgressBar={false}
+                      newestOnTop={false}
+                      closeOnClick
+                      rtl={false}
+                      pauseOnFocusLoss
+                      draggable
+                      pauseOnHover
+                      theme="colored"
+                    />
+                    
+                    {/* PWA Components */}
+                    <InstallPrompt />
+                    <OfflineIndicator />
+                    <UpdateAvailable />
+                  </div>
+                </ErrorBoundary>
+              </Router>
+                    </GroupProvider>
+                  </PaymentProvider>
+                </AIInsightsProvider>
+              </PushNotificationProvider>
+            </RealtimeBalanceProvider>
+          </RealtimeNotificationProvider>
+        </WebSocketProvider>
+      </AppProviders>
     </Provider>
   );
 }

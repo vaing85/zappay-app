@@ -6,30 +6,51 @@
   "dependencies": {
     "@heroicons/react": "^2.0.18",
     "@reduxjs/toolkit": "^1.9.7",
+    "@stripe/react-stripe-js": "^4.0.0",
+    "@stripe/stripe-js": "^7.9.0",
     "@types/qrcode": "^1.5.5",
+    "@types/recharts": "^1.8.29",
     "axios": "^1.6.0",
     "chart.js": "^4.5.0",
+    "cors": "^2.8.5",
     "date-fns": "^2.30.0",
+    "express": "^5.1.0",
     "framer-motion": "^10.16.4",
+    "jsqr": "^1.4.0",
     "qrcode": "^1.5.4",
-    "react": "^18.2.0",
+    "react": "^18.3.1",
     "react-chartjs-2": "^5.3.0",
-    "react-dom": "^18.2.0",
+    "react-dom": "^18.3.1",
     "react-redux": "^8.1.3",
     "react-router-dom": "^6.17.0",
-    "react-scripts": "5.0.1",
+    "react-scripts": "^5.0.1",
     "react-toastify": "^9.1.3",
+    "recharts": "^3.1.2",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
+    "stripe": "^18.5.0",
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
-    "@types/node": "^16.18.39",
-    "@types/react": "^18.2.17",
-    "@types/react-dom": "^18.2.7",
+    "@testing-library/jest-dom": "^6.8.0",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
     "autoprefixer": "^10.4.15",
+    "concurrently": "^9.2.1",
     "gh-pages": "^6.3.0",
-    "postcss": "^8.4.29",
-    "tailwindcss": "^3.3.3"
+    "jest-environment-jsdom": "^30.1.2",
+    "postcss": "^8.4.31",
+    "tailwindcss": "^3.4.0"
+  },
+  "resolutions": {
+    "nth-check": "^2.1.1",
+    "css-select": "^5.1.0",
+    "postcss": "^8.4.31"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -43,7 +64,12 @@
     "deploy:vercel": "vercel --prod",
     "audit:security": "npm audit --audit-level moderate",
     "lint:fix": "eslint src --ext .js,.jsx,.ts,.tsx --fix",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "server": "node server.js",
+    "dev": "concurrently \"npm run server\" \"npm start\"",
+    "deploy": "node scripts/deploy.js",
+    "generate-icons": "node scripts/generate-icons.js",
+    "build:appstore": "npm run build && npm run generate-icons"
   },
   "eslintConfig": {
     "extends": [

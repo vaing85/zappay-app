@@ -1,16 +1,16 @@
-const CACHE_NAME = 'zapcash-v2';
+// Service Worker for ZapCash PWA
+const CACHE_NAME = 'zapcash-v1';
 const urlsToCache = [
   '/',
   '/static/js/bundle.js',
   '/static/css/main.css',
-  '/manifest.json',
-  '/favicon.svg',
-  '/logo192.svg',
-  '/logo512.svg'
+  '/favicon.ico',
+  '/manifest.json'
 ];
 
-// Install event - cache resources
+// Install event
 self.addEventListener('install', (event) => {
+  console.log('Service Worker installing...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
@@ -18,68 +18,15 @@ self.addEventListener('install', (event) => {
         return cache.addAll(urlsToCache);
       })
       .catch((error) => {
-        console.log('Failed to cache resources:', error);
-        // Don't fail the installation if caching fails
-        return Promise.resolve();
+        console.error('Failed to cache resources:', error);
       })
   );
+  self.skipWaiting();
 });
 
-// Fetch event - serve from cache when offline
-self.addEventListener('fetch', (event) => {
-  // Skip non-HTTP requests (chrome-extension, data, blob, etc.)
-  if (!event.request.url.startsWith('http')) {
-    console.log('Skipping non-HTTP request:', event.request.url);
-    return;
-  }
-  
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Return cached version or fetch from network
-        if (response) {
-          return response;
-        }
-        
-        // Clone the request
-        const fetchRequest = event.request.clone();
-        
-        return fetch(fetchRequest).then((response) => {
-          // Check if valid response
-          if (!response || response.status !== 200 || response.type !== 'basic') {
-            return response;
-          }
-          
-          // Clone the response
-          const responseToCache = response.clone();
-          
-          // Only cache GET requests and avoid caching chrome-extension requests
-          if (event.request.method === 'GET' && 
-              !event.request.url.includes('chrome-extension://') &&
-              !event.request.url.includes('moz-extension://') &&
-              !event.request.url.includes('safari-extension://')) {
-            caches.open(CACHE_NAME)
-              .then((cache) => {
-                cache.put(event.request, responseToCache);
-              })
-              .catch((error) => {
-                console.log('Failed to cache request:', error);
-              });
-          }
-          
-          return response;
-        }).catch(() => {
-          // Return offline page for navigation requests
-          if (event.request.mode === 'navigate') {
-            return caches.match('/');
-          }
-        });
-      })
-  );
-});
-
-// Activate event - clean up old caches
+// Activate event
 self.addEventListener('activate', (event) => {
+  console.log('Service Worker activating...');
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
@@ -92,74 +39,127 @@ self.addEventListener('activate', (event) => {
       );
     })
   );
+  self.clients.claim();
 });
 
-// Background sync for offline transactions
-self.addEventListener('sync', (event) => {
-  if (event.tag === 'background-sync') {
-    event.waitUntil(doBackgroundSync());
-  }
+// Fetch event
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request)
+      .then((response) => {
+        // Return cached version or fetch from network
+        return response || fetch(event.request);
+      })
+      .catch((error) => {
+        console.error('Fetch failed:', error);
+        // Return offline page if available
+        if (event.request.destination === 'document') {
+          return caches.match('/');
+        }
+      })
+  );
 });
 
-// Push notification handling
+// Push event
 self.addEventListener('push', (event) => {
-  const options = {
-    body: event.data ? event.data.text() : 'New notification from ZapCash',
-    icon: '/logo192.svg',
-    badge: '/favicon.svg',
-    vibrate: [100, 50, 100],
-    data: {
-      dateOfArrival: Date.now(),
-      primaryKey: 1
-    },
+  console.log('Push event received:', event);
+
+  let notificationData = {
+    title: 'ZapCash',
+    body: 'You have a new notification',
+    icon: '/favicon.ico',
+    badge: '/favicon.ico',
+    vibrate: [200, 100, 200],
+    requireInteraction: true,
     actions: [
       {
-        action: 'explore',
-        title: 'View in App',
-        icon: '/favicon.svg'
+        action: 'view',
+        title: 'View',
+        icon: '/favicon.ico'
       },
       {
-        action: 'close',
-        title: 'Close',
-        icon: '/favicon.svg'
+        action: 'dismiss',
+        title: 'Dismiss',
+        icon: '/favicon.ico'
       }
     ]
   };
 
+  if (event.data) {
+    try {
+      const data = event.data.json();
+      notificationData = { ...notificationData, ...data };
+    } catch (error) {
+      console.error('Failed to parse push data:', error);
+    }
+  }
+
   event.waitUntil(
-    self.registration.showNotification('ZapCash', options)
+    self.registration.showNotification(notificationData.title, notificationData)
   );
 });
 
-// Notification click handling
+// Notification click event
 self.addEventListener('notificationclick', (event) => {
+  console.log('Notification clicked:', event);
+  
   event.notification.close();
+  
+  const action = event.action;
+  
+  if (action === 'dismiss') {
+    return;
+  }
+  
+  // Focus or open the app
+  event.waitUntil(
+    clients.matchAll({ type: 'window' }).then((clientList) => {
+      if (clientList.length > 0) {
+        return clientList[0].focus();
+      }
+      return clients.openWindow('/');
+    })
+  );
+});
 
-  if (event.action === 'explore') {
+// Background sync
+self.addEventListener('sync', (event) => {
+  console.log('Background sync event:', event.tag);
+  
+  if (event.tag === 'background-sync') {
     event.waitUntil(
-      clients.openWindow('/')
+      // Handle background sync tasks
+      handleBackgroundSync()
     );
   }
 });
 
-// Background sync function
-async function doBackgroundSync() {
+// Message event
+self.addEventListener('message', (event) => {
+  console.log('Service Worker received message:', event.data);
+  
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
+// Handle background sync tasks
+async function handleBackgroundSync() {
   try {
     // Get pending transactions from IndexedDB
     const pendingTransactions = await getPendingTransactions();
     
+    // Process each pending transaction
     for (const transaction of pendingTransactions) {
       try {
-        // Attempt to sync transaction
-        await syncTransaction(transaction);
-        // Remove from pending list
+        await processTransaction(transaction);
         await removePendingTransaction(transaction.id);
       } catch (error) {
-        console.log('Failed to sync transaction:', error);
+        console.error('Failed to process transaction:', error);
       }
     }
   } catch (error) {
-    console.log('Background sync failed:', error);
+    console.error('Background sync failed:', error);
   }
 }
 
@@ -170,12 +170,12 @@ async function getPendingTransactions() {
   return [];
 }
 
-async function syncTransaction(transaction) {
-  // This would make API calls to sync the transaction
-  console.log('Syncing transaction:', transaction);
+async function processTransaction(transaction) {
+  // This would send the transaction to the server
+  console.log('Processing transaction:', transaction);
 }
 
-async function removePendingTransaction(id) {
+async function removePendingTransaction(transactionId) {
   // This would remove the transaction from IndexedDB
-  console.log('Removing pending transaction:', id);
+  console.log('Removing transaction:', transactionId);
 }

@@ -10,6 +10,7 @@ import {
 } from '@heroicons/react/24/outline';
 import QRCodeGenerator from '../components/QRCodeGenerator';
 import QRCodeScanner from '../components/QRCodeScanner';
+import CameraQRScanner from '../components/CameraQRScanner';
 import { toast } from 'react-toastify';
 
 const QRPayment: React.FC = () => {
@@ -24,6 +25,13 @@ const QRPayment: React.FC = () => {
     
     // In a real app, this would navigate to a payment confirmation screen
     toast.success(`QR Code scanned! Payment to ${data.recipient} for $${data.amount}`);
+    setShowScanner(false);
+  };
+
+  const handleCameraScan = (result: any) => {
+    // Handle camera QR scan result
+    console.log('Camera QR scan result:', result);
+    toast.success(`QR Code scanned: ${result.data}`);
     setShowScanner(false);
   };
 
@@ -188,8 +196,9 @@ const QRPayment: React.FC = () => {
 
       {/* QR Scanner Modal */}
       {showScanner && (
-        <QRCodeScanner
-          onScan={handleQRScan}
+        <CameraQRScanner
+          isOpen={showScanner}
+          onScan={handleCameraScan}
           onClose={() => setShowScanner(false)}
         />
       )}

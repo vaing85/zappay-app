@@ -7,8 +7,6 @@ import {
   SecurityAlert, 
   TransactionSecurity,
   PasswordPolicy,
-  SecurityQuestion,
-  BiometricData,
   SecurityReport
 } from '../types/Security';
 import { 
@@ -98,13 +96,6 @@ export const SecurityProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [loading, setLoading] = useState(false);
 
 
-  // Load initial data
-  useEffect(() => {
-    if (user) {
-      loadSecurityData();
-    }
-  }, [user]);
-
   const loadSecurityData = useCallback(async () => {
     if (!user) {
       return;
@@ -146,6 +137,13 @@ export const SecurityProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       setLoading(false);
     }
   }, [user]);
+
+  // Load initial data
+  useEffect(() => {
+    if (user) {
+      loadSecurityData();
+    }
+  }, [user, loadSecurityData]);
 
   const refreshSecurityData = useCallback(() => {
     if (user) {

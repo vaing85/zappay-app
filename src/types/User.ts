@@ -41,6 +41,7 @@ export interface User {
 
 export interface Transaction {
   id: string;
+  userId: string;
   type: 'send' | 'receive';
   amount: number;
   recipient?: string;
@@ -48,6 +49,7 @@ export interface Transaction {
   note?: string;
   timestamp: string;
   status: 'pending' | 'completed' | 'failed';
+  category?: string;
 }
 
 export interface RegisterData {

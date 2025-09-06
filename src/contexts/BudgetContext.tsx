@@ -84,13 +84,6 @@ export const BudgetProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [budgetInsights, setBudgetInsights] = useState<BudgetInsight[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Load initial data
-  useEffect(() => {
-    if (user) {
-      loadBudgetData();
-    }
-  }, [user]);
-
   const loadBudgetData = useCallback(async () => {
     if (!user) return;
     
@@ -131,6 +124,13 @@ export const BudgetProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setLoading(false);
     }
   }, [user]);
+
+  // Load initial data
+  useEffect(() => {
+    if (user) {
+      loadBudgetData();
+    }
+  }, [user, loadBudgetData]);
 
   const refreshBudgets = useCallback(() => {
     if (user) {

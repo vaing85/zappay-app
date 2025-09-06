@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { Link } from 'react-router-dom';
@@ -10,28 +10,87 @@ import {
   ReceiptPercentIcon,
   ChartBarIcon,
   CurrencyDollarIcon,
-  ShieldCheckIcon
+  ShieldCheckIcon,
+  ArrowDownTrayIcon,
+  ArrowUpTrayIcon
 } from '@heroicons/react/24/outline';
 import { getRecentTransactions } from '../services/mockData';
+import { getAriaLabel } from '../utils/accessibility';
+import RealtimeBalanceIndicator from '../components/RealtimeBalanceIndicator';
+import DepositWithdrawModal from '../components/DepositWithdrawModal';
 
-const Dashboard: React.FC = () => {
+const Dashboard: React.FC = memo(() => {
   const { user } = useAuth();
+  const [showDepositModal, setShowDepositModal] = useState(false);
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+
+  // Memoize expensive calculations
+  const recentTransactions = useMemo(() => 
+    user ? getRecentTransactions(user.id) : [], [user]
+  );
+
+  const quickActions = useMemo(() => [
+    { 
+      icon: <ArrowUpIcon className="w-6 h-6" />, 
+      label: "Zap Money", 
+      link: "/send", 
+      color: "bg-yellow-500",
+      ariaLabel: getAriaLabel('send-money')
+    },
+    { 
+      icon: <ArrowDownTrayIcon className="w-6 h-6" />, 
+      label: "Add Money", 
+      action: () => setShowDepositModal(true), 
+      color: "bg-green-500",
+      ariaLabel: "Add money to account"
+    },
+    { 
+      icon: <ArrowUpTrayIcon className="w-6 h-6" />, 
+      label: "Withdraw", 
+      action: () => setShowWithdrawModal(true), 
+      color: "bg-red-500",
+      ariaLabel: "Withdraw money from account"
+    },
+    { 
+      icon: <QrCodeIcon className="w-6 h-6" />, 
+      label: "QR Zap", 
+      link: "/qr", 
+      color: "bg-orange-500",
+      ariaLabel: getAriaLabel('qr-payment')
+    },
+    { 
+      icon: <ReceiptPercentIcon className="w-6 h-6" />, 
+      label: "Advanced", 
+      link: "/advanced", 
+      color: "bg-blue-500",
+      ariaLabel: getAriaLabel('advanced-payments')
+    },
+    { 
+      icon: <ChartBarIcon className="w-6 h-6" />, 
+      label: "Analytics", 
+      link: "/analytics", 
+      color: "bg-green-500",
+      ariaLabel: getAriaLabel('analytics')
+    },
+    { 
+      icon: <CurrencyDollarIcon className="w-6 h-6" />, 
+      label: "Budget", 
+      link: "/budget", 
+      color: "bg-purple-500",
+      ariaLabel: getAriaLabel('budget')
+    },
+    { 
+      icon: <ShieldCheckIcon className="w-6 h-6" />, 
+      label: "Security", 
+      link: "/security", 
+      color: "bg-red-500",
+      ariaLabel: getAriaLabel('security-settings')
+    },
+  ], []);
 
   if (!user) {
     return <div>Please log in to view your dashboard.</div>;
   }
-
-  // Get recent transactions for the current user
-  const recentTransactions = getRecentTransactions(user.id);
-
-              const quickActions = [
-    { icon: <ArrowUpIcon className="w-6 h-6" />, label: "Zap Money", link: "/send", color: "bg-yellow-500" },
-    { icon: <QrCodeIcon className="w-6 h-6" />, label: "QR Zap", link: "/qr", color: "bg-orange-500" },
-    { icon: <ReceiptPercentIcon className="w-6 h-6" />, label: "Advanced", link: "/advanced", color: "bg-blue-500" },
-    { icon: <ChartBarIcon className="w-6 h-6" />, label: "Analytics", link: "/analytics", color: "bg-green-500" },
-    { icon: <CurrencyDollarIcon className="w-6 h-6" />, label: "Budget", link: "/budget", color: "bg-purple-500" },
-    { icon: <ShieldCheckIcon className="w-6 h-6" />, label: "Security", link: "/security", color: "bg-red-500" },
-  ];
 
   const formatDate = (timestamp: string) => {
     const date = new Date(timestamp);
@@ -66,11 +125,18 @@ const Dashboard: React.FC = () => {
         className="bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 rounded-2xl p-8 text-white mb-8 shadow-xl"
       >
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-medium">ZapCash Balance</h2>
-          <BoltIcon className="w-8 h-8 animate-pulse" />
+          <h2 className="text-lg font-medium" id="balance-label">ZapCash Balance</h2>
+          <BoltIcon className="w-8 h-8 animate-pulse" aria-hidden="true" />
         </div>
-        <p className="text-4xl font-bold">${user.balance.toFixed(2)}</p>
-        <p className="text-yellow-100 mt-2">⚡ Ready to Zap</p>
+        <div className="text-white">
+          <RealtimeBalanceIndicator 
+            size="lg" 
+            showChange={true} 
+            showLastUpdate={true}
+            className="text-white"
+          />
+        </div>
+        <p className="text-yellow-100 mt-2" aria-hidden="true">⚡ Ready to Zap</p>
       </motion.div>
 
       {/* Quick Actions */}
@@ -80,18 +146,46 @@ const Dashboard: React.FC = () => {
         transition={{ duration: 0.6, delay: 0.2 }}
         className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
       >
-        {quickActions.map((action, index) => (
-                            <Link
-                    key={index}
-                    to={action.link}
-                    className="bg-white dark:bg-gray-800 rounded-xl p-6 text-center hover:shadow-lg transition-all transform hover:scale-105"
-                  >
-            <div className={`${action.color} w-12 h-12 rounded-full flex items-center justify-center text-white mx-auto mb-3`}>
-              {action.icon}
-            </div>
-            <p className="font-medium text-gray-900 dark:text-white">{action.label}</p>
-          </Link>
-        ))}
+        {quickActions.map((action, index) => {
+          const content = (
+            <>
+              <div 
+                className={`${action.color} w-12 h-12 rounded-full flex items-center justify-center text-white mx-auto mb-3`}
+                aria-hidden="true"
+              >
+                {action.icon}
+              </div>
+              <p className="font-medium text-gray-900 dark:text-white">{action.label}</p>
+            </>
+          );
+
+          if (action.action) {
+            return (
+              <button
+                key={index}
+                onClick={action.action}
+                className="bg-white dark:bg-gray-800 rounded-xl p-6 text-center hover:shadow-lg transition-all transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 w-full"
+                aria-label={action.ariaLabel}
+                type="button"
+              >
+                {content}
+              </button>
+            );
+          }
+
+          return (
+            <Link
+              key={index}
+              to={action.link!}
+              className="bg-white dark:bg-gray-800 rounded-xl p-6 text-center hover:shadow-lg transition-all transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
+              aria-label={action.ariaLabel}
+              role="button"
+              tabIndex={0}
+            >
+              {content}
+            </Link>
+          );
+        })}
       </motion.div>
 
       {/* Recent Transactions */}
@@ -156,8 +250,22 @@ const Dashboard: React.FC = () => {
           View All Zaps
         </Link>
       </motion.div>
+
+      {/* Modals */}
+      <DepositWithdrawModal
+        isOpen={showDepositModal}
+        onClose={() => setShowDepositModal(false)}
+        type="deposit"
+      />
+      <DepositWithdrawModal
+        isOpen={showWithdrawModal}
+        onClose={() => setShowWithdrawModal(false)}
+        type="withdraw"
+      />
     </div>
   );
-};
+});
+
+Dashboard.displayName = 'Dashboard';
 
 export default Dashboard;

@@ -6,9 +6,7 @@ import {
   DataClassification,
   EncryptedField,
   EncryptionContext as EncryptionContextType,
-  EncryptionAuditLog,
-  BiometricAuth,
-  DataProtectionPolicy
+  EncryptionAuditLog
 } from '../types/DataEncryption';
 import {
   generateKeyPair,
@@ -22,7 +20,6 @@ import {
   secureWipe,
   getAuditLogs,
   getUserKeys,
-  getUserEncryptedData,
   defaultEncryptionSettings,
   defaultDataClassifications
 } from '../services/encryptionService';
@@ -48,22 +45,15 @@ export const DataEncryptionProvider: React.FC<DataEncryptionProviderProps> = ({ 
   // State
   const [isEncrypted, setIsEncrypted] = useState(false);
   const [encryptionKey, setEncryptionKey] = useState<EncryptionKey | null>(null);
-  const [masterPasswordHash, setMasterPasswordHash] = useState<string | null>(null);
+  const [masterPasswordHash] = useState<string | null>(null);
   const [settings, setSettings] = useState<EncryptionSettings>(defaultEncryptionSettings);
   const [dataClassifications, setDataClassifications] = useState<DataClassification[]>(defaultDataClassifications);
-  const [auditLogs, setAuditLogs] = useState<EncryptionAuditLog[]>([]);
+  const [, setAuditLogs] = useState<EncryptionAuditLog[]>([]);
   const [loading, setLoading] = useState(false);
   const [encrypting, setEncrypting] = useState(false);
   const [decrypting, setDecrypting] = useState(false);
 
-  // Load initial data
-  useEffect(() => {
-    if (user) {
-      loadEncryptionData();
-    }
-  }, [user]);
-
-  const loadEncryptionData = async () => {
+  const loadEncryptionData = useCallback(async () => {
     if (!user) return;
     
     setLoading(true);
@@ -85,7 +75,14 @@ export const DataEncryptionProvider: React.FC<DataEncryptionProviderProps> = ({ 
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  // Load initial data
+  useEffect(() => {
+    if (user) {
+      loadEncryptionData();
+    }
+  }, [user, loadEncryptionData]);
 
   const encryptDataAction = useCallback(async (
     data: any,
@@ -174,7 +171,7 @@ export const DataEncryptionProvider: React.FC<DataEncryptionProviderProps> = ({ 
       console.error('Key rotation failed:', error);
       throw error;
     }
-  }, [user]);
+  }, [user, loadEncryptionData]);
 
   const revokeKeyAction = useCallback(async (keyId: string) => {
     try {
@@ -188,7 +185,7 @@ export const DataEncryptionProvider: React.FC<DataEncryptionProviderProps> = ({ 
       console.error('Key revocation failed:', error);
       throw error;
     }
-  }, [encryptionKey]);
+  }, [encryptionKey, loadEncryptionData]);
 
   const updateEncryptionSettingsAction = useCallback(async (newSettings: Partial<EncryptionSettings>) => {
     try {

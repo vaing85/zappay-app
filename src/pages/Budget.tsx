@@ -8,14 +8,14 @@ import {
   ExclamationTriangleIcon,
   TagIcon,
   CurrencyDollarIcon,
-  CalendarIcon,
   Cog6ToothIcon
 } from '@heroicons/react/24/outline';
 import BudgetCard from '../components/budget/BudgetCard';
 import BudgetGoalCard from '../components/budget/BudgetGoalCard';
 import BudgetAlertCard from '../components/budget/BudgetAlertCard';
+import SmartBudgetRecommendations from '../components/SmartBudgetRecommendations';
 import ErrorBoundary from '../components/ErrorBoundary';
-import { Budget as BudgetType, BudgetGoal } from '../types/Budget';
+// import { Budget as BudgetType, BudgetGoal } from '../types/Budget';
 
 const BudgetPage: React.FC = () => {
   const { user } = useAuth();
@@ -23,7 +23,6 @@ const BudgetPage: React.FC = () => {
     budgets = [],
     budgetGoals = [],
     budgetAlerts = [],
-    budgetReport = null,
     budgetInsights = [],
     loading = false
   } = useBudget();
@@ -365,6 +364,16 @@ const BudgetPage: React.FC = () => {
             </div>
           )}
         </div>
+      </motion.div>
+
+      {/* Smart Budget Recommendations */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.4 }}
+        className="mt-8"
+      >
+        <SmartBudgetRecommendations />
       </motion.div>
       </div>
     </ErrorBoundary>

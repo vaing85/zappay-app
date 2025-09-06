@@ -1,19 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
+import { usePayment } from '../contexts/PaymentContext';
 import { toast } from 'react-toastify';
 
 const SendMoney: React.FC = () => {
   const { user } = useAuth();
+  const { paymentMethods, processPayment, isLoading } = usePayment();
   const [recipient, setRecipient] = useState('');
   const [amount, setAmount] = useState('');
   const [note, setNote] = useState('');
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Set default payment method when available
+  useEffect(() => {
+    if (paymentMethods.length > 0 && !selectedPaymentMethod) {
+      const defaultMethod = paymentMethods.find(pm => pm.isDefault);
+      if (defaultMethod) {
+        setSelectedPaymentMethod(defaultMethod.id);
+      } else {
+        setSelectedPaymentMethod(paymentMethods[0].id);
+      }
+    }
+  }, [paymentMethods, selectedPaymentMethod]);
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!recipient || !amount) {
+    if (!recipient || !amount || !selectedPaymentMethod) {
       toast.error('Please fill in all required fields');
       return;
     }
@@ -31,14 +46,28 @@ const SendMoney: React.FC = () => {
 
     setLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      toast.success(`⚡ $${sendAmount} zapped to ${recipient}`);
-      setRecipient('');
-      setAmount('');
-      setNote('');
+    try {
+      const result = await processPayment(
+        sendAmount,
+        recipient, // In a real app, this would be a user ID
+        recipient + '@example.com', // In a real app, this would be the actual email
+        note || `Payment to ${recipient}`,
+        selectedPaymentMethod
+      );
+
+      if (result.success) {
+        toast.success(`⚡ $${sendAmount} zapped to ${recipient}`);
+        setRecipient('');
+        setAmount('');
+        setNote('');
+      } else {
+        toast.error(result.error || 'Payment failed');
+      }
+    } catch (error) {
+      toast.error('Payment processing failed');
+    } finally {
       setLoading(false);
-    }, 2000);
+    }
   };
 
   return (
@@ -87,6 +116,32 @@ const SendMoney: React.FC = () => {
             <p className="text-sm text-gray-500 mt-1">
               Available: ${user?.balance.toFixed(2)}
             </p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Payment Method
+            </label>
+            {paymentMethods.length === 0 ? (
+              <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <p className="text-sm text-yellow-800">
+                  No payment methods available. Please add a payment method first.
+                </p>
+              </div>
+            ) : (
+              <select
+                value={selectedPaymentMethod}
+                onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                required
+              >
+                {paymentMethods.map((method) => (
+                  <option key={method.id} value={method.id}>
+                    {method.name} {method.last4 ? `(****${method.last4})` : ''} {method.isDefault ? '- Default' : ''}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
 
           <div>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
@@ -8,8 +8,9 @@ import {
   CurrencyDollarIcon
 } from '@heroicons/react/24/outline';
 
-const Home: React.FC = () => {
-  const features = [
+const Home: React.FC = memo(() => {
+  // Memoize features to prevent recreation on every render
+  const features = useMemo(() => [
     {
       icon: <BoltIcon className="w-8 h-8" />,
       title: "Lightning Fast",
@@ -30,7 +31,20 @@ const Home: React.FC = () => {
       title: "Zero Fees",
       description: "No hidden charges, no surprise costs"
     }
-  ];
+  ], []);
+
+  // Memoize brand name component to avoid repetition
+  const BrandName = useMemo(() => (
+    <>
+      <span className="text-yellow-500">Zap</span><span className="text-orange-600">Cash</span>
+    </>
+  ), []);
+
+  // Memoize CTA button styles to avoid repetition
+  const ctaButtonStyles = useMemo(() => ({
+    primary: "bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-8 py-3 rounded-full text-lg font-semibold hover:from-yellow-600 hover:to-orange-600 transition-all transform hover:scale-105 shadow-lg",
+    secondary: "border-2 border-orange-500 text-orange-600 px-8 py-3 rounded-full text-lg font-semibold hover:bg-orange-50 transition-colors"
+  }), []);
 
   return (
     <div className="min-h-screen">
@@ -44,7 +58,7 @@ const Home: React.FC = () => {
         <div className="mb-8">
           <BoltIcon className="w-16 h-16 text-yellow-500 mx-auto mb-4 animate-pulse" />
           <h1 className="text-6xl font-bold text-gray-900 mb-6">
-            <span className="text-yellow-500">Zap</span><span className="text-orange-600">Cash</span>
+            {BrandName}
           </h1>
         </div>
         <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
@@ -54,13 +68,13 @@ const Home: React.FC = () => {
         <div className="flex gap-4 justify-center">
           <Link
             to="/register"
-            className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-8 py-3 rounded-full text-lg font-semibold hover:from-yellow-600 hover:to-orange-600 transition-all transform hover:scale-105 shadow-lg"
+            className={ctaButtonStyles.primary}
           >
             ⚡ Get Started
           </Link>
           <Link
             to="/login"
-            className="border-2 border-orange-500 text-orange-600 px-8 py-3 rounded-full text-lg font-semibold hover:bg-orange-50 transition-colors"
+            className={ctaButtonStyles.secondary}
           >
             Sign In
           </Link>
@@ -71,7 +85,7 @@ const Home: React.FC = () => {
       <section className="py-20 bg-white">
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="text-4xl font-bold text-center text-gray-900 mb-16">
-            Why Choose <span className="text-yellow-500">Zap</span><span className="text-orange-600">Cash</span>?
+            Why Choose {BrandName}?
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, index) => (
@@ -93,26 +107,33 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* Stats Section - More valuable than redundant CTA */}
       <section className="py-20 bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 text-white">
         <div className="text-center max-w-4xl mx-auto px-4">
           <BoltIcon className="w-20 h-20 mx-auto mb-6 animate-bounce" />
           <h2 className="text-4xl font-bold mb-6">
-            Ready to Zap Your Payments?
+            Trusted by Thousands
           </h2>
-          <p className="text-xl mb-8 opacity-90">
-            Join thousands of users who trust ZapCash for instant, secure transactions
-          </p>
-          <Link
-            to="/register"
-            className="bg-white text-orange-600 px-8 py-3 rounded-full text-lg font-semibold hover:bg-gray-100 transition-colors inline-block transform hover:scale-105 shadow-lg"
-          >
-            ⚡ Start Zapping Today
-          </Link>
+          <div className="grid md:grid-cols-3 gap-8 mt-12">
+            <div className="text-center">
+              <div className="text-4xl font-bold mb-2">50K+</div>
+              <div className="text-lg opacity-90">Active Users</div>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl font-bold mb-2">$2M+</div>
+              <div className="text-lg opacity-90">Transactions Processed</div>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl font-bold mb-2">99.9%</div>
+              <div className="text-lg opacity-90">Uptime</div>
+            </div>
+          </div>
         </div>
       </section>
     </div>
   );
-};
+});
+
+Home.displayName = 'Home';
 
 export default Home;

@@ -49,14 +49,6 @@ const BudgetGoalCard: React.FC<BudgetGoalCardProps> = ({ goal, onEdit, onDelete 
     }
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric', 
-      year: 'numeric' 
-    });
-  };
 
   const getDaysRemaining = () => {
     const now = new Date();
