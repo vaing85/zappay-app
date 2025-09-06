@@ -45,7 +45,7 @@ ZapPay is a modern, lightning-fast peer-to-peer payment application built with R
 ## 🎯 Getting Started
 
 1. **Register a new account** - Click "Get Started" on the home page
-2. **Login** - Use any email and password (demo mode)
+2. **Login** - Use your email and password to sign in
 3. **Explore the Dashboard** - View your balance and quick actions
 4. **Send Money** - Try the lightning-fast payment feature
 5. **View History** - Check your transaction history

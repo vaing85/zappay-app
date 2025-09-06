@@ -7,7 +7,6 @@ import PWAStatus from './PWAStatus';
 import NotificationCenter from './NotificationCenter';
 import RealtimeNotificationCenter from './RealtimeNotificationCenter';
 import RealtimeBalanceIndicator from './RealtimeBalanceIndicator';
-import UserSwitcher from './UserSwitcher';
 import {
   Bars3Icon,
   XMarkIcon,
@@ -130,7 +129,6 @@ const Navbar: React.FC = () => {
                   <PWAStatus />
                   <RealtimeNotificationCenter />
                   <ThemeToggle />
-                  <UserSwitcher />
                   <button
                     onClick={handleLogout}
                     className="flex items-center space-x-1 text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 px-2 py-2 rounded-md text-sm font-medium transition-colors"
@@ -267,7 +265,6 @@ const Navbar: React.FC = () => {
                     <span className="text-gray-700 dark:text-gray-300 text-sm font-medium">Theme:</span>
                     <ThemeToggle />
                   </div>
-                  <UserSwitcher />
                   <button
                     onClick={() => {
                       handleLogout();

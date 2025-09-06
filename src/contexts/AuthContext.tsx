@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, RegisterData } from '../types/User';
-import { getUserByEmail, mockUsers, testCredentials } from '../services/mockData';
+import { getUserByEmail, mockUsers } from '../services/mockData';
 
 interface AuthContextType {
   user: User | null;
@@ -8,8 +8,6 @@ interface AuthContextType {
   register: (userData: RegisterData) => Promise<void>;
   logout: () => void;
   loading: boolean;
-  switchUser: (email: string) => void;
-  availableUsers: typeof testCredentials;
   updateUser: (updatedUser: User) => void;
 }
 
@@ -42,22 +40,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const login = async (email: string, password: string) => {
-    // Check if it's a test user
-    const testUser = testCredentials.find(cred => cred.email === email);
-    if (testUser && password === 'password123') {
-      const mockUser = getUserByEmail(email);
-      if (mockUser) {
-        setUser(mockUser);
-        localStorage.setItem('zappay_user', JSON.stringify(mockUser));
-        return;
-      }
-    }
-    
-    // For any other email/password combination, use John Doe as default
-    const defaultUser = getUserByEmail('john@zappay.com');
-    if (defaultUser) {
-      setUser(defaultUser);
-      localStorage.setItem('zappay_user', JSON.stringify(defaultUser));
+    // In a real app, this would validate against a backend API
+    // For demo purposes, we'll allow any email/password combination
+    // and create a basic user profile
+    const existingUser = getUserByEmail(email);
+    if (existingUser) {
+      setUser(existingUser);
+      localStorage.setItem('zappay_user', JSON.stringify(existingUser));
+    } else {
+      // Create a new user for demo purposes
+      const newUser: User = {
+        id: (mockUsers.length + 1).toString(),
+        name: email.split('@')[0],
+        email: email,
+        balance: 100.00,
+        createdAt: new Date().toISOString(),
+      };
+      mockUsers.push(newUser);
+      setUser(newUser);
+      localStorage.setItem('zappay_user', JSON.stringify(newUser));
     }
   };
 
@@ -82,14 +83,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem('zappay_user');
   };
 
-  const switchUser = (email: string) => {
-    const mockUser = getUserByEmail(email);
-    if (mockUser) {
-      setUser(mockUser);
-      localStorage.setItem('zappay_user', JSON.stringify(mockUser));
-    }
-  };
-
   const updateUser = (updatedUser: User) => {
     setUser(updatedUser);
     localStorage.setItem('zappay_user', JSON.stringify(updatedUser));
@@ -102,8 +95,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       register, 
       logout, 
       loading, 
-      switchUser,
-      availableUsers: testCredentials,
       updateUser
     }}>
       {children}

@@ -6,7 +6,7 @@ export const mockUsers: User[] = [
     id: '1', 
     firstName: 'John',
     lastName: 'Doe',
-    email: 'john@zappay.com',
+    email: 'demo@zappay.com',
     phoneNumber: '+1 (555) 123-4567',
     balance: 1250.75,
     createdAt: '2024-01-01T00:00:00Z',
@@ -45,7 +45,7 @@ export const mockUsers: User[] = [
     id: '1', 
     firstName: 'Sarah',
     lastName: 'Wilson',
-    email: 'sarah@zappay.com',
+    email: 'user2@zappay.com',
     phoneNumber: '+1 (555) 234-5678',
     balance: 3200.50,
     createdAt: '2024-01-15T00:00:00Z',
@@ -84,7 +84,7 @@ export const mockUsers: User[] = [
     id: '1', 
     firstName: 'Mike',
     lastName: 'Johnson',
-    email: 'mike@zappay.com',
+    email: 'user3@zappay.com',
     phoneNumber: '+1 (555) 345-6789',
     balance: 89.25,
     createdAt: '2024-02-01T00:00:00Z',
@@ -123,7 +123,7 @@ export const mockUsers: User[] = [
     id: '1', 
     firstName: 'Emma',
     lastName: 'Davis',
-    email: 'emma@zappay.com',
+    email: 'user4@zappay.com',
     phoneNumber: '+1 (555) 456-7890',
     balance: 5675.00,
     createdAt: '2024-01-20T00:00:00Z',
@@ -162,7 +162,7 @@ export const mockUsers: User[] = [
     id: '1', 
     firstName: 'Alex',
     lastName: 'Brown',
-    email: 'alex@zappay.com',
+    email: 'user5@zappay.com',
     phoneNumber: '+1 (555) 567-8901',
     balance: 0.00,
     createdAt: '2024-02-10T00:00:00Z',
@@ -355,14 +355,7 @@ export const mockTransactions: Transaction[] = [
   },
 ];
 
-// Quick test credentials for easy testing
-export const testCredentials = [
-  { email: 'john@zappay.com', password: 'password123', name: 'John Doe' },
-  { email: 'sarah@zappay.com', password: 'password123', name: 'Sarah Wilson' },
-  { email: 'mike@zappay.com', password: 'password123', name: 'Mike Johnson' },
-  { email: 'emma@zappay.com', password: 'password123', name: 'Emma Davis' },
-  { email: 'alex@zappay.com', password: 'password123', name: 'Alex Brown' },
-];
+// Test credentials removed for production security
 
 // Get user by email
 export const getUserByEmail = (email: string): User | undefined => {

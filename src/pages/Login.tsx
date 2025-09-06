@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { motion } from 'framer-motion';
-import { BoltIcon, EyeIcon, EyeSlashIcon, InformationCircleIcon } from '@heroicons/react/24/outline';
+import { BoltIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { toast } from 'react-toastify';
-import { testCredentials } from '../services/mockData';
 
 const Login: React.FC = () => {
   const { login } = useAuth();
@@ -143,37 +142,6 @@ const Login: React.FC = () => {
           </div>
         </motion.form>
 
-        {/* Test User Information */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="mt-8 bg-blue-50 border border-blue-200 rounded-xl p-6"
-        >
-          <div className="flex items-start space-x-3">
-            <InformationCircleIcon className="w-6 h-6 text-blue-600 mt-0.5" />
-            <div>
-              <h3 className="text-sm font-semibold text-blue-900 mb-2">Test Users Available</h3>
-              <p className="text-sm text-blue-700 mb-3">
-                Use any of these test accounts to explore different user scenarios:
-              </p>
-              <div className="space-y-2">
-                {testCredentials.map((user, index) => (
-                  <div key={index} className="flex items-center justify-between text-xs bg-white rounded-lg p-2">
-                    <div>
-                      <span className="font-medium text-gray-900">{user.name}</span>
-                      <span className="text-gray-500 ml-2">({user.email})</span>
-                    </div>
-                    <code className="bg-gray-100 text-gray-700 px-2 py-1 rounded">password123</code>
-                  </div>
-                ))}
-              </div>
-              <p className="text-xs text-blue-600 mt-2">
-                💡 Each user has different balances and transaction history for testing!
-              </p>
-            </div>
-          </div>
-        </motion.div>
       </motion.div>
     </div>
   );

@@ -10,10 +10,10 @@ export const mockSplitBills: SplitBill[] = [
     createdBy: '1',
     createdByName: 'John Doe',
     participants: [
-      { userId: '1', userName: 'John Doe', userEmail: 'john@zappay.com', amount: 30.00, status: 'paid', paidAt: '2024-01-15T19:30:00Z' },
-      { userId: '2', userName: 'Sarah Wilson', userEmail: 'sarah@zappay.com', amount: 30.00, status: 'paid', paidAt: '2024-01-15T19:35:00Z' },
-      { userId: '3', userName: 'Mike Johnson', userEmail: 'mike@zappay.com', amount: 30.00, status: 'paid', paidAt: '2024-01-15T19:40:00Z' },
-      { userId: '4', userName: 'Emma Davis', userEmail: 'emma@zappay.com', amount: 30.00, status: 'pending' }
+      { userId: '1', userName: 'Demo User', userEmail: 'demo@zappay.com', amount: 30.00, status: 'paid', paidAt: '2024-01-15T19:30:00Z' },
+      { userId: '2', userName: 'User 2', userEmail: 'user2@zappay.com', amount: 30.00, status: 'paid', paidAt: '2024-01-15T19:35:00Z' },
+      { userId: '3', userName: 'User 3', userEmail: 'user3@zappay.com', amount: 30.00, status: 'paid', paidAt: '2024-01-15T19:40:00Z' },
+      { userId: '4', userName: 'User 4', userEmail: 'user4@zappay.com', amount: 30.00, status: 'pending' }
     ],
     category: 'food',
     status: 'active',
@@ -28,9 +28,9 @@ export const mockSplitBills: SplitBill[] = [
     createdBy: '2',
     createdByName: 'Sarah Wilson',
     participants: [
-      { userId: '2', userName: 'Sarah Wilson', userEmail: 'sarah@zappay.com', amount: 15.00, status: 'paid', paidAt: '2024-01-14T08:00:00Z' },
-      { userId: '1', userName: 'John Doe', userEmail: 'john@zappay.com', amount: 15.00, status: 'paid', paidAt: '2024-01-14T08:05:00Z' },
-      { userId: '4', userName: 'Emma Davis', userEmail: 'emma@zappay.com', amount: 15.00, status: 'pending' }
+      { userId: '2', userName: 'User 2', userEmail: 'user2@zappay.com', amount: 15.00, status: 'paid', paidAt: '2024-01-14T08:00:00Z' },
+      { userId: '1', userName: 'Demo User', userEmail: 'demo@zappay.com', amount: 15.00, status: 'paid', paidAt: '2024-01-14T08:05:00Z' },
+      { userId: '4', userName: 'User 4', userEmail: 'user4@zappay.com', amount: 15.00, status: 'pending' }
     ],
     category: 'transport',
     status: 'active',
@@ -45,9 +45,9 @@ export const mockSplitBills: SplitBill[] = [
     createdBy: '3',
     createdByName: 'Mike Johnson',
     participants: [
-      { userId: '3', userName: 'Mike Johnson', userEmail: 'mike@zappay.com', amount: 20.00, status: 'paid', paidAt: '2024-01-13T20:00:00Z' },
-      { userId: '1', userName: 'John Doe', userEmail: 'john@zappay.com', amount: 20.00, status: 'paid', paidAt: '2024-01-13T20:05:00Z' },
-      { userId: '2', userName: 'Sarah Wilson', userEmail: 'sarah@zappay.com', amount: 20.00, status: 'paid', paidAt: '2024-01-13T20:10:00Z' }
+      { userId: '3', userName: 'User 3', userEmail: 'user3@zappay.com', amount: 20.00, status: 'paid', paidAt: '2024-01-13T20:00:00Z' },
+      { userId: '1', userName: 'Demo User', userEmail: 'demo@zappay.com', amount: 20.00, status: 'paid', paidAt: '2024-01-13T20:05:00Z' },
+      { userId: '2', userName: 'User 2', userEmail: 'user2@zappay.com', amount: 20.00, status: 'paid', paidAt: '2024-01-13T20:10:00Z' }
     ],
     category: 'entertainment',
     status: 'completed',
@@ -114,9 +114,9 @@ export const mockPaymentGroups: PaymentGroup[] = [
     description: 'Shared expenses for our apartment',
     createdBy: '1',
     members: [
-      { userId: '1', userName: 'John Doe', userEmail: 'john@zappay.com', role: 'admin', joinedAt: '2024-01-01T00:00:00Z' },
-      { userId: '2', userName: 'Sarah Wilson', userEmail: 'sarah@zappay.com', role: 'member', joinedAt: '2024-01-01T00:00:00Z' },
-      { userId: '3', userName: 'Mike Johnson', userEmail: 'mike@zappay.com', role: 'member', joinedAt: '2024-01-01T00:00:00Z' }
+      { userId: '1', userName: 'Demo User', userEmail: 'demo@zappay.com', role: 'admin', joinedAt: '2024-01-01T00:00:00Z' },
+      { userId: '2', userName: 'User 2', userEmail: 'user2@zappay.com', role: 'member', joinedAt: '2024-01-01T00:00:00Z' },
+      { userId: '3', userName: 'User 3', userEmail: 'user3@zappay.com', role: 'member', joinedAt: '2024-01-01T00:00:00Z' }
     ],
     createdAt: '2024-01-01T00:00:00Z',
     isActive: true
@@ -127,9 +127,9 @@ export const mockPaymentGroups: PaymentGroup[] = [
     description: 'Lunch expenses with colleagues',
     createdBy: '2',
     members: [
-      { userId: '2', userName: 'Sarah Wilson', userEmail: 'sarah@zappay.com', role: 'admin', joinedAt: '2024-01-05T00:00:00Z' },
-      { userId: '4', userName: 'Emma Davis', userEmail: 'emma@zappay.com', role: 'member', joinedAt: '2024-01-05T00:00:00Z' },
-      { userId: '5', userName: 'Alex Brown', userEmail: 'alex@zappay.com', role: 'member', joinedAt: '2024-01-05T00:00:00Z' }
+      { userId: '2', userName: 'User 2', userEmail: 'user2@zappay.com', role: 'admin', joinedAt: '2024-01-05T00:00:00Z' },
+      { userId: '4', userName: 'User 4', userEmail: 'user4@zappay.com', role: 'member', joinedAt: '2024-01-05T00:00:00Z' },
+      { userId: '5', userName: 'User 5', userEmail: 'user5@zappay.com', role: 'member', joinedAt: '2024-01-05T00:00:00Z' }
     ],
     createdAt: '2024-01-05T00:00:00Z',
     isActive: true
