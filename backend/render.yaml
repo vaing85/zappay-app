@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: zappay-backend
+    env: node
+    plan: starter
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: REFRESH_TOKEN_SECRET
+        generateValue: true
+      - key: DB_URL
+        fromDatabase:
+          name: zappay-postgres
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: zappay-redis
+          property: connectionString
+
+databases:
+  - name: zappay-postgres
+    plan: starter
+    databaseName: zappay_production
+    user: zappay_user
+
+  - name: zappay-redis
+    plan: starter

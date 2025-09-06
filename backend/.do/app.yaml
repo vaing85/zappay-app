@@ -1,0 +1,67 @@
+name: zappay-backend
+services:
+- name: api
+  source_dir: /backend
+  github:
+    repo: vaing85/zapcash-app
+    branch: main
+  run_command: npm start
+  environment_slug: node-js
+  instance_count: 1
+  instance_size_slug: basic-xxs
+  http_port: 3001
+  health_check:
+    http_path: /health
+    initial_delay_seconds: 10
+    period_seconds: 10
+    timeout_seconds: 5
+    success_threshold: 1
+    failure_threshold: 3
+  envs:
+  - key: NODE_ENV
+    value: production
+  - key: PORT
+    value: "3001"
+  - key: JWT_SECRET
+    value: ${JWT_SECRET}
+  - key: REFRESH_TOKEN_SECRET
+    value: ${REFRESH_TOKEN_SECRET}
+  - key: DB_URL
+    value: ${zappay-postgres.DATABASE_URL}
+  - key: REDIS_URL
+    value: ${zappay-redis.REDIS_URL}
+  - key: STRIPE_SECRET_KEY
+    value: ${STRIPE_SECRET_KEY}
+  - key: STRIPE_PUBLISHABLE_KEY
+    value: ${STRIPE_PUBLISHABLE_KEY}
+  - key: STRIPE_WEBHOOK_SECRET
+    value: ${STRIPE_WEBHOOK_SECRET}
+  - key: SENDGRID_API_KEY
+    value: ${SENDGRID_API_KEY}
+  - key: FROM_EMAIL
+    value: noreply@zappay.com
+  - key: FROM_NAME
+    value: ZapPay
+  - key: TWILIO_ACCOUNT_SID
+    value: ${TWILIO_ACCOUNT_SID}
+  - key: TWILIO_AUTH_TOKEN
+    value: ${TWILIO_AUTH_TOKEN}
+  - key: TWILIO_PHONE_NUMBER
+    value: ${TWILIO_PHONE_NUMBER}
+  - key: FRONTEND_URL
+    value: https://zappay.com
+  - key: CORS_ORIGIN
+    value: https://zappay.com,https://www.zappay.com
+
+databases:
+- name: zappay-postgres
+  engine: PG
+  version: "14"
+  size: db-s-1vcpu-1gb
+  num_nodes: 1
+
+- name: zappay-redis
+  engine: REDIS
+  version: "7"
+  size: db-s-1vcpu-1gb
+  num_nodes: 1
