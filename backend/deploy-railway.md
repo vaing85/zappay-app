@@ -15,7 +15,7 @@
 ## Step 2: Deploy Backend
 1. Click "New Project"
 2. Select "Deploy from GitHub repo"
-3. Choose your `zapcash-app` repository
+3. Choose your `zappay-app` repository
 4. Select the `backend` folder as root directory
 5. Railway will automatically detect it's a Node.js app
 

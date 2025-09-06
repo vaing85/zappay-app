@@ -13,7 +13,7 @@
 1. Go to [DigitalOcean App Platform](https://cloud.digitalocean.com/apps)
 2. Click "Create App"
 3. Connect your GitHub account
-4. Select your `zapcash-app` repository
+4. Select your `zappay-app` repository
 5. Choose "Backend Service" and set root directory to `backend`
 
 ### Step 2: Configure App Settings
@@ -24,7 +24,7 @@ services:
 - name: api
   source_dir: /backend
   github:
-    repo: yourusername/zapcash-app
+    repo: yourusername/zappay-app
     branch: main
   run_command: npm start
   environment_slug: node-js
@@ -172,8 +172,8 @@ systemctl restart redis-server
 ### Step 6: Deploy Application
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/zapcash-app.git
-cd zapcash-app/backend
+git clone https://github.com/yourusername/zappay-app.git
+cd zappay-app/backend
 
 # Install dependencies
 npm install --production

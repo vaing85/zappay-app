@@ -2,7 +2,7 @@
 
 ## Issues Identified:
 1. **JavaScript Syntax Error**: `Uncaught SyntaxError: Unexpected token '<'`
-2. **Service Worker Cache**: Still referencing old `zapcash-v1` cache
+2. **Service Worker Cache**: Still referencing old `zapcash-v1` cache (will be updated to `zappay-v1`)
 3. **Build Artifacts**: Need fresh build with updated branding
 
 ## Solutions Applied:
@@ -30,7 +30,7 @@
 
 ### Option 2: Manual Netlify Deploy
 1. Go to Netlify dashboard
-2. Find your site (zapcashapp.netlify.app)
+2. Find your site (zappayapp.netlify.app)
 3. Click "Trigger deploy" → "Deploy site"
 4. Wait for build to complete
 
@@ -48,6 +48,6 @@
 
 ## Expected Results:
 - ✅ No JavaScript syntax errors
-- ✅ Service worker shows "Deleting old cache: zapcash-v1"
+- ✅ Service worker shows "Deleting old cache: zapcash-v1" (will show "zappay-v1" after deployment)
 - ✅ All UI shows "ZapPay" branding
 - ✅ New logos and favicons display correctly

@@ -3,7 +3,7 @@ services:
 - name: api
   source_dir: /backend
   github:
-    repo: vaing85/zapcash-app
+    repo: vaing85/zappay-app
     branch: main
   run_command: npm start
   environment_slug: node-js

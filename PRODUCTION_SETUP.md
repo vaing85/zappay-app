@@ -54,8 +54,8 @@ sudo systemctl restart redis-server
 ### 3. Backend Deployment
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/zapcash-app.git
-cd zapcash-app/backend
+git clone https://github.com/yourusername/zappay-app.git
+cd zappay-app/backend
 
 # Install dependencies
 npm install
@@ -307,7 +307,7 @@ npm run migrate
 For production deployment support:
 - Email: support@zappay.com
 - Documentation: https://docs.zappay.com
-- GitHub Issues: https://github.com/yourusername/zapcash-app/issues
+- GitHub Issues: https://github.com/yourusername/zappay-app/issues
 
 ---
 
