@@ -108,6 +108,33 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Public Stripe test endpoint
+app.post('/api/stripe/test', async (req, res) => {
+  try {
+    const stripeService = require('./services/stripePaymentService');
+    const result = await stripeService.createPaymentIntent(1, 'usd', { test: true });
+
+    if (result.success) {
+      res.json({
+        success: true,
+        message: 'Stripe connection successful',
+        timestamp: new Date().toISOString()
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: `Stripe connection failed: ${result.error}`
+      });
+    }
+  } catch (error) {
+    console.error('Stripe test error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Stripe test failed'
+    });
+  }
+});
+
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', authMiddleware, userRoutes);
