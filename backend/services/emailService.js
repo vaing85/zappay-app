@@ -2,7 +2,8 @@ const nodemailer = require('nodemailer');
 
 // Create transporter based on environment
 const createTransporter = () => {
-  if (process.env.EMAIL_SERVICE === 'sendgrid') {
+  // Use SendGrid if API key is available
+  if (process.env.SENDGRID_API_KEY) {
     return nodemailer.createTransport({
       service: 'SendGrid',
       auth: {
@@ -13,7 +14,7 @@ const createTransporter = () => {
   }
   
   // Default to SMTP (for development or other providers)
-  return nodemailer.createTransporter({
+  return nodemailer.createTransport({
     host: process.env.SMTP_HOST || 'smtp.gmail.com',
     port: process.env.SMTP_PORT || 587,
     secure: false,
@@ -195,8 +196,39 @@ const sendTransactionNotification = async (email, firstName, transaction) => {
   }
 };
 
+// Send test email
+const sendTestEmail = async (email, name) => {
+  try {
+    const mailOptions = {
+      from: {
+        name: process.env.SENDGRID_FROM_NAME || 'ZapPay',
+        address: process.env.SENDGRID_FROM_EMAIL || 'noreply@zappay.com'
+      },
+      to: email,
+      subject: 'ZapPay - Test Email',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #4F46E5;">ZapPay Test Email</h2>
+          <p>Hello ${name},</p>
+          <p>This is a test email from ZapPay to verify that our email service is working correctly.</p>
+          <p>If you received this email, our SendGrid integration is working perfectly! 🎉</p>
+          <p>Best regards,<br>The ZapPay Team</p>
+        </div>
+      `
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log(`Test email sent to ${email}`);
+    return { success: true };
+  } catch (error) {
+    console.error('Error sending test email:', error);
+    return { success: false, error: error.message };
+  }
+};
+
 module.exports = {
   sendVerificationEmail,
   sendPasswordResetEmail,
-  sendTransactionNotification
+  sendTransactionNotification,
+  sendTestEmail
 };

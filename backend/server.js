@@ -150,6 +150,47 @@ app.get('/stripe-test', async (req, res) => {
   }
 });
 
+// Simple SendGrid test endpoint
+app.get('/email-test', async (req, res) => {
+  try {
+    // Check if SendGrid environment variables are set
+    const hasSendGridKey = !!process.env.SENDGRID_API_KEY;
+    const hasFromEmail = !!process.env.SENDGRID_FROM_EMAIL;
+    
+    if (!hasSendGridKey || !hasFromEmail) {
+      return res.status(400).json({
+        success: false,
+        message: 'SendGrid environment variables not set',
+        hasApiKey: hasSendGridKey,
+        hasFromEmail: hasFromEmail
+      });
+    }
+
+    const emailService = require('./services/emailService');
+    const result = await emailService.sendTestEmail('test@example.com', 'Test User');
+
+    if (result.success) {
+      res.json({
+        success: true,
+        message: 'SendGrid connection successful',
+        timestamp: new Date().toISOString()
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: `SendGrid connection failed: ${result.error}`
+      });
+    }
+  } catch (error) {
+    console.error('SendGrid test error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'SendGrid test failed',
+      error: error.message
+    });
+  }
+});
+
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', authMiddleware, userRoutes);
