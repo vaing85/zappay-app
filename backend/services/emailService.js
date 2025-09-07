@@ -3,7 +3,7 @@ const nodemailer = require('nodemailer');
 // Create transporter based on environment
 const createTransporter = () => {
   if (process.env.EMAIL_SERVICE === 'sendgrid') {
-    return nodemailer.createTransporter({
+    return nodemailer.createTransport({
       service: 'SendGrid',
       auth: {
         user: 'apikey',
