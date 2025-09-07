@@ -126,8 +126,20 @@ app.use(errorHandler);
 // Database and Redis connection
 const startServer = async () => {
   try {
-    await connectDB();
-    await connectRedis();
+    // Try to connect to databases, but don't fail if they don't exist yet
+    try {
+      await connectDB();
+      console.log('✅ Database connected');
+    } catch (dbError) {
+      console.warn('⚠️ Database connection failed (will retry later):', dbError.message);
+    }
+    
+    try {
+      await connectRedis();
+      console.log('✅ Redis connected');
+    } catch (redisError) {
+      console.warn('⚠️ Redis connection failed (will retry later):', redisError.message);
+    }
     
     const PORT = process.env.PORT || 3001;
     const HOST = process.env.HOST || '0.0.0.0';
