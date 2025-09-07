@@ -1,0 +1,40 @@
+name: zappay-backend
+services:
+- name: api
+  source_dir: /backend
+  github:
+    repo: vaing85/zappay-app
+    branch: main
+  run_command: npm start
+  environment_slug: node-js
+  instance_count: 1
+  instance_size_slug: basic-xxs
+  http_port: 3001
+  health_check:
+    http_path: /health
+    initial_delay_seconds: 30
+    period_seconds: 10
+    timeout_seconds: 10
+    success_threshold: 1
+    failure_threshold: 3
+  envs:
+  - key: NODE_ENV
+    value: production
+  - key: PORT
+    value: "3001"
+  - key: JWT_SECRET
+    value: "your_super_secret_jwt_key_here_change_this_in_production"
+  - key: REFRESH_TOKEN_SECRET
+    value: "your_refresh_token_secret_here_change_this_in_production"
+  - key: JWT_EXPIRES_IN
+    value: "1h"
+  - key: REFRESH_TOKEN_EXPIRES_IN
+    value: "7d"
+  - key: FRONTEND_URL
+    value: "https://zappayapp.netlify.app"
+  - key: CORS_ORIGIN
+    value: "https://zappayapp.netlify.app,https://zappay.com"
+  - key: RATE_LIMIT_WINDOW_MS
+    value: "900000"
+  - key: RATE_LIMIT_MAX_REQUESTS
+    value: "100"

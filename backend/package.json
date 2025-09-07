@@ -2,9 +2,9 @@
   "name": "zappay-backend",
   "version": "1.0.0",
   "description": "ZapPay Backend API Server",
-  "main": "server.js",
+  "main": "server-simple.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node server-simple.js",
     "dev": "nodemon server.js",
     "test": "jest",
     "build": "echo 'No build step required'",
