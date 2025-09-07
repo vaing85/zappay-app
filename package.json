@@ -53,7 +53,7 @@
     "postcss": "^8.4.31"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "cd backend && node server-simple.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
