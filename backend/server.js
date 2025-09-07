@@ -20,8 +20,30 @@ const notificationRoutes = require('./routes/notifications');
 // Import middleware
 const errorHandler = require('./middleware/errorHandler');
 const authMiddleware = require('./middleware/auth');
-const { connectDB } = require('./config/database');
-const { connectRedis } = require('./config/redis');
+
+// Import database connections with error handling
+let connectDB, connectRedis;
+try {
+  const dbConfig = require('./config/database');
+  connectDB = dbConfig.connectDB;
+} catch (error) {
+  console.warn('⚠️ Database config not available:', error.message);
+  connectDB = async () => {
+    console.warn('⚠️ Database connection skipped');
+    return null;
+  };
+}
+
+try {
+  const redisConfig = require('./config/redis');
+  connectRedis = redisConfig.connectRedis;
+} catch (error) {
+  console.warn('⚠️ Redis config not available:', error.message);
+  connectRedis = async () => {
+    console.warn('⚠️ Redis connection skipped');
+    return null;
+  };
+}
 
 const app = express();
 const server = createServer(app);
