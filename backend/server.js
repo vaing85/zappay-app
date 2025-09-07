@@ -112,6 +112,19 @@ app.get('/health', (req, res) => {
 // Simple Stripe test endpoint
 app.get('/stripe-test', async (req, res) => {
   try {
+    // Check if Stripe environment variables are set
+    const hasStripeKey = !!process.env.STRIPE_SECRET_KEY;
+    const hasStripePubKey = !!process.env.STRIPE_PUBLISHABLE_KEY;
+    
+    if (!hasStripeKey || !hasStripePubKey) {
+      return res.status(400).json({
+        success: false,
+        message: 'Stripe environment variables not set',
+        hasSecretKey: hasStripeKey,
+        hasPublishableKey: hasStripePubKey
+      });
+    }
+
     const stripeService = require('./services/stripePaymentService');
     const result = await stripeService.createPaymentIntent(1, 'usd', { test: true });
 
@@ -131,7 +144,8 @@ app.get('/stripe-test', async (req, res) => {
     console.error('Stripe test error:', error);
     res.status(500).json({
       success: false,
-      message: 'Stripe test failed'
+      message: 'Stripe test failed',
+      error: error.message
     });
   }
 });
