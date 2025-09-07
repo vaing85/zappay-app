@@ -3,7 +3,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 // Import routes
-const authRoutes = require('./routes/auth');
+const authRoutes = require('./routes/auth-simple');
 const userRoutes = require('./routes/users');
 const transactionRoutes = require('./routes/transactions');
 const paymentRoutes = require('./routes/payments');
