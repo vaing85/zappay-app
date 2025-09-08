@@ -105,7 +105,7 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     environment: process.env.NODE_ENV,
-    message: 'ZapPay Backend is running!'
+        message: 'ZapPay Backend is running with SMS support!'
   });
 });
 
