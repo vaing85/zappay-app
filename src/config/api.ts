@@ -143,7 +143,6 @@ export const apiRequest = async (
       'Content-Type': 'application/json',
       ...options.headers,
     },
-    timeout: API_CONFIG.TIMEOUT,
   };
   
   const mergedOptions = { ...defaultOptions, ...options };
