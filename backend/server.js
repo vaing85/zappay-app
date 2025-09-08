@@ -191,6 +191,59 @@ app.get('/email-test', async (req, res) => {
   }
 });
 
+// Simple Twilio SMS test endpoint
+app.post('/sms-test', async (req, res) => {
+  try {
+    // Check if Twilio environment variables are set
+    const hasAccountSid = !!process.env.TWILIO_ACCOUNT_SID;
+    const hasAuthToken = !!process.env.TWILIO_AUTH_TOKEN;
+    const hasPhoneNumber = !!process.env.TWILIO_PHONE_NUMBER;
+    
+    if (!hasAccountSid || !hasAuthToken || !hasPhoneNumber) {
+      return res.status(400).json({
+        success: false,
+        message: 'Twilio environment variables not set',
+        hasAccountSid,
+        hasAuthToken,
+        hasPhoneNumber
+      });
+    }
+
+    const { phoneNumber } = req.body;
+    
+    if (!phoneNumber) {
+      return res.status(400).json({
+        success: false,
+        message: 'Phone number is required in request body'
+      });
+    }
+
+    const smsService = require('./services/smsService');
+    const result = await smsService.testSMSService(phoneNumber);
+
+    if (result.success) {
+      res.json({
+        success: true,
+        message: 'SMS sent successfully',
+        messageId: result.messageId,
+        timestamp: new Date().toISOString()
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: `SMS sending failed: ${result.error}`
+      });
+    }
+  } catch (error) {
+    console.error('SMS test error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'SMS test failed',
+      error: error.message
+    });
+  }
+});
+
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', authMiddleware, userRoutes);
