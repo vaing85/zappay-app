@@ -12,7 +12,9 @@ import {
   CurrencyDollarIcon,
   ShieldCheckIcon,
   ArrowDownTrayIcon,
-  ArrowUpTrayIcon
+  ArrowUpTrayIcon,
+  CreditCardIcon,
+  Cog6ToothIcon
 } from '@heroicons/react/24/outline';
 import { getRecentTransactions } from '../services/mockData';
 import { getAriaLabel } from '../utils/accessibility';
@@ -137,6 +139,48 @@ const Dashboard: React.FC = memo(() => {
           />
         </div>
         <p className="text-yellow-100 mt-2" aria-hidden="true">⚡ Ready to Zap</p>
+      </motion.div>
+
+      {/* Funding Options */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.15 }}
+        className="bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl shadow-lg p-6 text-white mb-8"
+      >
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h2 className="text-xl font-semibold mb-2">Add Funds to Your Account</h2>
+            <p className="text-yellow-100">Quick and secure ways to fund your ZapCash wallet</p>
+          </div>
+          <CreditCardIcon className="w-8 h-8 text-yellow-200" />
+        </div>
+        <div className="grid md:grid-cols-3 gap-4">
+          <button
+            onClick={() => setShowDepositModal(true)}
+            className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white p-4 rounded-lg text-center transition-all duration-200 border border-white/20"
+          >
+            <ArrowDownTrayIcon className="w-6 h-6 mx-auto mb-2" />
+            <span className="block text-sm font-medium">Add Money</span>
+            <span className="block text-xs text-yellow-100 mt-1">Instant deposit</span>
+          </button>
+          <Link
+            to="/payment-settings"
+            className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white p-4 rounded-lg text-center transition-all duration-200 border border-white/20"
+          >
+            <CreditCardIcon className="w-6 h-6 mx-auto mb-2" />
+            <span className="block text-sm font-medium">Payment Methods</span>
+            <span className="block text-xs text-yellow-100 mt-1">Manage cards & banks</span>
+          </Link>
+          <Link
+            to="/payment-settings"
+            className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white p-4 rounded-lg text-center transition-all duration-200 border border-white/20"
+          >
+            <Cog6ToothIcon className="w-6 h-6 mx-auto mb-2" />
+            <span className="block text-sm font-medium">Settings</span>
+            <span className="block text-xs text-yellow-100 mt-1">Configure payments</span>
+          </Link>
+        </div>
       </motion.div>
 
       {/* Quick Actions */}

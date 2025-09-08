@@ -115,6 +115,14 @@ const Navbar: React.FC = () => {
                     <span className="hidden 2xl:inline">Groups</span>
                   </Link>
                   <Link
+                    to="/payment-settings"
+                    className="text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 px-2 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-1"
+                    title="Payment Settings"
+                  >
+                    <CreditCardIcon className="w-4 h-4" />
+                    <span className="hidden 2xl:inline">Payments</span>
+                  </Link>
+                  <Link
                     to="/budget"
                     className="text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 px-2 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-1"
                     title="Budget"
@@ -224,6 +232,14 @@ const Navbar: React.FC = () => {
                   >
                     <UserGroupIcon className="w-5 h-5" />
                     <span>Groups</span>
+                  </Link>
+                  <Link
+                    to="/payment-settings"
+                    className="text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 block px-3 py-2 rounded-md text-base font-medium flex items-center space-x-2"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <CreditCardIcon className="w-5 h-5" />
+                    <span>Payment Settings</span>
                   </Link>
                   <Link
                     to="/budget"
