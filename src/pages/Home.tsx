@@ -130,6 +130,51 @@ const Home: React.FC = memo(() => {
           </div>
         </div>
       </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white py-12">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="grid md:grid-cols-4 gap-8">
+            <div>
+              <h3 className="text-lg font-semibold mb-4">ZapCash</h3>
+              <p className="text-gray-400">
+                Lightning-fast payments that zap money instantly to anyone, anywhere.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Legal</h3>
+              <ul className="space-y-2">
+                <li>
+                  <Link to="/privacy-policy" className="text-gray-400 hover:text-white transition-colors">
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/terms-of-service" className="text-gray-400 hover:text-white transition-colors">
+                    Terms of Service
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Support</h3>
+              <ul className="space-y-2">
+                <li><a href="mailto:support@zappay.site" className="text-gray-400 hover:text-white transition-colors">Contact Support</a></li>
+                <li><a href="mailto:privacy@zappay.site" className="text-gray-400 hover:text-white transition-colors">Privacy Inquiries</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Security</h3>
+              <p className="text-gray-400 text-sm">
+                Bank-level security with end-to-end encryption. Your money and data are protected with military-grade security.
+              </p>
+            </div>
+          </div>
+          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+            <p>&copy; {new Date().getFullYear()} ZapCash. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 });
