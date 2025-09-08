@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "ZapPay - Lightning fast peer-to-peer payment application",
   "private": true,
+  "homepage": ".",
   "dependencies": {
     "@heroicons/react": "^2.0.18",
     "@reduxjs/toolkit": "^1.9.7",
