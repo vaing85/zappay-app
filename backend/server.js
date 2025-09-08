@@ -46,6 +46,10 @@ try {
 }
 
 const app = express();
+
+// Trust proxy for DigitalOcean App Platform
+app.set('trust proxy', 1);
+
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
@@ -81,6 +85,12 @@ const limiter = rateLimit({
   message: 'Too many requests from this IP, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
+  // Trust proxy for DigitalOcean App Platform
+  trustProxy: true,
+  // Skip successful requests from rate limiting
+  skipSuccessfulRequests: false,
+  // Skip failed requests from rate limiting
+  skipFailedRequests: false
 });
 app.use(limiter);
 
