@@ -26,7 +26,10 @@ const sequelize = new Sequelize(process.env.DB_URL || {
       rejectUnauthorized: false,
       ca: process.env.DB_SSL_CA || undefined,
       key: process.env.DB_SSL_KEY || undefined,
-      cert: process.env.DB_SSL_CERT || undefined
+      cert: process.env.DB_SSL_CERT || undefined,
+      // Additional SSL options for managed databases
+      checkServerIdentity: () => undefined,
+      secureProtocol: 'TLSv1_2_method'
     } : false
   }
 });
@@ -87,7 +90,11 @@ const connectDB = async () => {
           dialectOptions: {
             ssl: {
               require: true,
-              rejectUnauthorized: false
+              rejectUnauthorized: false,
+              checkServerIdentity: () => undefined,
+              secureProtocol: 'TLSv1_2_method',
+              // Completely bypass SSL certificate validation for managed databases
+              agent: false
             }
           }
         });
@@ -103,7 +110,43 @@ const connectDB = async () => {
         return sequelizeRelaxed;
       } catch (retryError) {
         console.error('❌ Database connection failed even with relaxed SSL:', retryError.message);
-        throw retryError;
+        
+        // Final fallback: try without SSL (if the database allows it)
+        console.warn('⚠️ Attempting final fallback: connection without SSL...');
+        try {
+          const sequelizeNoSSL = new Sequelize(process.env.DB_URL || {
+            host: process.env.DB_HOST || 'localhost',
+            port: process.env.DB_PORT || 5432,
+            database: process.env.DB_NAME || 'zappay_production',
+            username: process.env.DB_USER || 'zappay_user',
+            password: process.env.DB_PASSWORD || 'password',
+            dialect: 'postgres',
+            logging: false,
+            pool: {
+              max: 20,
+              min: 0,
+              acquire: 30000,
+              idle: 10000
+            },
+            dialectOptions: {
+              ssl: false // Completely disable SSL
+            }
+          });
+          
+          await sequelizeNoSSL.authenticate();
+          console.log('✅ Database connection established without SSL');
+          
+          if (process.env.NODE_ENV === 'production') {
+            await sequelizeNoSSL.sync({ alter: true });
+            console.log('✅ Database synchronized');
+          }
+          
+          return sequelizeNoSSL;
+        } catch (noSSLError) {
+          console.error('❌ Database connection failed even without SSL:', noSSLError.message);
+          console.error('📝 Please check your database configuration and network connectivity.');
+          throw noSSLError;
+        }
       }
     }
     
