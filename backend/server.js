@@ -130,6 +130,31 @@ app.get('/robots.txt', (req, res) => {
   res.send('User-agent: *\nDisallow: /');
 });
 
+// Common static asset endpoints to prevent 404 errors
+app.get('/manifest.json', (req, res) => {
+  res.status(204).end(); // No Content - prevents 404 errors
+});
+
+app.get('/favicon.svg', (req, res) => {
+  res.status(204).end(); // No Content - prevents 404 errors
+});
+
+app.get('/logo192.svg', (req, res) => {
+  res.status(204).end(); // No Content - prevents 404 errors
+});
+
+app.get('/logo512.svg', (req, res) => {
+  res.status(204).end(); // No Content - prevents 404 errors
+});
+
+app.get('/apple-touch-icon.png', (req, res) => {
+  res.status(204).end(); // No Content - prevents 404 errors
+});
+
+app.get('/sw.js', (req, res) => {
+  res.status(204).end(); // No Content - prevents 404 errors
+});
+
 // Simple Stripe test endpoint
 app.get('/stripe-test', async (req, res) => {
   try {
