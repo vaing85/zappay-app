@@ -24,13 +24,15 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
-# SPA redirects - this should work correctly with Netlify
+# SPA redirects - explicit configuration for Netlify
 [[redirects]]
   from = "/static/*"
   to = "/static/:splat"
   status = 200
+  force = true
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+  force = true

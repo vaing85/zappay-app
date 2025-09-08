@@ -1,4 +1,4 @@
-# Netlify redirects for SPA
+# Netlify redirects for SPA - explicit configuration
 # Serve static assets directly
 /static/*    /static/:splat   200
 
