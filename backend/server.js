@@ -332,6 +332,19 @@ app.use(errorHandler);
 // Database and Redis connection
 const startServer = async () => {
   try {
+    console.log('🚀 Starting ZapPay Backend Server...');
+    console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`🔗 Port: ${process.env.PORT || 3001}`);
+    console.log(`🔗 Host: ${process.env.HOST || '0.0.0.0'}`);
+    
+    // Log environment variables (without sensitive data)
+    console.log('📝 Environment check:');
+    console.log(`  - NODE_ENV: ${process.env.NODE_ENV || 'not set'}`);
+    console.log(`  - PORT: ${process.env.PORT || 'not set (using default 3001)'}`);
+    console.log(`  - DB_URL: ${process.env.DB_URL ? 'set' : 'not set'}`);
+    console.log(`  - REDIS_URL: ${process.env.REDIS_URL ? 'set' : 'not set'}`);
+    console.log(`  - STRIPE_SECRET_KEY: ${process.env.STRIPE_SECRET_KEY ? 'set' : 'not set'}`);
+    
     // Try to connect to databases, but don't fail if they don't exist yet
     try {
       await connectDB();
@@ -352,11 +365,24 @@ const startServer = async () => {
     
     server.listen(PORT, HOST, () => {
       console.log(`🚀 ZapPay Backend Server running on ${HOST}:${PORT}`);
-      console.log(`📊 Environment: ${process.env.NODE_ENV}`);
+      console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
       console.log(`🔗 Health check: http://${HOST}:${PORT}/health`);
+      console.log('✅ Server started successfully!');
     });
+
+    // Handle server errors gracefully
+    server.on('error', (error) => {
+      console.error('❌ Server error:', error);
+      if (error.code === 'EADDRINUSE') {
+        console.error(`❌ Port ${PORT} is already in use`);
+      }
+      process.exit(1);
+    });
+    
   } catch (error) {
     console.error('❌ Failed to start server:', error);
+    console.error('📝 Error details:', error.message);
+    console.error('📝 Stack trace:', error.stack);
     process.exit(1);
   }
 };
