@@ -23,7 +23,10 @@ const sequelize = new Sequelize(process.env.DB_URL || {
   dialectOptions: {
     ssl: process.env.NODE_ENV === 'production' ? {
       require: true,
-      rejectUnauthorized: false
+      rejectUnauthorized: false,
+      ca: process.env.DB_SSL_CA || undefined,
+      key: process.env.DB_SSL_KEY || undefined,
+      cert: process.env.DB_SSL_CERT || undefined
     } : false
   }
 });
@@ -58,7 +61,52 @@ const connectDB = async () => {
     
     return sequelize;
   } catch (error) {
-    console.error('❌ Unable to connect to the database:', error);
+    console.error('❌ Unable to connect to the database:', error.message);
+    
+    // Handle specific SSL certificate errors
+    if (error.message.includes('self-signed certificate') || error.message.includes('certificate')) {
+      console.warn('⚠️ SSL Certificate issue detected. This is common with managed databases.');
+      console.warn('📝 The database connection will be retried with relaxed SSL settings.');
+      
+      // Try to reconnect with more relaxed SSL settings
+      try {
+        const sequelizeRelaxed = new Sequelize(process.env.DB_URL || {
+          host: process.env.DB_HOST || 'localhost',
+          port: process.env.DB_PORT || 5432,
+          database: process.env.DB_NAME || 'zappay_production',
+          username: process.env.DB_USER || 'zappay_user',
+          password: process.env.DB_PASSWORD || 'password',
+          dialect: 'postgres',
+          logging: false,
+          pool: {
+            max: 20,
+            min: 0,
+            acquire: 30000,
+            idle: 10000
+          },
+          dialectOptions: {
+            ssl: {
+              require: true,
+              rejectUnauthorized: false
+            }
+          }
+        });
+        
+        await sequelizeRelaxed.authenticate();
+        console.log('✅ Database connection established with relaxed SSL settings');
+        
+        if (process.env.NODE_ENV === 'production') {
+          await sequelizeRelaxed.sync({ alter: true });
+          console.log('✅ Database synchronized');
+        }
+        
+        return sequelizeRelaxed;
+      } catch (retryError) {
+        console.error('❌ Database connection failed even with relaxed SSL:', retryError.message);
+        throw retryError;
+      }
+    }
+    
     throw error;
   }
 };
