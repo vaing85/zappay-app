@@ -3,6 +3,7 @@
 
 import { loadStripe, Stripe, StripeElements } from '@stripe/stripe-js';
 import { STRIPE_PUBLISHABLE_KEY, DEFAULT_CURRENCY } from '../config/stripe';
+import { API_CONFIG, buildApiUrl } from '../config/api';
 
 export interface StripePaymentMethod {
   id: string;
@@ -125,7 +126,7 @@ class StripePaymentService {
     metadata: Record<string, string> = {}
   ): Promise<StripePaymentIntent> {
     try {
-      const response = await fetch('/api/stripe/create-payment-intent', {
+      const response = await fetch(buildApiUrl(API_CONFIG.ENDPOINTS.STRIPE.CREATE_PAYMENT_INTENT), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -216,7 +217,7 @@ class StripePaymentService {
   // Get payment methods for customer
   async getPaymentMethods(customerId: string): Promise<StripePaymentMethod[]> {
     try {
-      const response = await fetch(`/api/stripe/payment-methods/${customerId}`, {
+      const response = await fetch(buildApiUrl(API_CONFIG.ENDPOINTS.STRIPE.GET_PAYMENT_METHODS(customerId)), {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -239,7 +240,7 @@ class StripePaymentService {
   // Attach payment method to customer
   async attachPaymentMethod(paymentMethodId: string, customerId: string): Promise<StripePaymentMethod> {
     try {
-      const response = await fetch('/api/stripe/attach-payment-method', {
+      const response = await fetch(buildApiUrl(API_CONFIG.ENDPOINTS.STRIPE.ATTACH_PAYMENT_METHOD), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -265,7 +266,7 @@ class StripePaymentService {
   // Detach payment method from customer
   async detachPaymentMethod(paymentMethodId: string): Promise<boolean> {
     try {
-      const response = await fetch('/api/stripe/detach-payment-method', {
+      const response = await fetch(buildApiUrl(API_CONFIG.ENDPOINTS.STRIPE.DETACH_PAYMENT_METHOD), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -295,7 +296,7 @@ class StripePaymentService {
     metadata: Record<string, string> = {}
   ): Promise<StripeRefund> {
     try {
-      const response = await fetch('/api/stripe/create-refund', {
+      const response = await fetch(buildApiUrl(API_CONFIG.ENDPOINTS.STRIPE.CREATE_REFUND), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -323,7 +324,7 @@ class StripePaymentService {
   // Get charges for customer
   async getCharges(customerId: string, limit: number = 50): Promise<StripeCharge[]> {
     try {
-      const response = await fetch(`/api/stripe/charges/${customerId}?limit=${limit}`, {
+      const response = await fetch(buildApiUrl(API_CONFIG.ENDPOINTS.STRIPE.GET_CHARGES(customerId, limit)), {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -350,7 +351,7 @@ class StripePaymentService {
     metadata: Record<string, string> = {}
   ): Promise<{ id: string; email: string; name?: string }> {
     try {
-      const response = await fetch('/api/stripe/create-customer', {
+      const response = await fetch(buildApiUrl(API_CONFIG.ENDPOINTS.STRIPE.CREATE_CUSTOMER), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

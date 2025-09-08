@@ -1,4 +1,6 @@
 // Push Notification Service for PWA
+import { buildApiUrl } from '../config/api';
+
 class PushNotificationService {
   private registration: ServiceWorkerRegistration | null = null;
   private subscription: PushSubscription | null = null;
@@ -139,7 +141,7 @@ class PushNotificationService {
 
   private async sendSubscriptionToServer(subscription: PushSubscription): Promise<void> {
     try {
-      const response = await fetch('/api/push/subscribe', {
+      const response = await fetch(buildApiUrl('/api/push/subscribe'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -162,7 +164,7 @@ class PushNotificationService {
 
   private async sendUnsubscriptionToServer(): Promise<void> {
     try {
-      const response = await fetch('/api/push/unsubscribe', {
+      const response = await fetch(buildApiUrl('/api/push/unsubscribe'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

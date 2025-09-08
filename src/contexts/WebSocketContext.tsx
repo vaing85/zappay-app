@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { io, Socket } from 'socket.io-client';
+import { API_CONFIG } from '../config/api';
 
 interface WebSocketContextType {
   socket: Socket | null;
@@ -26,7 +27,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
   useEffect(() => {
     const initializeSocket = () => {
       // Check if WebSocket server is available
-      const wsUrl = process.env.REACT_APP_WEBSOCKET_URL || 'ws://localhost:3001';
+      const wsUrl = API_CONFIG.WEBSOCKET_URL;
       
       // For now, disable WebSocket connection to prevent errors
       // In production, you would enable this when the server is available
