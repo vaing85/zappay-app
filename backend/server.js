@@ -109,6 +109,17 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Favicon endpoint to prevent 404 errors
+app.get('/favicon.ico', (req, res) => {
+  res.status(204).end(); // No Content - prevents 404 errors
+});
+
+// Robots.txt endpoint to prevent 404 errors
+app.get('/robots.txt', (req, res) => {
+  res.type('text/plain');
+  res.send('User-agent: *\nDisallow: /');
+});
+
 // Simple Stripe test endpoint
 app.get('/stripe-test', async (req, res) => {
   try {
