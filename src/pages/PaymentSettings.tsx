@@ -26,7 +26,7 @@ const PaymentSettings: React.FC = () => {
       await addPaymentMethod('card', 'Demo Card', {
         cardElement: null,
         email: user.email,
-        phone: user.phone || '',
+        phone: user.phoneNumber || '',
         address: {
           line1: '123 Demo St',
           line2: '',
