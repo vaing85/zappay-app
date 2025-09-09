@@ -1,4 +1,4 @@
-# ZapCash Development Progress Summary
+# ZapPay Development Progress Summary
 
 ## 🎯 **Today's Major Accomplishments**
 

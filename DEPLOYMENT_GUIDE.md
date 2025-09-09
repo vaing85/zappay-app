@@ -6,7 +6,7 @@
 1. Go to: https://github.com/vaing85/zappay-app
 2. Click **"Settings"** tab
 3. Scroll to **"Repository name"** section
-4. Change from: `zapcash-app` (if not already renamed)
+4. Change from: `zappay-app` (if not already renamed)
 5. Change to: `zappay-app`
 6. Click **"Rename"** button
 

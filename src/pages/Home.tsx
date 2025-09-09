@@ -136,7 +136,7 @@ const Home: React.FC = memo(() => {
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
-              <h3 className="text-lg font-semibold mb-4">ZapCash</h3>
+              <h3 className="text-lg font-semibold mb-4">ZapPay</h3>
               <p className="text-gray-400">
                 Lightning-fast payments that zap money instantly to anyone, anywhere.
               </p>
@@ -171,7 +171,7 @@ const Home: React.FC = memo(() => {
             </div>
           </div>
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; {new Date().getFullYear()} ZapCash. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} ZapPay. All rights reserved.</p>
           </div>
         </div>
       </footer>

@@ -151,7 +151,7 @@ const Dashboard: React.FC = memo(() => {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h2 className="text-xl font-semibold mb-2">Add Funds to Your Account</h2>
-            <p className="text-yellow-100">Quick and secure ways to fund your ZapCash wallet</p>
+            <p className="text-yellow-100">Quick and secure ways to fund your ZapPay wallet</p>
           </div>
           <CreditCardIcon className="w-8 h-8 text-yellow-200" />
         </div>

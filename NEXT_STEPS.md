@@ -14,7 +14,7 @@
 ## **🔄 WHEN YOU'RE READY TO CONTINUE:**
 
 ### **Step 1: Rename GitHub Repository (2 minutes)**
-1. Go to: https://github.com/vaing85/zapcash-app
+1. Go to: https://github.com/vaing85/zappay-app
 2. Click **Settings** → **Repository name**
 3. Change to: `zappay-app`
 4. Click **Rename**
