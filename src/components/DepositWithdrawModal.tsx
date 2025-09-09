@@ -17,7 +17,7 @@ const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
   type 
 }) => {
   const { user, updateUser } = useAuth();
-  const { paymentMethods } = usePayment();
+  const { paymentMethods, processDeposit } = usePayment();
   const [amount, setAmount] = useState('');
   const [selectedMethod, setSelectedMethod] = useState('');
   const [loading, setLoading] = useState(false);
@@ -50,29 +50,56 @@ const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
     setLoading(true);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      if (isDeposit) {
+        // Use real Stripe integration for deposits
+        const result = await processDeposit(
+          transactionAmount,
+          selectedMethod,
+          notes || 'Account Deposit'
+        );
 
-      // Update user balance
-      const newBalance = isDeposit 
-        ? (user?.balance || 0) + transactionAmount
-        : (user?.balance || 0) - transactionAmount;
+        if (result.success) {
+          // Update user balance
+          const newBalance = (user?.balance || 0) + transactionAmount;
+          updateUser({
+            ...user!,
+            balance: newBalance
+          });
 
-      updateUser({
-        ...user!,
-        balance: newBalance
-      });
+          toast.success(
+            `$${transactionAmount.toFixed(2)} added to your account successfully!`
+          );
 
-      // Show success message
-      toast.success(
-        `$${transactionAmount.toFixed(2)} ${isDeposit ? 'added to' : 'withdrawn from'} your account`
-      );
+          // Reset form
+          setAmount('');
+          setSelectedMethod('');
+          setNotes('');
+          onClose();
+        } else {
+          toast.error(result.error || 'Deposit failed. Please try again.');
+        }
+      } else {
+        // For withdrawals, we'll keep the simulation for now
+        // In a real app, this would also use Stripe or bank integration
+        await new Promise(resolve => setTimeout(resolve, 2000));
 
-      // Reset form
-      setAmount('');
-      setSelectedMethod('');
-      setNotes('');
-      onClose();
+        // Update user balance
+        const newBalance = (user?.balance || 0) - transactionAmount;
+        updateUser({
+          ...user!,
+          balance: newBalance
+        });
+
+        toast.success(
+          `$${transactionAmount.toFixed(2)} withdrawn from your account`
+        );
+
+        // Reset form
+        setAmount('');
+        setSelectedMethod('');
+        setNotes('');
+        onClose();
+      }
     } catch (error) {
       toast.error(`${isDeposit ? 'Deposit' : 'Withdrawal'} failed. Please try again.`);
     } finally {

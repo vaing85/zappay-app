@@ -502,6 +502,97 @@ class PaymentService {
     return true;
   }
 
+  // Process deposit using Stripe
+  async processDeposit(
+    amount: number,
+    paymentMethodId: string,
+    userId: string,
+    userEmail: string,
+    description: string = 'Account Deposit'
+  ): Promise<PaymentResult> {
+    try {
+      // Create customer if needed
+      const customer = await stripePaymentService.createCustomer(
+        userEmail,
+        userId,
+        { userId, type: 'deposit' }
+      );
+
+      // Create Stripe payment intent for deposit
+      const stripePaymentIntent = await stripePaymentService.createPaymentIntent(
+        amount,
+        'usd',
+        paymentMethodId,
+        customer.id,
+        description,
+        { userId, type: 'deposit', userEmail }
+      );
+
+      // Confirm payment intent
+      const result = await stripePaymentService.confirmPaymentIntent(
+        stripePaymentIntent.client_secret!,
+        paymentMethodId
+      );
+
+      if (result.error) {
+        return {
+          success: false,
+          error: result.error
+        };
+      }
+
+      if (result.paymentIntent.status === 'succeeded') {
+        // Create deposit transaction record
+        const transaction: Transaction = {
+          id: `dep_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          type: 'deposit',
+          amount: amount,
+          currency: 'usd',
+          status: 'completed',
+          senderId: userId,
+          recipientId: userId, // User deposits to their own account
+          description: description,
+          paymentMethodId: paymentMethodId,
+          fees: this.calculateFees(amount),
+          netAmount: amount - this.calculateFees(amount),
+          metadata: {
+            stripePaymentIntentId: stripePaymentIntent.id,
+            type: 'deposit'
+          },
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          completedAt: new Date()
+        };
+
+        this.transactions.set(transaction.id, transaction);
+        
+        return {
+          success: true,
+          transactionId: transaction.id
+        };
+      } else if (result.paymentIntent.status === 'requires_action') {
+        return {
+          success: false,
+          requiresAction: true,
+          nextAction: {
+            type: '3d_secure'
+          }
+        };
+      } else {
+        return {
+          success: false,
+          error: 'Deposit processing failed'
+        };
+      }
+    } catch (error) {
+      console.error('Error processing deposit:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Deposit failed'
+      };
+    }
+  }
+
   // Get payment statistics
   async getPaymentStats(userId: string): Promise<{
     totalSent: number;

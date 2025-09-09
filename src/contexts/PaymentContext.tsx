@@ -11,6 +11,7 @@ interface PaymentContextType {
   removePaymentMethod: (id: string) => Promise<boolean>;
   setDefaultPaymentMethod: (id: string) => Promise<boolean>;
   processPayment: (amount: number, recipientId: string, recipientEmail: string, description: string, paymentMethodId: string) => Promise<PaymentResult>;
+  processDeposit: (amount: number, paymentMethodId: string, description?: string) => Promise<PaymentResult>;
   getTransactions: (limit?: number) => Promise<Transaction[]>;
   getTransaction: (id: string) => Promise<Transaction | null>;
   refundTransaction: (transactionId: string, amount?: number) => Promise<PaymentResult>;
@@ -112,6 +113,50 @@ export const PaymentProvider: React.FC<PaymentProviderProps> = ({ children }) =>
       return result;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Payment processing failed';
+      setError(errorMessage);
+      return {
+        success: false,
+        error: errorMessage
+      };
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user]);
+
+  const processDeposit = useCallback(async (
+    amount: number,
+    paymentMethodId: string,
+    description: string = 'Account Deposit'
+  ): Promise<PaymentResult> => {
+    if (!user) {
+      return {
+        success: false,
+        error: 'User not authenticated'
+      };
+    }
+
+    try {
+      setError(null);
+      setIsLoading(true);
+
+      // Process deposit using Stripe
+      const result = await paymentService.processDeposit(
+        amount,
+        paymentMethodId,
+        user.id,
+        user.email,
+        description
+      );
+
+      if (result.success) {
+        // Refresh transactions and update user balance
+        // Note: In a real app, this would be handled by the backend
+        // and the user balance would be updated via a separate API call
+      }
+
+      return result;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Deposit processing failed';
       setError(errorMessage);
       return {
         success: false,
@@ -240,6 +285,7 @@ export const PaymentProvider: React.FC<PaymentProviderProps> = ({ children }) =>
     removePaymentMethod,
     setDefaultPaymentMethod,
     processPayment,
+    processDeposit,
     getTransactions,
     getTransaction,
     refundTransaction,
