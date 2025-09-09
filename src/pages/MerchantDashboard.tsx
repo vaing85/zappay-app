@@ -18,7 +18,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useAuth } from '../contexts/AuthContext';
 import { useSubscription } from '../contexts/SubscriptionContext';
-import QRCodeGenerator from '../components/QRCodeGenerator';
+import BusinessQRGenerator from '../components/BusinessQRGenerator';
 import { Link } from 'react-router-dom';
 
 interface MerchantTransaction {
@@ -644,7 +644,7 @@ const MerchantDashboard: React.FC = () => {
 
       {/* QR Code Generator Modal */}
       {showQRGenerator && (
-        <QRCodeGenerator
+        <BusinessQRGenerator
           isOpen={showQRGenerator}
           onClose={() => setShowQRGenerator(false)}
           onQRGenerated={(qrData) => {
