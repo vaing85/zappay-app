@@ -233,7 +233,8 @@ class StripePaymentService {
       return data.paymentMethods || [];
     } catch (error) {
       console.error('Error getting payment methods:', error);
-      throw error;
+      // Return empty array instead of throwing to allow fallback
+      return [];
     }
   }
 

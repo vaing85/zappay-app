@@ -244,7 +244,7 @@ export const PaymentProvider: React.FC<PaymentProviderProps> = ({ children }) =>
   }, [user]);
 
   const refreshData = useCallback(async () => {
-    if (!user) return;
+    if (!user || !user.id) return;
 
     try {
       setIsLoading(true);
@@ -268,7 +268,7 @@ export const PaymentProvider: React.FC<PaymentProviderProps> = ({ children }) =>
 
   // Load data when user changes
   useEffect(() => {
-    if (user) {
+    if (user && user.id) {
       refreshData();
     } else {
       setPaymentMethods([]);
