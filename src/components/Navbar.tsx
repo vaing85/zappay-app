@@ -6,7 +6,6 @@ import ThemeToggle from './ThemeToggle';
 import PWAStatus from './PWAStatus';
 import NotificationCenter from './NotificationCenter';
 import RealtimeNotificationCenter from './RealtimeNotificationCenter';
-import RealtimeBalanceIndicator from './RealtimeBalanceIndicator';
 import {
   Bars3Icon,
   XMarkIcon,

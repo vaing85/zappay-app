@@ -55,7 +55,7 @@ const BankAccountModal: React.FC<BankAccountModalProps> = ({
     setLoading(true);
     try {
       // Simulate bank account addition
-      const bankAccount = await withdrawalService.addBankAccount('user_id', {
+      await withdrawalService.addBankAccount('user_id', {
         routingNumber: formData.routingNumber,
         accountNumber: formData.accountNumber,
         accountType: formData.accountType,

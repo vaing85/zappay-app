@@ -5,7 +5,6 @@ import {
   ExclamationTriangleIcon,
   CheckCircleIcon,
   XCircleIcon,
-  EyeIcon,
   ClockIcon,
   ChartBarIcon,
   BellIcon

@@ -28,7 +28,7 @@ import DepositWithdrawModal from '../components/DepositWithdrawModal';
 
 const Dashboard: React.FC = memo(() => {
   const { user } = useAuth();
-  const { currentSubscription, plans, hasFeatureAccess } = useSubscription();
+  const { currentSubscription, plans } = useSubscription();
   const [showDepositModal, setShowDepositModal] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
 

@@ -216,7 +216,7 @@ export const PaymentProvider: React.FC<PaymentProviderProps> = ({ children }) =>
     } finally {
       setIsLoading(false);
     }
-  }, [getTransactions]);
+  }, []);
 
   const getPaymentStats = useCallback(async () => {
     if (!user) {

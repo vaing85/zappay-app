@@ -1,7 +1,6 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  CameraIcon, 
   XMarkIcon, 
   QrCodeIcon,
   ExclamationTriangleIcon,

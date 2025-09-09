@@ -11,7 +11,6 @@ import {
   ExclamationTriangleIcon,
   CalendarIcon
 } from '@heroicons/react/24/outline';
-import { useAuth } from '../contexts/AuthContext';
 import { useSubscription } from '../contexts/SubscriptionContext';
 
 interface APIKey {
@@ -25,7 +24,6 @@ interface APIKey {
 }
 
 const APIKeyManager: React.FC = () => {
-  const { user } = useAuth();
   const { hasFeatureAccess } = useSubscription();
   const [apiKeys, setApiKeys] = useState<APIKey[]>([]);
   const [showCreateForm, setShowCreateForm] = useState(false);

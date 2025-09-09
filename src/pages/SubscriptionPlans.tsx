@@ -5,7 +5,6 @@ import {
   XMarkIcon, 
   StarIcon,
   ArrowRightIcon,
-  CreditCardIcon,
   ShieldCheckIcon,
   ChartBarIcon,
   UsersIcon,
@@ -67,21 +66,6 @@ const SubscriptionPlans: React.FC = () => {
         return <StarIcon className="w-8 h-8" />;
       default:
         return <CogIcon className="w-8 h-8" />;
-    }
-  };
-
-  const getPlanColor = (planId: SubscriptionTier) => {
-    switch (planId) {
-      case 'free':
-        return 'gray';
-      case 'pro':
-        return 'blue';
-      case 'business':
-        return 'green';
-      case 'enterprise':
-        return 'purple';
-      default:
-        return 'gray';
     }
   };
 

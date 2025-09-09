@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { 
   SparklesIcon,
@@ -10,7 +10,6 @@ import {
   InformationCircleIcon,
   XCircleIcon,
   ArrowUpIcon,
-  ArrowDownIcon,
   StarIcon,
   UsersIcon
 } from '@heroicons/react/24/outline';
@@ -21,7 +20,7 @@ import { Link } from 'react-router-dom';
 
 const PremiumAnalytics: React.FC = () => {
   const { user } = useAuth();
-  const { hasFeatureAccess, currentSubscription } = useSubscription();
+  const { currentSubscription } = useSubscription();
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'insights' | 'predictions' | 'reports' | 'alerts'>('insights');
   
@@ -30,13 +29,7 @@ const PremiumAnalytics: React.FC = () => {
   const [reports, setReports] = useState<any>(null);
   const [alerts, setAlerts] = useState<any>(null);
 
-  useEffect(() => {
-    if (user) {
-      loadPremiumData();
-    }
-  }, [user, activeTab]);
-
-  const loadPremiumData = async () => {
+  const loadPremiumData = useCallback(async () => {
     if (!user) return;
     
     setLoading(true);
@@ -70,7 +63,13 @@ const PremiumAnalytics: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, activeTab, currentSubscription]);
+
+  useEffect(() => {
+    if (user) {
+      loadPremiumData();
+    }
+  }, [user, loadPremiumData]);
 
   const getSeverityIcon = (severity: string) => {
     switch (severity) {

@@ -1,24 +1,19 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import QRCode from 'qrcode';
 import { motion } from 'framer-motion';
 import { 
   QrCodeIcon, 
   ClipboardIcon, 
-  CheckIcon, 
   ArrowDownTrayIcon,
-  EyeIcon,
-  CogIcon,
   PlusIcon,
   TrashIcon,
   BuildingStorefrontIcon,
-  TagIcon,
   CurrencyDollarIcon,
   CalendarIcon,
-  ChartBarIcon
+  EyeIcon
 } from '@heroicons/react/24/outline';
 import { toast } from 'react-toastify';
 import { useAuth } from '../contexts/AuthContext';
-import { useSubscription } from '../contexts/SubscriptionContext';
 
 interface BusinessQRCode {
   id: string;
@@ -46,9 +41,7 @@ const BusinessQRGenerator: React.FC<BusinessQRGeneratorProps> = ({
   onQRGenerated 
 }) => {
   const { user } = useAuth();
-  const { hasFeatureAccess } = useSubscription();
   const [loading, setLoading] = useState(false);
-  const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState<'create' | 'manage'>('create');
   
   // QR Creation Form
@@ -57,7 +50,6 @@ const BusinessQRGenerator: React.FC<BusinessQRGeneratorProps> = ({
   const [qrAmount, setQrAmount] = useState<number | null>(null);
   const [qrCategory, setQrCategory] = useState('General');
   const [qrExpiry, setQrExpiry] = useState<number | null>(null);
-  const [qrCodeDataURL, setQrCodeDataURL] = useState<string>('');
   
   // QR Management
   const [qrCodes, setQrCodes] = useState<BusinessQRCode[]>([]);
@@ -107,7 +99,6 @@ const BusinessQRGenerator: React.FC<BusinessQRGeneratorProps> = ({
         errorCorrectionLevel: 'M'
       });
       
-      setQrCodeDataURL(dataURL);
       return dataURL;
     } catch (error) {
       console.error('Error generating QR code:', error);
@@ -156,7 +147,6 @@ const BusinessQRGenerator: React.FC<BusinessQRGeneratorProps> = ({
       setQrAmount(null);
       setQrCategory('General');
       setQrExpiry(null);
-      setQrCodeDataURL('');
       
       toast.success('QR code created successfully!');
     }
@@ -180,10 +170,7 @@ const BusinessQRGenerator: React.FC<BusinessQRGeneratorProps> = ({
       };
       
       await navigator.clipboard.writeText(JSON.stringify(paymentData));
-      setCopied(true);
       toast.success('QR code data copied to clipboard!');
-      
-      setTimeout(() => setCopied(false), 2000);
     } catch (error) {
       toast.error('Failed to copy to clipboard');
     }

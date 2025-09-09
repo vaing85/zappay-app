@@ -1,18 +1,15 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { 
   ChartBarIcon, 
   ArrowTrendingUpIcon, 
   ArrowTrendingDownIcon,
-  CalendarIcon,
   ArrowDownTrayIcon,
-  TagIcon,
-  EyeIcon
+  TagIcon
 } from '@heroicons/react/24/outline';
 import { useAuth } from '../contexts/AuthContext';
 import { analyticsService } from '../services/analyticsService';
 import { SpendingCategory, SpendingTrend, MonthlyReport, SpendingForecast, SpendingGoal, ComparisonData } from '../types/Analytics';
-import SpendingChart from './charts/SpendingChart';
 import CategoryChart from './charts/CategoryChart';
 import TrendChart from './charts/TrendChart';
 import ForecastCard from './cards/ForecastCard';
@@ -22,8 +19,8 @@ import ComparisonCard from './cards/ComparisonCard';
 const AnalyticsDashboard: React.FC = () => {
   const { user } = useAuth();
   const [selectedPeriod, setSelectedPeriod] = useState<'month' | 'quarter' | 'year'>('month');
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedMonth] = useState(new Date().getMonth() + 1);
+  const [selectedYear] = useState(new Date().getFullYear());
   const [loading, setLoading] = useState(true);
 
   const [categories, setCategories] = useState<SpendingCategory[]>([]);
@@ -34,18 +31,11 @@ const AnalyticsDashboard: React.FC = () => {
   const [monthlyComparison, setMonthlyComparison] = useState<ComparisonData | null>(null);
   const [yearlyComparison, setYearlyComparison] = useState<ComparisonData | null>(null);
 
-  useEffect(() => {
-    if (user) {
-      loadAnalyticsData();
-    }
-  }, [user, selectedMonth, selectedYear]);
-
-  const loadAnalyticsData = async () => {
+  const loadAnalyticsData = useCallback(async () => {
     if (!user) return;
     
     setLoading(true);
     try {
-      const now = new Date();
       const startDate = new Date(selectedYear, selectedMonth - 1, 1);
       const endDate = new Date(selectedYear, selectedMonth, 0);
 
@@ -80,7 +70,13 @@ const AnalyticsDashboard: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, selectedMonth, selectedYear]);
+
+  useEffect(() => {
+    if (user) {
+      loadAnalyticsData();
+    }
+  }, [user, loadAnalyticsData]);
 
   const handleExport = (format: 'csv' | 'pdf') => {
     if (!user) return;

@@ -4,8 +4,6 @@ import { motion } from 'framer-motion';
 import { 
   BoltIcon, 
   ShieldCheckIcon, 
-  ClockIcon, 
-  CurrencyDollarIcon,
   ChartBarIcon,
   BuildingStorefrontIcon,
   QrCodeIcon,
@@ -13,8 +11,7 @@ import {
   UsersIcon,
   SparklesIcon,
   BanknotesIcon,
-  CreditCardIcon,
-  ArrowTrendingUpIcon
+  CreditCardIcon
 } from '@heroicons/react/24/outline';
 import { CheckIcon } from '@heroicons/react/24/solid';
 

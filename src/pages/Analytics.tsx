@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import AnalyticsDashboard from '../components/AnalyticsDashboard';
 import PremiumAnalytics from '../components/PremiumAnalytics';
+import AdvancedAnalyticsDashboard from '../components/AdvancedAnalyticsDashboard';
 import { useSubscription } from '../contexts/SubscriptionContext';
-import { ChartBarIcon, SparklesIcon } from '@heroicons/react/24/outline';
+import { ChartBarIcon, SparklesIcon, CpuChipIcon } from '@heroicons/react/24/outline';
 
 const Analytics: React.FC = () => {
   const { hasFeatureAccess } = useSubscription();
-  const [activeTab, setActiveTab] = useState<'basic' | 'premium'>('basic');
+  const [activeTab, setActiveTab] = useState<'basic' | 'premium' | 'advanced'>('basic');
 
   const hasAdvancedFeatures = hasFeatureAccess('AI Recommendations') || 
                              hasFeatureAccess('Advanced Analytics') || 
@@ -51,6 +52,20 @@ const Analytics: React.FC = () => {
                 </span>
               )}
             </button>
+            <button
+              onClick={() => setActiveTab('advanced')}
+              className={`flex items-center space-x-2 py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'advanced'
+                  ? 'border-orange-500 text-orange-600 dark:text-orange-400'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
+              }`}
+            >
+              <CpuChipIcon className="w-5 h-5" />
+              <span>AI Insights</span>
+              <span className="px-2 py-1 bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-200 rounded-full text-xs font-medium">
+                New
+              </span>
+            </button>
           </nav>
         </div>
       </div>
@@ -58,6 +73,7 @@ const Analytics: React.FC = () => {
       {/* Content */}
       {activeTab === 'basic' && <AnalyticsDashboard />}
       {activeTab === 'premium' && <PremiumAnalytics />}
+      {activeTab === 'advanced' && <AdvancedAnalyticsDashboard />}
     </motion.div>
   );
 };

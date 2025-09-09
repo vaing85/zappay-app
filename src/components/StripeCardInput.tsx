@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import { Elements, CardElement } from '@stripe/react-stripe-js';
 import { stripePromise, stripeOptions } from '../config/stripe';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 

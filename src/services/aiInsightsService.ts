@@ -40,6 +40,54 @@ export interface SpendingAnalysis {
     nextYear: number;
   };
   recommendations: string[];
+  financialHealth: FinancialHealthScore;
+  spendingPatterns: SpendingPattern[];
+  anomalyDetection: AnomalyDetection[];
+  budgetOptimization: BudgetOptimization[];
+}
+
+export interface FinancialHealthScore {
+  overall: number; // 0-100
+  spending: number; // 0-100
+  savings: number; // 0-100
+  debt: number; // 0-100
+  income: number; // 0-100
+  recommendations: string[];
+}
+
+export interface SpendingPattern {
+  id: string;
+  name: string;
+  description: string;
+  frequency: 'daily' | 'weekly' | 'monthly' | 'irregular';
+  amount: number;
+  confidence: number; // 0-1
+  category: string;
+  merchant?: string;
+  timeOfDay?: string;
+  dayOfWeek?: string;
+}
+
+export interface AnomalyDetection {
+  id: string;
+  type: 'unusual_amount' | 'unusual_frequency' | 'unusual_merchant' | 'unusual_time' | 'unusual_location';
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  description: string;
+  transactionId?: string;
+  expectedValue?: number;
+  actualValue?: number;
+  confidence: number;
+  recommendation: string;
+}
+
+export interface BudgetOptimization {
+  category: string;
+  currentSpending: number;
+  recommendedBudget: number;
+  potentialSavings: number;
+  priority: 'high' | 'medium' | 'low';
+  reasoning: string;
+  actionItems: string[];
 }
 
 export interface Transaction {
@@ -176,6 +224,12 @@ class AIInsightsService {
     // Generate recommendations
     const recommendations = this.generateRecommendations(insights, topCategories);
 
+    // Advanced analytics
+    const financialHealth = this.calculateFinancialHealth(periodTransactions, totalSpent);
+    const spendingPatterns = this.detectSpendingPatterns(periodTransactions);
+    const anomalyDetection = this.detectAnomalies(periodTransactions);
+    const budgetOptimization = this.optimizeBudget(topCategories, totalSpent);
+
     return {
       totalSpent,
       averageDailySpent,
@@ -183,7 +237,11 @@ class AIInsightsService {
       insights,
       trends,
       predictions,
-      recommendations
+      recommendations,
+      financialHealth,
+      spendingPatterns,
+      anomalyDetection,
+      budgetOptimization
     };
   }
 
@@ -342,6 +400,260 @@ class AIInsightsService {
   async getSpendingForecast(userId: string, days: number): Promise<number> {
     const analysis = await this.analyzeSpending(userId);
     return analysis.averageDailySpent * days;
+  }
+
+  // Advanced Analytics Methods
+
+  private calculateFinancialHealth(transactions: Transaction[], totalSpent: number): FinancialHealthScore {
+    const incomeTransactions = this.transactions.filter(t => t.type === 'income');
+    const totalIncome = incomeTransactions.reduce((sum, t) => sum + t.amount, 0);
+    
+    // Calculate spending score (lower spending = higher score)
+    const spendingRatio = totalSpent / totalIncome;
+    const spendingScore = Math.max(0, 100 - (spendingRatio * 100));
+    
+    // Calculate savings score (mock calculation)
+    const savingsScore = Math.max(0, 100 - (spendingRatio * 50));
+    
+    // Calculate debt score (mock calculation)
+    const debtScore = 85; // Assume good debt management
+    
+    // Calculate income score
+    const incomeScore = totalIncome > 3000 ? 90 : totalIncome > 2000 ? 70 : 50;
+    
+    // Calculate overall score
+    const overall = Math.round((spendingScore + savingsScore + debtScore + incomeScore) / 4);
+    
+    const recommendations: string[] = [];
+    if (spendingRatio > 0.8) {
+      recommendations.push('Consider reducing discretionary spending to improve financial health');
+    }
+    if (savingsScore < 60) {
+      recommendations.push('Set up automatic savings to build your emergency fund');
+    }
+    if (incomeScore < 70) {
+      recommendations.push('Consider ways to increase your income or find additional revenue streams');
+    }
+    
+    return {
+      overall,
+      spending: Math.round(spendingScore),
+      savings: Math.round(savingsScore),
+      debt: Math.round(debtScore),
+      income: Math.round(incomeScore),
+      recommendations
+    };
+  }
+
+  private detectSpendingPatterns(transactions: Transaction[]): SpendingPattern[] {
+    const patterns: SpendingPattern[] = [];
+    
+    // Group transactions by merchant and category
+    const merchantMap = new Map<string, Transaction[]>();
+    const categoryMap = new Map<string, Transaction[]>();
+    
+    transactions.forEach(t => {
+      if (t.merchant) {
+        if (!merchantMap.has(t.merchant)) {
+          merchantMap.set(t.merchant, []);
+        }
+        merchantMap.get(t.merchant)!.push(t);
+      }
+      
+      if (!categoryMap.has(t.category)) {
+        categoryMap.set(t.category, []);
+      }
+      categoryMap.get(t.category)!.push(t);
+    });
+    
+    // Detect recurring merchant patterns
+    merchantMap.forEach((merchantTransactions, merchant) => {
+      if (merchantTransactions.length >= 3) {
+        const avgAmount = merchantTransactions.reduce((sum, t) => sum + Math.abs(t.amount), 0) / merchantTransactions.length;
+        const frequency = this.calculateFrequency(merchantTransactions);
+        
+        patterns.push({
+          id: `merchant-${merchant.toLowerCase().replace(/\s+/g, '-')}`,
+          name: `Regular ${merchant} visits`,
+          description: `You visit ${merchant} ${frequency} with an average spend of $${avgAmount.toFixed(2)}`,
+          frequency: this.getFrequencyType(merchantTransactions.length),
+          amount: avgAmount,
+          confidence: Math.min(0.9, merchantTransactions.length / 10),
+          category: merchantTransactions[0].category,
+          merchant,
+          timeOfDay: this.getMostCommonTime(merchantTransactions),
+          dayOfWeek: this.getMostCommonDay(merchantTransactions)
+        });
+      }
+    });
+    
+    // Detect category patterns
+    categoryMap.forEach((categoryTransactions, category) => {
+      if (categoryTransactions.length >= 5) {
+        const avgAmount = categoryTransactions.reduce((sum, t) => sum + Math.abs(t.amount), 0) / categoryTransactions.length;
+        
+        patterns.push({
+          id: `category-${category.toLowerCase().replace(/\s+/g, '-')}`,
+          name: `Regular ${category} spending`,
+          description: `You spend on ${category} ${this.getFrequencyType(categoryTransactions.length)} with an average of $${avgAmount.toFixed(2)}`,
+          frequency: this.getFrequencyType(categoryTransactions.length),
+          amount: avgAmount,
+          confidence: Math.min(0.8, categoryTransactions.length / 15),
+          category
+        });
+      }
+    });
+    
+    return patterns.sort((a, b) => b.confidence - a.confidence).slice(0, 10);
+  }
+
+  private detectAnomalies(transactions: Transaction[]): AnomalyDetection[] {
+    const anomalies: AnomalyDetection[] = [];
+    
+    // Detect unusual amounts
+    const amounts = transactions.map(t => Math.abs(t.amount));
+    const mean = amounts.reduce((sum, amount) => sum + amount, 0) / amounts.length;
+    const variance = amounts.reduce((sum, amount) => sum + Math.pow(amount - mean, 2), 0) / amounts.length;
+    const stdDev = Math.sqrt(variance);
+    
+    transactions.forEach(t => {
+      const amount = Math.abs(t.amount);
+      const zScore = (amount - mean) / stdDev;
+      
+      if (zScore > 2) { // More than 2 standard deviations
+        anomalies.push({
+          id: `unusual-amount-${t.id}`,
+          type: 'unusual_amount',
+          severity: zScore > 3 ? 'high' : 'medium',
+          description: `Unusual spending of $${amount.toFixed(2)} at ${t.merchant || 'unknown merchant'}`,
+          transactionId: t.id,
+          expectedValue: mean,
+          actualValue: amount,
+          confidence: Math.min(0.95, zScore / 4),
+          recommendation: 'Review this transaction to ensure it\'s legitimate'
+        });
+      }
+    });
+    
+    // Detect unusual frequency
+    const merchantFrequency = new Map<string, number>();
+    transactions.forEach(t => {
+      if (t.merchant) {
+        merchantFrequency.set(t.merchant, (merchantFrequency.get(t.merchant) || 0) + 1);
+      }
+    });
+    
+    merchantFrequency.forEach((count, merchant) => {
+      if (count > 10) { // More than 10 transactions
+        anomalies.push({
+          id: `unusual-frequency-${merchant}`,
+          type: 'unusual_frequency',
+          severity: count > 20 ? 'high' : 'medium',
+          description: `Unusual frequency: ${count} transactions at ${merchant}`,
+          confidence: Math.min(0.9, count / 30),
+          recommendation: 'Consider if this spending pattern is intentional'
+        });
+      }
+    });
+    
+    return anomalies.sort((a, b) => b.confidence - a.confidence);
+  }
+
+  private optimizeBudget(categories: SpendingCategory[], totalSpent: number): BudgetOptimization[] {
+    const optimizations: BudgetOptimization[] = [];
+    
+    // Recommended budget percentages based on financial best practices
+    const recommendedPercentages: { [key: string]: number } = {
+      'Food & Dining': 15,
+      'Transportation': 10,
+      'Shopping': 5,
+      'Entertainment': 5,
+      'Healthcare': 10,
+      'Utilities': 10,
+      'Housing': 30,
+      'Savings': 20
+    };
+    
+    categories.forEach(category => {
+      const recommendedPercentage = recommendedPercentages[category.name] || 10;
+      const recommendedAmount = (totalSpent * recommendedPercentage) / 100;
+      const currentAmount = category.amount;
+      const potentialSavings = Math.max(0, currentAmount - recommendedAmount);
+      
+      if (potentialSavings > 50) { // Only suggest if savings > $50
+        optimizations.push({
+          category: category.name,
+          currentSpending: currentAmount,
+          recommendedBudget: recommendedAmount,
+          potentialSavings,
+          priority: potentialSavings > 200 ? 'high' : potentialSavings > 100 ? 'medium' : 'low',
+          reasoning: `Current spending (${category.percentage.toFixed(1)}%) exceeds recommended (${recommendedPercentage}%)`,
+          actionItems: [
+            `Set a budget of $${recommendedAmount.toFixed(2)} for ${category.name}`,
+            `Track daily spending in this category`,
+            `Look for ways to reduce costs by ${((potentialSavings / currentAmount) * 100).toFixed(1)}%`
+          ]
+        });
+      }
+    });
+    
+    return optimizations.sort((a, b) => b.potentialSavings - a.potentialSavings);
+  }
+
+  private calculateFrequency(transactions: Transaction[]): string {
+    const days = new Set(transactions.map(t => t.date.toDateString())).size;
+    if (days <= 7) return 'daily';
+    if (days <= 14) return 'every other day';
+    if (days <= 30) return 'weekly';
+    return 'monthly';
+  }
+
+  private getFrequencyType(transactionCount: number): 'daily' | 'weekly' | 'monthly' | 'irregular' {
+    if (transactionCount >= 20) return 'daily';
+    if (transactionCount >= 10) return 'weekly';
+    if (transactionCount >= 5) return 'monthly';
+    return 'irregular';
+  }
+
+  private getMostCommonTime(transactions: Transaction[]): string {
+    const timeMap = new Map<string, number>();
+    transactions.forEach(t => {
+      const hour = t.date.getHours();
+      const timeSlot = hour < 6 ? 'Early Morning' : 
+                      hour < 12 ? 'Morning' : 
+                      hour < 18 ? 'Afternoon' : 'Evening';
+      timeMap.set(timeSlot, (timeMap.get(timeSlot) || 0) + 1);
+    });
+    
+    let maxCount = 0;
+    let mostCommon = 'Morning';
+    timeMap.forEach((count, time) => {
+      if (count > maxCount) {
+        maxCount = count;
+        mostCommon = time;
+      }
+    });
+    
+    return mostCommon;
+  }
+
+  private getMostCommonDay(transactions: Transaction[]): string {
+    const dayMap = new Map<string, number>();
+    transactions.forEach(t => {
+      const day = t.date.toLocaleDateString('en-US', { weekday: 'long' });
+      dayMap.set(day, (dayMap.get(day) || 0) + 1);
+    });
+    
+    let maxCount = 0;
+    let mostCommon = 'Monday';
+    dayMap.forEach((count, day) => {
+      if (count > maxCount) {
+        maxCount = count;
+        mostCommon = day;
+      }
+    });
+    
+    return mostCommon;
   }
 
   // Clear cache
