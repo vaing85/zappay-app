@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { XMarkIcon, ArrowDownTrayIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '../contexts/AuthContext';
 import { usePayment } from '../contexts/PaymentContext';
+import { withdrawalService } from '../services/withdrawalService';
 import { toast } from 'react-toastify';
 
 interface DepositWithdrawModalProps {
@@ -20,6 +21,7 @@ const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
   const { paymentMethods, processDeposit } = usePayment();
   const [amount, setAmount] = useState('');
   const [selectedMethod, setSelectedMethod] = useState('');
+  const [withdrawalMethod, setWithdrawalMethod] = useState<'ach' | 'debit_card'>('ach');
   const [loading, setLoading] = useState(false);
   const [notes, setNotes] = useState('');
 
@@ -27,6 +29,19 @@ const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
   const title = isDeposit ? 'Add Money' : 'Withdraw Money';
   const icon = isDeposit ? ArrowDownTrayIcon : ArrowUpTrayIcon;
   const Icon = icon;
+
+  // Calculate withdrawal fee
+  const withdrawalFee = !isDeposit && amount 
+    ? withdrawalService.calculateWithdrawalFee(
+        parseFloat(amount) || 0, 
+        withdrawalMethod, 
+        user?.verificationLevel || 'basic'
+      )
+    : 0;
+  
+  const netAmount = !isDeposit && amount 
+    ? (parseFloat(amount) || 0) - withdrawalFee
+    : parseFloat(amount) || 0;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,26 +94,35 @@ const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
           toast.error(result.error || 'Deposit failed. Please try again.');
         }
       } else {
-        // For withdrawals, we'll keep the simulation for now
-        // In a real app, this would also use Stripe or bank integration
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        // Process withdrawal with fees
+        const result = await withdrawalService.processWithdrawal({
+          userId: user!.id,
+          amount: transactionAmount,
+          method: withdrawalMethod,
+          description: notes || 'Account Withdrawal'
+        }, user!.verificationLevel || 'basic');
 
-        // Update user balance
-        const newBalance = (user?.balance || 0) - transactionAmount;
-        updateUser({
-          ...user!,
-          balance: newBalance
-        });
+        if (result.success) {
+          // Update user balance
+          const newBalance = (user?.balance || 0) - transactionAmount;
+          updateUser({
+            ...user!,
+            balance: newBalance
+          });
 
-        toast.success(
-          `$${transactionAmount.toFixed(2)} withdrawn from your account`
-        );
+          const feeText = result.fee && result.fee > 0 ? ` (Fee: $${result.fee.toFixed(2)})` : ' (No fee)';
+          toast.success(
+            `$${transactionAmount.toFixed(2)} withdrawn from your account${feeText}`
+          );
 
-        // Reset form
-        setAmount('');
-        setSelectedMethod('');
-        setNotes('');
-        onClose();
+          // Reset form
+          setAmount('');
+          setSelectedMethod('');
+          setNotes('');
+          onClose();
+        } else {
+          toast.error(result.error || 'Withdrawal failed. Please try again.');
+        }
       }
     } catch (error) {
       toast.error(`${isDeposit ? 'Deposit' : 'Withdrawal'} failed. Please try again.`);
@@ -165,41 +189,113 @@ const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Payment Method
+              {isDeposit ? 'Payment Method' : 'Withdrawal Method'}
             </label>
-            {paymentMethods.length === 0 ? (
-              <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <p className="text-sm text-yellow-800 mb-3">
-                  No payment methods available. Please add a payment method first.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => {
-                    onClose();
-                    // Navigate to payment settings
-                    window.location.href = '/payment-settings';
-                  }}
-                  className="text-sm bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded-lg font-medium transition-colors"
+            {isDeposit ? (
+              paymentMethods.length === 0 ? (
+                <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <p className="text-sm text-yellow-800 mb-3">
+                    No payment methods available. Please add a payment method first.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onClose();
+                      // Navigate to payment settings
+                      window.location.href = '/payment-settings';
+                    }}
+                    className="text-sm bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded-lg font-medium transition-colors"
+                  >
+                    Add Payment Method
+                  </button>
+                </div>
+              ) : (
+                <select
+                  value={selectedMethod}
+                  onChange={(e) => setSelectedMethod(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  required
                 >
-                  Add Payment Method
-                </button>
-              </div>
+                  <option value="">Select payment method</option>
+                  {paymentMethods.map((method) => (
+                    <option key={method.id} value={method.id}>
+                      {method.name} {method.last4 ? `(****${method.last4})` : ''}
+                    </option>
+                  ))}
+                </select>
+              )
             ) : (
-              <select
-                value={selectedMethod}
-                onChange={(e) => setSelectedMethod(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                required
-              >
-                <option value="">Select payment method</option>
-                {paymentMethods.map((method) => (
-                  <option key={method.id} value={method.id}>
-                    {method.name} {method.last4 ? `(****${method.last4})` : ''}
-                  </option>
-                ))}
-              </select>
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setWithdrawalMethod('ach')}
+                    className={`p-3 text-left border rounded-lg transition-colors ${
+                      withdrawalMethod === 'ach'
+                        ? 'border-orange-500 bg-orange-50 dark:bg-orange-900 dark:border-orange-400'
+                        : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+                    }`}
+                  >
+                    <div className="font-medium text-gray-900 dark:text-white">ACH Transfer</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">1-3 business days</div>
+                    <div className="text-sm text-gray-500">Fee: $1.99</div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setWithdrawalMethod('debit_card')}
+                    className={`p-3 text-left border rounded-lg transition-colors ${
+                      withdrawalMethod === 'debit_card'
+                        ? 'border-orange-500 bg-orange-50 dark:bg-orange-900 dark:border-orange-400'
+                        : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+                    }`}
+                  >
+                    <div className="font-medium text-gray-900 dark:text-white">Debit Card</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">Instant</div>
+                    <div className="text-sm text-gray-500">Fee: $2.99</div>
+                  </button>
+                </div>
+                {user?.verificationLevel === 'premium' && (
+                  <div className="p-2 bg-yellow-100 dark:bg-yellow-900 rounded-lg">
+                    <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                      🎉 Premium users get free withdrawals!
+                    </p>
+                  </div>
+                )}
+              </div>
             )}
           </div>
+
+          {/* Withdrawal Fee Display */}
+          {!isDeposit && amount && (
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600 dark:text-gray-400">Withdrawal Amount:</span>
+                <span className="font-medium">${parseFloat(amount).toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600 dark:text-gray-400">Processing Fee:</span>
+                <span className="font-medium text-red-600">
+                  {withdrawalFee > 0 ? `-$${withdrawalFee.toFixed(2)}` : 'FREE'}
+                </span>
+              </div>
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-2">
+                <div className="flex justify-between text-base font-semibold">
+                  <span>You'll Receive:</span>
+                  <span className="text-green-600">${netAmount.toFixed(2)}</span>
+                </div>
+              </div>
+              {withdrawalMethod === 'ach' && (
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Funds will arrive in 1-3 business days
+                </p>
+              )}
+              {withdrawalMethod === 'debit_card' && (
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Funds will arrive instantly
+                </p>
+              )}
+            </div>
+          )}
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">

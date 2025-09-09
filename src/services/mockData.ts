@@ -38,7 +38,28 @@ export const mockUsers: User[] = [
       email: true,
       phone: true,
       identity: true,
-      address: true
+      address: true,
+      bankAccount: false
+    },
+    verificationLevel: 'verified',
+    bankAccount: {
+      routingNumber: '021000021',
+      accountNumber: '1234567890',
+      accountType: 'checking',
+      bankName: 'Chase Bank',
+      isVerified: true,
+      lastVerified: '2024-01-15T10:30:00Z'
+    },
+    withdrawalPreferences: {
+      defaultMethod: 'ach',
+      achEnabled: true,
+      debitCardEnabled: true
+    },
+    limits: {
+      dailyDeposit: 5000,
+      monthlyDeposit: 25000,
+      dailyWithdrawal: 2000,
+      monthlyWithdrawal: 10000
     }
   },
   {
@@ -77,7 +98,8 @@ export const mockUsers: User[] = [
       email: true,
       phone: true,
       identity: true,
-      address: false
+      address: false,
+      bankAccount: false
     }
   },
   {
@@ -116,7 +138,8 @@ export const mockUsers: User[] = [
       email: true,
       phone: true,
       identity: false,
-      address: true
+      address: true,
+      bankAccount: false
     }
   },
   {
@@ -155,7 +178,8 @@ export const mockUsers: User[] = [
       email: true,
       phone: true,
       identity: true,
-      address: true
+      address: true,
+      bankAccount: false
     }
   },
   {
@@ -194,7 +218,8 @@ export const mockUsers: User[] = [
       email: true,
       phone: false,
       identity: false,
-      address: false
+      address: false,
+      bankAccount: false
     }
   },
 ];

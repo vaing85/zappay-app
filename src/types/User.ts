@@ -36,6 +36,27 @@ export interface User {
     phone: boolean;
     identity: boolean;
     address: boolean;
+    bankAccount: boolean;
+  };
+  verificationLevel?: 'basic' | 'verified' | 'premium';
+  bankAccount?: {
+    routingNumber: string;
+    accountNumber: string;
+    accountType: 'checking' | 'savings';
+    bankName: string;
+    isVerified: boolean;
+    lastVerified?: string;
+  };
+  withdrawalPreferences?: {
+    defaultMethod: 'ach' | 'debit_card';
+    achEnabled: boolean;
+    debitCardEnabled: boolean;
+  };
+  limits?: {
+    dailyDeposit: number;
+    monthlyDeposit: number;
+    dailyWithdrawal: number;
+    monthlyWithdrawal: number;
   };
 }
 

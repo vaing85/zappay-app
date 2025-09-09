@@ -22,11 +22,13 @@ import {
   CogIcon
 } from '@heroicons/react/24/outline';
 import { toast } from 'react-toastify';
+import BankAccountModal from '../components/BankAccountModal';
 
 const Profile: React.FC = () => {
   const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
-  const [activeTab, setActiveTab] = useState<'personal' | 'professional' | 'preferences' | 'verification'>('personal');
+  const [activeTab, setActiveTab] = useState<'personal' | 'professional' | 'preferences' | 'verification' | 'banking'>('personal');
+  const [isBankAccountModalOpen, setIsBankAccountModalOpen] = useState(false);
 
 
   const handleEdit = () => {
@@ -136,6 +138,7 @@ const Profile: React.FC = () => {
             {[
               { id: 'personal', label: 'Personal Info', icon: UserIcon },
               { id: 'professional', label: 'Professional', icon: BriefcaseIcon },
+              { id: 'banking', label: 'Banking', icon: CurrencyDollarIcon },
               { id: 'preferences', label: 'Preferences', icon: CogIcon },
               { id: 'verification', label: 'Verification', icon: CheckCircleIcon },
             ].map((tab) => (
@@ -344,6 +347,170 @@ const Profile: React.FC = () => {
             </div>
           )}
 
+          {activeTab === 'banking' && (
+            <div className="space-y-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Banking Information</h3>
+              
+              {/* Bank Account Section */}
+              <div className="bg-gray-50 rounded-lg p-6">
+                <h4 className="text-md font-semibold text-gray-900 mb-4">Linked Bank Account</h4>
+                {user.bankAccount ? (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Bank Name
+                        </label>
+                        <p className="text-gray-900">{user.bankAccount.bankName}</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Account Type
+                        </label>
+                        <p className="text-gray-900 capitalize">{user.bankAccount.accountType}</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Account Number
+                        </label>
+                        <p className="text-gray-900">****{user.bankAccount.accountNumber.slice(-4)}</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Verification Status
+                        </label>
+                        <div className="flex items-center space-x-2">
+                          {user.bankAccount.isVerified ? (
+                            <CheckCircleIcon className="w-5 h-5 text-green-500" />
+                          ) : (
+                            <XCircleIcon className="w-5 h-5 text-red-500" />
+                          )}
+                          <span className={user.bankAccount.isVerified ? 'text-green-600' : 'text-red-600'}>
+                            {user.bankAccount.isVerified ? 'Verified' : 'Not Verified'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    {user.bankAccount.lastVerified && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Last Verified
+                        </label>
+                        <p className="text-gray-900">{formatDate(user.bankAccount.lastVerified)}</p>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <CurrencyDollarIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">No Bank Account Linked</h3>
+                    <p className="text-gray-600 mb-4">
+                      Link your bank account to enable ACH deposits and withdrawals
+                    </p>
+                    <button 
+                      onClick={() => setIsBankAccountModalOpen(true)}
+                      className="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600 transition-colors"
+                    >
+                      Add Bank Account
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Withdrawal Preferences */}
+              <div className="bg-gray-50 rounded-lg p-6">
+                <h4 className="text-md font-semibold text-gray-900 mb-4">Withdrawal Preferences</h4>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Default Withdrawal Method
+                    </label>
+                    <p className="text-gray-900">
+                      {user.withdrawalPreferences?.defaultMethod === 'ach' ? 'ACH Bank Transfer' : 'Debit Card'}
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        checked={user.withdrawalPreferences?.achEnabled || false}
+                        disabled
+                        className="rounded border-gray-300"
+                      />
+                      <label className="text-sm text-gray-700">ACH Withdrawals Enabled</label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        checked={user.withdrawalPreferences?.debitCardEnabled || false}
+                        disabled
+                        className="rounded border-gray-300"
+                      />
+                      <label className="text-sm text-gray-700">Debit Card Withdrawals Enabled</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Account Limits */}
+              {user.limits && (
+                <div className="bg-gray-50 rounded-lg p-6">
+                  <h4 className="text-md font-semibold text-gray-900 mb-4">Account Limits</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Daily Deposit Limit
+                      </label>
+                      <p className="text-gray-900">${user.limits.dailyDeposit.toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Monthly Deposit Limit
+                      </label>
+                      <p className="text-gray-900">${user.limits.monthlyDeposit.toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Daily Withdrawal Limit
+                      </label>
+                      <p className="text-gray-900">${user.limits.dailyWithdrawal.toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Monthly Withdrawal Limit
+                      </label>
+                      <p className="text-gray-900">${user.limits.monthlyWithdrawal.toLocaleString()}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Verification Level */}
+              <div className="bg-gray-50 rounded-lg p-6">
+                <h4 className="text-md font-semibold text-gray-900 mb-4">Verification Level</h4>
+                <div className="flex items-center space-x-3">
+                  <div className={`px-3 py-1 rounded-full text-sm font-medium ${
+                    user.verificationLevel === 'premium' 
+                      ? 'bg-yellow-100 text-yellow-800' 
+                      : user.verificationLevel === 'verified'
+                      ? 'bg-blue-100 text-blue-800'
+                      : 'bg-gray-100 text-gray-800'
+                  }`}>
+                    {user.verificationLevel?.toUpperCase() || 'BASIC'}
+                  </div>
+                  <p className="text-sm text-gray-600">
+                    {user.verificationLevel === 'premium' 
+                      ? 'Premium users get free withdrawals and higher limits'
+                      : user.verificationLevel === 'verified'
+                      ? 'Verified users get reduced fees and higher limits'
+                      : 'Basic users have standard fees and limits'
+                    }
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {activeTab === 'verification' && user.verificationStatus && (
             <div className="space-y-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Account Verification Status</h3>
@@ -353,6 +520,7 @@ const Profile: React.FC = () => {
                   { key: 'phone', label: 'Phone Number', description: 'Verified phone number' },
                   { key: 'identity', label: 'Identity', description: 'Government ID verified' },
                   { key: 'address', label: 'Address', description: 'Address verification completed' },
+                  { key: 'bankAccount', label: 'Bank Account', description: 'Bank account verified' },
                 ].map((item) => (
                   <div key={item.key} className="flex items-center space-x-3 p-4 border rounded-lg">
                     {user.verificationStatus![item.key as keyof typeof user.verificationStatus] ? (
@@ -403,6 +571,17 @@ const Profile: React.FC = () => {
           </div>
         </div>
       </motion.div>
+
+      {/* Bank Account Modal */}
+      <BankAccountModal
+        isOpen={isBankAccountModalOpen}
+        onClose={() => setIsBankAccountModalOpen(false)}
+        onBankAccountAdded={(bankAccount) => {
+          // In a real app, this would update the user's bank account info
+          toast.success('Bank account added successfully!');
+          setIsBankAccountModalOpen(false);
+        }}
+      />
     </div>
   );
 };
