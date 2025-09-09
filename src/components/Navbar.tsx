@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import ThemeToggle from './ThemeToggle';
 import PWAStatus from './PWAStatus';
 import NotificationCenter from './NotificationCenter';
-import RealtimeNotificationCenter from './RealtimeNotificationCenter';
+import EnhancedNotificationCenter from './EnhancedNotificationCenter';
 import {
   Bars3Icon,
   XMarkIcon,
@@ -177,7 +177,7 @@ const Navbar: React.FC = () => {
                 {/* User Controls - More Compact */}
                 <div className="flex items-center space-x-1">
                   <PWAStatus />
-                  <RealtimeNotificationCenter />
+                  <EnhancedNotificationCenter />
                   <ThemeToggle />
                   <button
                     onClick={handleLogout}
@@ -341,7 +341,7 @@ const Navbar: React.FC = () => {
                   </Link>
                   <div className="flex items-center justify-between px-3 py-2">
                     <span className="text-gray-700 dark:text-gray-300 text-sm font-medium">Notifications:</span>
-                    <NotificationCenter />
+                    <EnhancedNotificationCenter />
                   </div>
                   <Link
                     to="/profile"

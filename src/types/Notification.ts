@@ -20,6 +20,8 @@ export interface AppNotification {
     transactionId?: string;
     splitBillId?: string;
     requestId?: string;
+    test?: boolean;
+    [key: string]: any; // Allow additional properties
   };
 }
 
