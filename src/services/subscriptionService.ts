@@ -439,10 +439,10 @@ class SubscriptionService {
 
     return allFeatures.map(feature => ({
       feature,
-      free: this.plans[0].features.some(f => f.name === feature)?.included || false,
-      pro: this.plans[1].features.some(f => f.name === feature)?.included || false,
-      business: this.plans[2].features.some(f => f.name === feature)?.included || false,
-      enterprise: this.plans[3].features.some(f => f.name === feature)?.included || false
+      free: this.plans[0].features.some(f => f.name === feature && f.included) || false,
+      pro: this.plans[1].features.some(f => f.name === feature && f.included) || false,
+      business: this.plans[2].features.some(f => f.name === feature && f.included) || false,
+      enterprise: this.plans[3].features.some(f => f.name === feature && f.included) || false
     }));
   }
 }

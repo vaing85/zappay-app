@@ -17,7 +17,6 @@ import {
   CreditCardIcon,
   Cog6ToothIcon,
   StarIcon,
-  CrownIcon,
   UsersIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon
@@ -165,7 +164,7 @@ const Dashboard: React.FC = memo(() => {
               ) : currentSubscription.planId === 'business' ? (
                 <UsersIcon className="w-8 h-8 text-green-500" />
               ) : (
-                <CrownIcon className="w-8 h-8 text-purple-500" />
+                <StarIcon className="w-8 h-8 text-purple-500" />
               )}
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">

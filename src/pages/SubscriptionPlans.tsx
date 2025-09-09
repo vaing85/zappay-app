@@ -9,8 +9,7 @@ import {
   ShieldCheckIcon,
   ChartBarIcon,
   UsersIcon,
-  CogIcon,
-  CrownIcon
+  CogIcon
 } from '@heroicons/react/24/outline';
 import { useSubscription } from '../contexts/SubscriptionContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -64,7 +63,7 @@ const SubscriptionPlans: React.FC = () => {
       case 'business':
         return <UsersIcon className="w-8 h-8" />;
       case 'enterprise':
-        return <CrownIcon className="w-8 h-8" />;
+        return <StarIcon className="w-8 h-8" />;
       default:
         return <CogIcon className="w-8 h-8" />;
     }
