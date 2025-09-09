@@ -324,7 +324,7 @@ const DeveloperDashboard: React.FC = () => {
                     <span className="text-sm font-medium text-gray-900 dark:text-white">1,800 requests</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-700 dark:text-gray-300">GET /api/v1/payments/{id}</span>
+                    <span className="text-sm text-gray-700 dark:text-gray-300">GET /api/v1/payments/&#123;id&#125;</span>
                     <span className="text-sm font-medium text-gray-900 dark:text-white">1,000 requests</span>
                   </div>
                 </div>

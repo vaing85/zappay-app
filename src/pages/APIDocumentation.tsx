@@ -93,6 +93,7 @@ const APIDocumentation: React.FC = () => {
           path: '/api/v1/payments/{paymentId}',
           description: 'Get payment details',
           example: {
+            request: null,
             response: {
               success: true,
               payment: {
@@ -116,6 +117,7 @@ const APIDocumentation: React.FC = () => {
           path: '/api/v1/transactions',
           description: 'Get user transaction history',
           example: {
+            request: null,
             response: {
               success: true,
               transactions: [
@@ -361,7 +363,7 @@ const APIDocumentation: React.FC = () => {
                           </h4>
                           <pre className="bg-gray-100 dark:bg-gray-900 rounded-lg p-4 overflow-x-auto">
                             <code className="text-sm text-gray-800 dark:text-gray-200">
-                              {JSON.stringify(method.example.request, null, 2)}
+                              {method.example.request ? JSON.stringify(method.example.request, null, 2) : 'No request body required for GET requests'}
                             </code>
                           </pre>
                         </div>
