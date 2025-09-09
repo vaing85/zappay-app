@@ -1,6 +1,7 @@
 import React, { memo, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
+import { useSubscription } from '../contexts/SubscriptionContext';
 import { Link } from 'react-router-dom';
 import { 
   ArrowUpIcon, 
@@ -14,7 +15,12 @@ import {
   ArrowDownTrayIcon,
   ArrowUpTrayIcon,
   CreditCardIcon,
-  Cog6ToothIcon
+  Cog6ToothIcon,
+  StarIcon,
+  CrownIcon,
+  UsersIcon,
+  ExclamationTriangleIcon,
+  CheckCircleIcon
 } from '@heroicons/react/24/outline';
 import { getRecentTransactions } from '../services/mockData';
 import { getAriaLabel } from '../utils/accessibility';
@@ -23,6 +29,7 @@ import DepositWithdrawModal from '../components/DepositWithdrawModal';
 
 const Dashboard: React.FC = memo(() => {
   const { user } = useAuth();
+  const { currentSubscription, plans, hasFeatureAccess } = useSubscription();
   const [showDepositModal, setShowDepositModal] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
 
@@ -141,6 +148,79 @@ const Dashboard: React.FC = memo(() => {
         <p className="text-yellow-100 mt-2" aria-hidden="true">⚡ Ready to Zap</p>
       </motion.div>
 
+      {/* Subscription Status */}
+      {currentSubscription && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.12 }}
+          className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg mb-8"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-3">
+              {currentSubscription.planId === 'free' ? (
+                <ShieldCheckIcon className="w-8 h-8 text-gray-500" />
+              ) : currentSubscription.planId === 'pro' ? (
+                <StarIcon className="w-8 h-8 text-blue-500" />
+              ) : currentSubscription.planId === 'business' ? (
+                <UsersIcon className="w-8 h-8 text-green-500" />
+              ) : (
+                <CrownIcon className="w-8 h-8 text-purple-500" />
+              )}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  {plans.find(p => p.id === currentSubscription.planId)?.name} Plan
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {plans.find(p => p.id === currentSubscription.planId)?.description}
+                </p>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-2xl font-bold text-orange-600">
+                ${plans.find(p => p.id === currentSubscription.planId)?.price}/month
+              </div>
+              <Link
+                to="/subscription-plans"
+                className="text-sm text-orange-600 hover:text-orange-700 font-medium"
+              >
+                {currentSubscription.planId === 'free' ? 'Upgrade Now' : 'Manage Plan'}
+              </Link>
+            </div>
+          </div>
+          
+          {/* Feature Highlights */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="flex items-center space-x-2">
+              <CheckCircleIcon className="w-5 h-5 text-green-500" />
+              <span className="text-sm text-gray-700 dark:text-gray-300">
+                {currentSubscription.planId === 'free' ? '50 transactions/month' : 'Unlimited transactions'}
+              </span>
+            </div>
+            <div className="flex items-center space-x-2">
+              {currentSubscription.planId === 'free' ? (
+                <ExclamationTriangleIcon className="w-5 h-5 text-yellow-500" />
+              ) : (
+                <CheckCircleIcon className="w-5 h-5 text-green-500" />
+              )}
+              <span className="text-sm text-gray-700 dark:text-gray-300">
+                {currentSubscription.planId === 'free' ? 'Withdrawal fees apply' : 'Free withdrawals'}
+              </span>
+            </div>
+            <div className="flex items-center space-x-2">
+              {currentSubscription.planId === 'free' ? (
+                <ExclamationTriangleIcon className="w-5 h-5 text-yellow-500" />
+              ) : (
+                <CheckCircleIcon className="w-5 h-5 text-green-500" />
+              )}
+              <span className="text-sm text-gray-700 dark:text-gray-300">
+                {currentSubscription.planId === 'free' ? 'Basic analytics' : 'Advanced analytics'}
+              </span>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
       {/* Funding Options */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -230,6 +310,121 @@ const Dashboard: React.FC = memo(() => {
             </Link>
           );
         })}
+      </motion.div>
+
+      {/* App Features Showcase */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.25 }}
+        className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg mb-8"
+      >
+        <h3 className="text-xl font-semibold mb-6 flex items-center text-gray-900 dark:text-white">
+          <BoltIcon className="w-6 h-6 text-yellow-500 mr-2" />
+          ZapPay Features
+        </h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Payment Features */}
+          <div className="space-y-4">
+            <h4 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+              <CreditCardIcon className="w-5 h-5 text-blue-500 mr-2" />
+              Payments
+            </h4>
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2">
+                <CheckCircleIcon className="w-4 h-4 text-green-500" />
+                <span className="text-sm text-gray-700 dark:text-gray-300">Send & Receive Money</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <CheckCircleIcon className="w-4 h-4 text-green-500" />
+                <span className="text-sm text-gray-700 dark:text-gray-300">QR Code Payments</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <CheckCircleIcon className="w-4 h-4 text-green-500" />
+                <span className="text-sm text-gray-700 dark:text-gray-300">Split Bills & Groups</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <CheckCircleIcon className="w-4 h-4 text-green-500" />
+                <span className="text-sm text-gray-700 dark:text-gray-300">ACH Deposits & Withdrawals</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Security Features */}
+          <div className="space-y-4">
+            <h4 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+              <ShieldCheckIcon className="w-5 h-5 text-red-500 mr-2" />
+              Security
+            </h4>
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2">
+                <CheckCircleIcon className="w-4 h-4 text-green-500" />
+                <span className="text-sm text-gray-700 dark:text-gray-300">End-to-End Encryption</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <CheckCircleIcon className="w-4 h-4 text-green-500" />
+                <span className="text-sm text-gray-700 dark:text-gray-300">Fraud Detection</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <CheckCircleIcon className="w-4 h-4 text-green-500" />
+                <span className="text-sm text-gray-700 dark:text-gray-300">Transaction Security</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <CheckCircleIcon className="w-4 h-4 text-green-500" />
+                <span className="text-sm text-gray-700 dark:text-gray-300">2FA Authentication</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Analytics & Insights */}
+          <div className="space-y-4">
+            <h4 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+              <ChartBarIcon className="w-5 h-5 text-green-500 mr-2" />
+              Analytics
+            </h4>
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2">
+                <CheckCircleIcon className="w-4 h-4 text-green-500" />
+                <span className="text-sm text-gray-700 dark:text-gray-300">Spending Insights</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <CheckCircleIcon className="w-4 h-4 text-green-500" />
+                <span className="text-sm text-gray-700 dark:text-gray-300">Budget Tracking</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <CheckCircleIcon className="w-4 h-4 text-green-500" />
+                <span className="text-sm text-gray-700 dark:text-gray-300">AI Recommendations</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <CheckCircleIcon className="w-4 h-4 text-green-500" />
+                <span className="text-sm text-gray-700 dark:text-gray-300">Real-time Notifications</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Premium Features Highlight */}
+        {currentSubscription?.planId === 'free' && (
+          <div className="mt-6 p-4 bg-gradient-to-r from-orange-50 to-yellow-50 dark:from-orange-900 dark:to-yellow-900 rounded-lg border border-orange-200 dark:border-orange-700">
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="text-lg font-semibold text-orange-900 dark:text-orange-100">
+                  Unlock Premium Features
+                </h4>
+                <p className="text-sm text-orange-700 dark:text-orange-200">
+                  Get unlimited transactions, free withdrawals, and advanced analytics
+                </p>
+              </div>
+              <Link
+                to="/subscription-plans"
+                className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+              >
+                View Plans
+              </Link>
+            </div>
+          </div>
+        )}
       </motion.div>
 
       {/* Recent Transactions */}

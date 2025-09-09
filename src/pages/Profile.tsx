@@ -19,15 +19,17 @@ import {
   LanguageIcon,
   ClockIcon,
   BellIcon,
-  CogIcon
+  CogIcon,
+  CreditCardIcon
 } from '@heroicons/react/24/outline';
 import { toast } from 'react-toastify';
 import BankAccountModal from '../components/BankAccountModal';
+import SubscriptionManagement from '../components/SubscriptionManagement';
 
 const Profile: React.FC = () => {
   const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
-  const [activeTab, setActiveTab] = useState<'personal' | 'professional' | 'preferences' | 'verification' | 'banking'>('personal');
+  const [activeTab, setActiveTab] = useState<'personal' | 'professional' | 'preferences' | 'verification' | 'banking' | 'subscription'>('personal');
   const [isBankAccountModalOpen, setIsBankAccountModalOpen] = useState(false);
 
 
@@ -139,6 +141,7 @@ const Profile: React.FC = () => {
               { id: 'personal', label: 'Personal Info', icon: UserIcon },
               { id: 'professional', label: 'Professional', icon: BriefcaseIcon },
               { id: 'banking', label: 'Banking', icon: CurrencyDollarIcon },
+              { id: 'subscription', label: 'Subscription', icon: CreditCardIcon },
               { id: 'preferences', label: 'Preferences', icon: CogIcon },
               { id: 'verification', label: 'Verification', icon: CheckCircleIcon },
             ].map((tab) => (
@@ -509,6 +512,10 @@ const Profile: React.FC = () => {
                 </div>
               </div>
             </div>
+          )}
+
+          {activeTab === 'subscription' && (
+            <SubscriptionManagement />
           )}
 
           {activeTab === 'verification' && user.verificationStatus && (

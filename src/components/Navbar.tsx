@@ -13,11 +13,11 @@ import {
   BoltIcon,
   QrCodeIcon,
   ReceiptPercentIcon,
+  CreditCardIcon,
   ChartBarIcon,
   CurrencyDollarIcon,
   ShieldCheckIcon,
   LockClosedIcon,
-  CreditCardIcon,
   ArrowRightOnRectangleIcon,
   UserIcon,
   UserGroupIcon,
@@ -122,14 +122,22 @@ const Navbar: React.FC = () => {
                     <CreditCardIcon className="w-4 h-4" />
                     <span className="hidden 2xl:inline">Payments</span>
                   </Link>
-                  <Link
-                    to="/profile"
-                    className="text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 px-2 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-1"
-                    title="Profile"
-                  >
-                    <UserIcon className="w-4 h-4" />
-                    <span className="hidden 2xl:inline">Profile</span>
-                  </Link>
+            <Link
+              to="/profile"
+              className="text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 px-2 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-1"
+              title="Profile"
+            >
+              <UserIcon className="w-4 h-4" />
+              <span className="hidden 2xl:inline">Profile</span>
+            </Link>
+            <Link
+              to="/subscription-plans"
+              className="text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 px-2 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-1"
+              title="Subscription Plans"
+            >
+              <CreditCardIcon className="w-4 h-4" />
+              <span className="hidden 2xl:inline">Plans</span>
+            </Link>
                   <Link
                     to="/budget"
                     className="text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 px-2 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-1"

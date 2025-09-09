@@ -7,6 +7,7 @@ import { BudgetProvider } from '../contexts/BudgetContext';
 import { SecurityProvider } from '../contexts/SecurityContext';
 import { TransactionSecurityProvider } from '../contexts/TransactionSecurityContext';
 import { DataEncryptionProvider } from '../contexts/DataEncryptionContext';
+import { SubscriptionProvider } from '../contexts/SubscriptionContext';
 
 interface AppProvidersProps {
   children: React.ReactNode;
@@ -18,15 +19,17 @@ const AppProviders: React.FC<AppProvidersProps> = ({ children }) => {
       <NotificationProvider>
         <PWAProvider>
           <AuthProvider>
-            <SecurityProvider>
-              <BudgetProvider>
-                <TransactionSecurityProvider>
-                  <DataEncryptionProvider>
-                    {children}
-                  </DataEncryptionProvider>
-                </TransactionSecurityProvider>
-              </BudgetProvider>
-            </SecurityProvider>
+            <SubscriptionProvider>
+              <SecurityProvider>
+                <BudgetProvider>
+                  <TransactionSecurityProvider>
+                    <DataEncryptionProvider>
+                      {children}
+                    </DataEncryptionProvider>
+                  </TransactionSecurityProvider>
+                </BudgetProvider>
+              </SecurityProvider>
+            </SubscriptionProvider>
           </AuthProvider>
         </PWAProvider>
       </NotificationProvider>
