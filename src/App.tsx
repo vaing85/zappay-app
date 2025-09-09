@@ -21,7 +21,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 
-// Lazy load pages for better performance
+// Lazy load pages for better performance - Core pages loaded first
 const Home = lazy(() => import('./pages/Home'));
 const Login = lazy(() => import('./pages/Login'));
 const Register = lazy(() => import('./pages/Register'));
@@ -29,6 +29,8 @@ const Dashboard = lazy(() => import('./pages/Dashboard'));
 const SendMoney = lazy(() => import('./pages/SendMoney'));
 const TransactionHistory = lazy(() => import('./pages/TransactionHistory'));
 const Profile = lazy(() => import('./pages/Profile'));
+
+// Secondary pages - loaded on demand
 const QRPayment = lazy(() => import('./pages/QRPayment'));
 const AdvancedPayments = lazy(() => import('./pages/AdvancedPayments'));
 const SplitBills = lazy(() => import('./pages/SplitBills'));

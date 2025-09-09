@@ -3,24 +3,13 @@ import { motion } from 'framer-motion';
 import { 
   ShieldCheckIcon, 
   ExclamationTriangleIcon,
-  CheckCircleIcon,
-  XCircleIcon,
   EyeIcon,
-  EyeSlashIcon,
   FingerPrintIcon,
   FaceSmileIcon,
   MicrophoneIcon,
   DevicePhoneMobileIcon,
-  ComputerDesktopIcon,
-  MapPinIcon,
-  ClockIcon,
   ChartBarIcon,
-  CogIcon,
-  BellIcon,
-  LockClosedIcon,
-  KeyIcon,
-  UserGroupIcon,
-  GlobeAltIcon
+  CogIcon
 } from '@heroicons/react/24/outline';
 import { useAuth } from '../contexts/AuthContext';
 import { biometricAuthService, BiometricCapability, BiometricEnrollment, BiometricSettings, BiometricAnalytics } from '../services/biometricAuthService';
@@ -36,7 +25,7 @@ const EnhancedSecurityDashboard: React.FC = () => {
   const [fraudAlerts, setFraudAlerts] = useState<FraudAlert[]>([]);
   const [fraudAnalytics, setFraudAnalytics] = useState<FraudAnalytics | null>(null);
   const [patterns, setPatterns] = useState<FraudPattern[]>([]);
-  const [rules, setRules] = useState<FraudRule[]>([]);
+  const [, setRules] = useState<FraudRule[]>([]);
   const [loading, setLoading] = useState(true);
 
   const loadData = useCallback(async () => {

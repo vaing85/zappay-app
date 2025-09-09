@@ -63,8 +63,8 @@ class EnhancedNotificationService {
       name: 'Payment Received',
       type: 'payment_received',
       channels: this.channels.filter(c => c.type === 'push' || c.type === 'email' || c.type === 'in_app'),
-      subject: '💰 Payment Received - \${amount} from \${senderName}',
-      body: 'You received \${amount} from \${senderName}. Transaction ID: \${transactionId}',
+      subject: '💰 Payment Received - ${amount} from ${senderName}',
+      body: 'You received ${amount} from ${senderName}. Transaction ID: ${transactionId}',
       htmlBody: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="background: linear-gradient(135deg, #f97316, #ea580c); padding: 20px; text-align: center;">
@@ -88,7 +88,7 @@ class EnhancedNotificationService {
           </div>
         </div>
       `,
-      smsBody: '💰 ZapPay: You received $\${amount} from \${senderName}. ID: \${transactionId}',
+      smsBody: '💰 ZapPay: You received $${amount} from ${senderName}. ID: ${transactionId}',
       variables: ['amount', 'senderName', 'transactionId', 'actionUrl'],
       isActive: true
     },
@@ -97,8 +97,8 @@ class EnhancedNotificationService {
       name: 'Security Alert',
       type: 'security_alert',
       channels: this.channels,
-      subject: '🚨 Security Alert - \${alertType}',
-      body: 'Security alert: \${message}. Please review your account immediately.',
+      subject: '🚨 Security Alert - ${alertType}',
+      body: 'Security alert: ${message}. Please review your account immediately.',
       htmlBody: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="background: linear-gradient(135deg, #dc2626, #b91c1c); padding: 20px; text-align: center;">
@@ -123,7 +123,7 @@ class EnhancedNotificationService {
           </div>
         </div>
       `,
-      smsBody: '🚨 ZapPay Security Alert: \${message}. Review account now.',
+      smsBody: '🚨 ZapPay Security Alert: ${message}. Review account now.',
       variables: ['alertType', 'message', 'timestamp', 'actionUrl'],
       isActive: true
     },
@@ -132,8 +132,8 @@ class EnhancedNotificationService {
       name: 'Budget Alert',
       type: 'budget_alert',
       channels: this.channels.filter(c => c.type === 'push' || c.type === 'email' || c.type === 'in_app'),
-      subject: '📊 Budget Alert - \${category}',
-      body: 'You\'ve spent \${percentage}% of your \${category} budget ($\${spent} of $\${budget}).',
+      subject: '📊 Budget Alert - ${category}',
+      body: 'You\'ve spent ${percentage}% of your ${category} budget ($${spent} of $${budget}).',
       htmlBody: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="background: linear-gradient(135deg, #f59e0b, #d97706); padding: 20px; text-align: center;">
@@ -165,7 +165,7 @@ class EnhancedNotificationService {
           </div>
         </div>
       `,
-      smsBody: '📊 ZapPay Budget Alert: \${percentage}% of \${category} budget used ($\${spent}/$\${budget})',
+      smsBody: '📊 ZapPay Budget Alert: ${percentage}% of ${category} budget used ($${spent}/$${budget})',
       variables: ['category', 'percentage', 'spent', 'budget', 'actionUrl'],
       isActive: true
     }

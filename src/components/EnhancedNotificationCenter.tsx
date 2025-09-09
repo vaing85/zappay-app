@@ -4,8 +4,6 @@ import {
   BellIcon, 
   XMarkIcon, 
   CogIcon, 
-  CheckIcon, 
-  ExclamationTriangleIcon,
   InformationCircleIcon,
   CurrencyDollarIcon,
   ShieldCheckIcon,
@@ -15,13 +13,7 @@ import {
   ComputerDesktopIcon,
   SpeakerWaveIcon,
   SpeakerXMarkIcon,
-  EyeIcon,
-  EyeSlashIcon,
-  ArchiveBoxIcon,
-  TrashIcon,
-  ClockIcon,
-  ChevronDownIcon,
-  ChevronUpIcon
+  TrashIcon
 } from '@heroicons/react/24/outline';
 import { useAuth } from '../contexts/AuthContext';
 import { useNotifications } from '../contexts/NotificationContext';
@@ -38,7 +30,6 @@ const EnhancedNotificationCenter: React.FC = () => {
     addNotification, 
     markAsRead, 
     markAllAsRead, 
-    archiveNotification, 
     deleteNotification, 
     updateSettings 
   } = useNotifications();
@@ -47,7 +38,7 @@ const EnhancedNotificationCenter: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'all' | 'unread' | 'archived'>('all');
   const [showSettings, setShowSettings] = useState(false);
   const [channels, setChannels] = useState<NotificationChannel[]>([]);
-  const [templates, setTemplates] = useState<NotificationTemplate[]>([]);
+  const [, setTemplates] = useState<NotificationTemplate[]>([]);
   const [analytics, setAnalytics] = useState<NotificationAnalytics | null>(null);
   const [filteredNotifications, setFilteredNotifications] = useState<AppNotification[]>([]);
 
