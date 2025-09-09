@@ -43,6 +43,7 @@ const PaymentSettings = lazy(() => import('./pages/PaymentSettings'));
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
 const TermsOfService = lazy(() => import('./pages/TermsOfService'));
 const SubscriptionPlans = lazy(() => import('./pages/SubscriptionPlans'));
+const MerchantDashboard = lazy(() => import('./pages/MerchantDashboard'));
 
 function App() {
   return (
@@ -80,6 +81,7 @@ function App() {
                           <Route path="/transaction-security" element={<TransactionSecurity />} />
                           <Route path="/data-encryption" element={<DataEncryption />} />
                           <Route path="/payment-settings" element={<PaymentSettings />} />
+                          <Route path="/merchant" element={<MerchantDashboard />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-of-service" element={<TermsOfService />} />
             <Route path="/subscription-plans" element={<SubscriptionPlans />} />

@@ -18,6 +18,7 @@ import {
   CurrencyDollarIcon,
   ShieldCheckIcon,
   LockClosedIcon,
+  BuildingStorefrontIcon,
   ArrowRightOnRectangleIcon,
   UserIcon,
   UserGroupIcon,
@@ -105,6 +106,14 @@ const Navbar: React.FC = () => {
                   >
                     <ChartBarIcon className="w-4 h-4" />
                     <span className="hidden 2xl:inline">Analytics</span>
+                  </Link>
+                  <Link
+                    to="/merchant"
+                    className="text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 px-2 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-1"
+                    title="Merchant Dashboard"
+                  >
+                    <BuildingStorefrontIcon className="w-4 h-4" />
+                    <span className="hidden 2xl:inline">Merchant</span>
                   </Link>
                   <Link
                     to="/groups"
