@@ -1,11 +1,12 @@
 // Service Worker for ZapPay PWA
-const CACHE_NAME = 'zappay-v1';
+const CACHE_NAME = 'zappay-v2';
 const urlsToCache = [
   '/',
-  '/static/js/bundle.js',
-  '/static/css/main.css',
   '/favicon.ico',
-  '/manifest.json'
+  '/manifest.json',
+  '/favicon.svg',
+  '/logo192.svg',
+  '/logo512.svg'
 ];
 
 // Install event
@@ -15,7 +16,15 @@ self.addEventListener('install', (event) => {
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('Opened cache');
-        return cache.addAll(urlsToCache);
+        // Cache only the essential files that we know exist
+        return Promise.all(
+          urlsToCache.map(url => 
+            cache.add(url).catch(err => {
+              console.warn(`Failed to cache ${url}:`, err);
+              // Don't fail the entire installation if one file fails
+            })
+          )
+        );
       })
       .catch((error) => {
         console.error('Failed to cache resources:', error);
@@ -44,18 +53,49 @@ self.addEventListener('activate', (event) => {
 
 // Fetch event
 self.addEventListener('fetch', (event) => {
+  // Skip non-GET requests
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
-        // Return cached version or fetch from network
-        return response || fetch(event.request);
+        // Return cached version if available
+        if (response) {
+          return response;
+        }
+
+        // For static assets, try to fetch and cache them
+        if (event.request.url.includes('/static/')) {
+          return fetch(event.request)
+            .then((response) => {
+              // Only cache successful responses
+              if (response.status === 200) {
+                const responseClone = response.clone();
+                caches.open(CACHE_NAME).then((cache) => {
+                  cache.put(event.request, responseClone);
+                });
+              }
+              return response;
+            })
+            .catch((error) => {
+              console.warn('Failed to fetch static asset:', event.request.url, error);
+              throw error;
+            });
+        }
+
+        // For other requests, just fetch from network
+        return fetch(event.request);
       })
       .catch((error) => {
         console.error('Fetch failed:', error);
-        // Return offline page if available
+        // Return offline page if available for document requests
         if (event.request.destination === 'document') {
           return caches.match('/');
         }
+        // For other requests, let them fail gracefully
+        throw error;
       })
   );
 });
