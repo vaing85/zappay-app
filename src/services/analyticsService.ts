@@ -7,6 +7,7 @@ import {
   SpendingGoal, 
   ComparisonData 
 } from '../types/Analytics';
+import { useSubscription } from '../contexts/SubscriptionContext';
 
 class AnalyticsService {
   private getTransactionsByUser(userId: string): Transaction[] {
@@ -384,6 +385,303 @@ class AnalyticsService {
     
     // PDF export would require a library like jsPDF
     return JSON.stringify(report, null, 2);
+  }
+
+  // Premium Analytics Features (gated behind subscription tiers)
+  
+  async getAdvancedInsights(userId: string, hasFeatureAccess: (feature: string) => boolean): Promise<any> {
+    if (!hasFeatureAccess('AI Recommendations')) {
+      return {
+        insights: [],
+        recommendations: [],
+        isPremium: false,
+        upgradeMessage: 'Upgrade to Pro or higher to unlock AI-powered financial insights and recommendations.'
+      };
+    }
+
+    // Simulate AI-powered insights
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    const transactions = this.getTransactionsByUser(userId);
+    const recentTransactions = transactions.slice(0, 10);
+    
+    const insights = [
+      {
+        id: '1',
+        type: 'spending_pattern',
+        title: 'Spending Pattern Detected',
+        description: 'You spend 40% more on weekends compared to weekdays',
+        impact: 'high',
+        category: 'Food & Dining',
+        confidence: 0.85,
+        recommendation: 'Consider meal prepping on weekends to reduce impulse spending'
+      },
+      {
+        id: '2',
+        type: 'savings_opportunity',
+        title: 'Savings Opportunity Found',
+        description: 'You could save $150/month by switching to a different streaming service',
+        impact: 'medium',
+        category: 'Entertainment',
+        confidence: 0.92,
+        recommendation: 'Compare streaming services and consider bundling options'
+      },
+      {
+        id: '3',
+        type: 'budget_alert',
+        title: 'Budget Alert',
+        description: 'You\'re approaching 80% of your monthly food budget',
+        impact: 'high',
+        category: 'Food & Dining',
+        confidence: 0.95,
+        recommendation: 'Consider cooking at home more often this week'
+      }
+    ];
+
+    const recommendations = [
+      {
+        id: '1',
+        type: 'budget_optimization',
+        title: 'Optimize Your Budget',
+        description: 'Based on your spending patterns, we recommend allocating 20% more to savings',
+        priority: 'high',
+        estimatedSavings: 200,
+        actionItems: [
+          'Set up automatic transfers to savings',
+          'Review and cancel unused subscriptions',
+          'Negotiate better rates on recurring bills'
+        ]
+      },
+      {
+        id: '2',
+        type: 'investment_opportunity',
+        title: 'Investment Opportunity',
+        description: 'With your current savings rate, you could start investing $100/month',
+        priority: 'medium',
+        estimatedReturns: 1200,
+        actionItems: [
+          'Open a high-yield savings account',
+          'Consider a robo-advisor for automated investing',
+          'Set up a 401(k) if not already enrolled'
+        ]
+      }
+    ];
+
+    return {
+      insights,
+      recommendations,
+      isPremium: true,
+      lastUpdated: new Date().toISOString()
+    };
+  }
+
+  async getPredictiveAnalytics(userId: string, hasFeatureAccess: (feature: string) => boolean): Promise<any> {
+    if (!hasFeatureAccess('Advanced Analytics')) {
+      return {
+        predictions: [],
+        isPremium: false,
+        upgradeMessage: 'Upgrade to Business or higher to unlock predictive analytics and forecasting.'
+      };
+    }
+
+    // Simulate advanced predictive analytics
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    const trends = this.getSpendingTrends(userId, 12);
+    const forecast = this.getSpendingForecast(userId);
+    
+    const predictions = [
+      {
+        id: '1',
+        type: 'spending_forecast',
+        title: 'Next Month Spending Forecast',
+        predictedAmount: forecast.nextMonth.predicted,
+        confidence: forecast.nextMonth.confidence,
+        factors: [
+          'Historical spending patterns',
+          'Seasonal trends',
+          'Recent transaction frequency'
+        ],
+        riskLevel: forecast.nextMonth.predicted > 2000 ? 'high' : 'medium'
+      },
+      {
+        id: '2',
+        type: 'category_trend',
+        title: 'Food & Dining Trend',
+        predictedAmount: 450,
+        confidence: 0.78,
+        factors: [
+          'Increasing weekend spending',
+          'Rising restaurant costs',
+          'Recent dining frequency'
+        ],
+        riskLevel: 'low'
+      },
+      {
+        id: '3',
+        type: 'savings_forecast',
+        title: 'Savings Potential',
+        predictedAmount: 800,
+        confidence: 0.85,
+        factors: [
+          'Current income stability',
+          'Reduced entertainment spending',
+          'Optimized budget allocation'
+        ],
+        riskLevel: 'low'
+      }
+    ];
+
+    return {
+      predictions,
+      isPremium: true,
+      lastUpdated: new Date().toISOString(),
+      modelVersion: 'v2.1'
+    };
+  }
+
+  async getCustomReports(userId: string, hasFeatureAccess: (feature: string) => boolean): Promise<any> {
+    if (!hasFeatureAccess('Custom Branding')) {
+      return {
+        reports: [],
+        isPremium: false,
+        upgradeMessage: 'Upgrade to Business or higher to unlock custom reporting and white-label features.'
+      };
+    }
+
+    // Simulate custom reporting features
+    await new Promise(resolve => setTimeout(resolve, 800));
+    
+    const customReports = [
+      {
+        id: '1',
+        name: 'Executive Summary',
+        description: 'High-level financial overview for stakeholders',
+        type: 'executive',
+        frequency: 'monthly',
+        includes: [
+          'Key financial metrics',
+          'Spending trends',
+          'ROI analysis',
+          'Risk assessment'
+        ],
+        customization: {
+          branding: true,
+          logo: true,
+          colorScheme: 'custom',
+          layout: 'professional'
+        }
+      },
+      {
+        id: '2',
+        name: 'Departmental Breakdown',
+        description: 'Detailed spending analysis by department/category',
+        type: 'departmental',
+        frequency: 'weekly',
+        includes: [
+          'Category-wise spending',
+          'Variance analysis',
+          'Budget vs actual',
+          'Performance metrics'
+        ],
+        customization: {
+          branding: true,
+          logo: true,
+          colorScheme: 'corporate',
+          layout: 'detailed'
+        }
+      },
+      {
+        id: '3',
+        name: 'Compliance Report',
+        description: 'Regulatory compliance and audit trail',
+        type: 'compliance',
+        frequency: 'quarterly',
+        includes: [
+          'Transaction audit trail',
+          'Compliance metrics',
+          'Risk indicators',
+          'Regulatory requirements'
+        ],
+        customization: {
+          branding: false,
+          logo: false,
+          colorScheme: 'standard',
+          layout: 'formal'
+        }
+      }
+    ];
+
+    return {
+      reports: customReports,
+      isPremium: true,
+      lastUpdated: new Date().toISOString()
+    };
+  }
+
+  async getRealTimeAlerts(userId: string, hasFeatureAccess: (feature: string) => boolean): Promise<any> {
+    if (!hasFeatureAccess('Real-time Notifications')) {
+      return {
+        alerts: [],
+        isPremium: false,
+        upgradeMessage: 'Upgrade to Pro or higher to unlock real-time alerts and notifications.'
+      };
+    }
+
+    // Simulate real-time alert system
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    const alerts = [
+      {
+        id: '1',
+        type: 'budget_alert',
+        severity: 'warning',
+        title: 'Budget Threshold Reached',
+        message: 'You\'ve spent 75% of your monthly food budget',
+        timestamp: new Date().toISOString(),
+        category: 'Food & Dining',
+        actionRequired: true,
+        actions: [
+          'Review recent transactions',
+          'Adjust budget if needed',
+          'Set up spending alerts'
+        ]
+      },
+      {
+        id: '2',
+        type: 'unusual_activity',
+        severity: 'info',
+        title: 'Unusual Spending Pattern',
+        message: 'Higher than usual spending detected in Entertainment category',
+        timestamp: new Date(Date.now() - 3600000).toISOString(),
+        category: 'Entertainment',
+        actionRequired: false,
+        actions: [
+          'Verify transactions',
+          'Review budget allocation'
+        ]
+      },
+      {
+        id: '3',
+        type: 'savings_milestone',
+        severity: 'success',
+        title: 'Savings Milestone Achieved',
+        message: 'Congratulations! You\'ve reached your emergency fund goal',
+        timestamp: new Date(Date.now() - 7200000).toISOString(),
+        category: 'Savings',
+        actionRequired: false,
+        actions: [
+          'Set new savings goal',
+          'Consider investment options'
+        ]
+      }
+    ];
+
+    return {
+      alerts,
+      isPremium: true,
+      lastUpdated: new Date().toISOString()
+    };
   }
 }
 
