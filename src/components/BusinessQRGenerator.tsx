@@ -83,7 +83,7 @@ const BusinessQRGenerator: React.FC<BusinessQRGeneratorProps> = ({
       const paymentData = {
         type: 'zappay_business_payment',
         businessId: user?.id || 'business',
-        businessName: user?.name || 'Business',
+        businessName: user ? `${user.firstName} ${user.lastName}` : 'Business',
         businessEmail: user?.email || 'business@example.com',
         qrId: qrData.id || `qr_${Date.now()}`,
         name: qrData.name || 'Business Payment',
@@ -167,7 +167,7 @@ const BusinessQRGenerator: React.FC<BusinessQRGeneratorProps> = ({
       const paymentData = {
         type: 'zappay_business_payment',
         businessId: user?.id || 'business',
-        businessName: user?.name || 'Business',
+        businessName: user ? `${user.firstName} ${user.lastName}` : 'Business',
         businessEmail: user?.email || 'business@example.com',
         qrId: qrCode.id,
         name: qrCode.name,

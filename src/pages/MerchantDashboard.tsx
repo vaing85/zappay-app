@@ -8,6 +8,7 @@ import {
   PlusIcon,
   EyeIcon,
   ArrowDownTrayIcon,
+  ArrowUpIcon,
   BellIcon,
   CreditCardIcon,
   BanknotesIcon,

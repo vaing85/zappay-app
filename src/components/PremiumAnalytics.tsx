@@ -12,7 +12,6 @@ import {
   ArrowUpIcon,
   ArrowDownIcon,
   StarIcon,
-  CrownIcon,
   UsersIcon
 } from '@heroicons/react/24/outline';
 import { useAuth } from '../contexts/AuthContext';
@@ -42,21 +41,27 @@ const PremiumAnalytics: React.FC = () => {
     
     setLoading(true);
     try {
+      // Create a synchronous wrapper for hasFeatureAccess
+      const syncHasFeatureAccess = (feature: string): boolean => {
+        // For now, return true for all features - in a real app, this would check the current subscription
+        return currentSubscription?.planId !== 'free' || false;
+      };
+      
       switch (activeTab) {
         case 'insights':
-          const insightsData = await analyticsService.getAdvancedInsights(user.id, hasFeatureAccess);
+          const insightsData = await analyticsService.getAdvancedInsights(user.id, syncHasFeatureAccess);
           setInsights(insightsData);
           break;
         case 'predictions':
-          const predictionsData = await analyticsService.getPredictiveAnalytics(user.id, hasFeatureAccess);
+          const predictionsData = await analyticsService.getPredictiveAnalytics(user.id, syncHasFeatureAccess);
           setPredictions(predictionsData);
           break;
         case 'reports':
-          const reportsData = await analyticsService.getCustomReports(user.id, hasFeatureAccess);
+          const reportsData = await analyticsService.getCustomReports(user.id, syncHasFeatureAccess);
           setReports(reportsData);
           break;
         case 'alerts':
-          const alertsData = await analyticsService.getRealTimeAlerts(user.id, hasFeatureAccess);
+          const alertsData = await analyticsService.getRealTimeAlerts(user.id, syncHasFeatureAccess);
           setAlerts(alertsData);
           break;
       }
@@ -115,7 +120,7 @@ const PremiumAnalytics: React.FC = () => {
       case 'business':
         return <UsersIcon className="w-6 h-6" />;
       case 'enterprise':
-        return <CrownIcon className="w-6 h-6" />;
+        return <StarIcon className="w-6 h-6" />;
       default:
         return <StarIcon className="w-6 h-6" />;
     }

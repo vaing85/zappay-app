@@ -7,7 +7,6 @@ import {
   SpendingGoal, 
   ComparisonData 
 } from '../types/Analytics';
-import { useSubscription } from '../contexts/SubscriptionContext';
 
 class AnalyticsService {
   private getTransactionsByUser(userId: string): Transaction[] {
