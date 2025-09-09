@@ -377,33 +377,6 @@ const Home: React.FC = memo(() => {
         </div>
       </section>
 
-      {/* Stats Section - More valuable than redundant CTA */}
-      <section className="py-20 bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 text-white">
-        <div className="text-center max-w-6xl mx-auto px-4">
-          <BoltIcon className="w-20 h-20 mx-auto mb-6 animate-bounce" />
-          <h2 className="text-4xl font-bold mb-6">
-            Trusted by Businesses Worldwide
-          </h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mt-12">
-            <div className="text-center">
-              <div className="text-4xl font-bold mb-2">100K+</div>
-              <div className="text-lg opacity-90">Active Users</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold mb-2">$10M+</div>
-              <div className="text-lg opacity-90">Transactions Processed</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold mb-2">5K+</div>
-              <div className="text-lg opacity-90">Businesses</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold mb-2">99.9%</div>
-              <div className="text-lg opacity-90">Uptime</div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12">
