@@ -381,45 +381,12 @@ const Home: React.FC = memo(() => {
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12">
         <div className="max-w-6xl mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-3 gap-8">
             <div>
               <h3 className="text-lg font-semibold mb-4">ZapPay</h3>
               <p className="text-gray-400 mb-4">
                 The complete payment platform for individuals and businesses. Send money instantly, accept payments, and grow your business.
               </p>
-              <div className="flex space-x-4">
-                <Link to="/subscription-plans" className="text-orange-400 hover:text-orange-300 transition-colors">
-                  View Plans
-                </Link>
-                <Link to="/merchant" className="text-orange-400 hover:text-orange-300 transition-colors">
-                  Merchant Tools
-                </Link>
-              </div>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Features</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link to="/qr" className="text-gray-400 hover:text-white transition-colors">
-                    QR Code Payments
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/analytics" className="text-gray-400 hover:text-white transition-colors">
-                    Analytics & Insights
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/merchant" className="text-gray-400 hover:text-white transition-colors">
-                    Merchant Dashboard
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/subscription-plans" className="text-gray-400 hover:text-white transition-colors">
-                    Premium Features
-                  </Link>
-                </li>
-              </ul>
             </div>
             <div>
               <h3 className="text-lg font-semibold mb-4">Support</h3>
