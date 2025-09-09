@@ -29,9 +29,8 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
       // Check if WebSocket server is available
       const wsUrl = API_CONFIG.WEBSOCKET_URL;
       
-      // For now, disable WebSocket connection to prevent errors
-      // In production, you would enable this when the server is available
-      const enableWebSocket = false;
+      // Enable WebSocket connection in production
+      const enableWebSocket = process.env.NODE_ENV === 'production';
       
       if (!enableWebSocket) {
         console.log('WebSocket disabled - running in offline mode');

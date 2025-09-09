@@ -7,6 +7,9 @@
   CI = "false"
   NPM_FLAGS = "--production=false"
   NODE_OPTIONS = "--max_old_space_size=4096"
+  REACT_APP_API_URL = "https://zappayapp-ie9d2.ondigitalocean.app"
+  REACT_APP_WEBSOCKET_URL = "wss://zappayapp-ie9d2.ondigitalocean.app"
+  REACT_APP_STRIPE_PUBLISHABLE_KEY = "pk_test_51S4EPVRmFp120lD285EbWWT0Kds4gkEjqLuTSN7UJdFGWGsoYzOEAeJ0EaOQYAixI18XZanIh4CruZgv7UUitKzH00f2VG83ip"
 
 # Security headers for all pages
 [[headers]]
