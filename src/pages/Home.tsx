@@ -36,7 +36,7 @@ const Home: React.FC = memo(() => {
   // Memoize brand name component to avoid repetition
   const BrandName = useMemo(() => (
     <>
-      <span className="text-yellow-500">Zap</span><span className="text-orange-600">Cash</span>
+      <span className="text-yellow-500">Zap</span><span className="text-orange-600">Pay</span>
     </>
   ), []);
 

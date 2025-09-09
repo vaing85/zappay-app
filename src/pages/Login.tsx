@@ -48,7 +48,7 @@ const Login: React.FC = () => {
         <div className="text-center">
           <BoltIcon className="w-16 h-16 text-yellow-500 mx-auto mb-4 animate-pulse" />
           <h2 className="text-3xl font-bold">
-            <span className="text-yellow-500">Zap</span><span className="text-orange-600">Cash</span>
+            <span className="text-yellow-500">Zap</span><span className="text-orange-600">Pay</span>
           </h2>
           <p className="mt-2 text-sm text-gray-600">
             Sign in to your account
