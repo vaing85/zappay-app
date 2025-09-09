@@ -22,6 +22,8 @@ import {
   ArrowRightOnRectangleIcon,
   UserIcon,
   UserGroupIcon,
+  CodeBracketIcon,
+  WrenchScrewdriverIcon,
 } from '@heroicons/react/24/outline';
 
 const Navbar: React.FC = () => {
@@ -114,6 +116,22 @@ const Navbar: React.FC = () => {
                   >
                     <BuildingStorefrontIcon className="w-4 h-4" />
                     <span className="hidden 2xl:inline">Merchant</span>
+                  </Link>
+                  <Link
+                    to="/api-docs"
+                    className="text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 px-2 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-1"
+                    title="API Documentation"
+                  >
+                    <CodeBracketIcon className="w-4 h-4" />
+                    <span className="hidden 2xl:inline">API Docs</span>
+                  </Link>
+                  <Link
+                    to="/developer"
+                    className="text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 px-2 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-1"
+                    title="Developer Dashboard"
+                  >
+                    <WrenchScrewdriverIcon className="w-4 h-4" />
+                    <span className="hidden 2xl:inline">Developer</span>
                   </Link>
                   <Link
                     to="/groups"
@@ -273,6 +291,30 @@ const Navbar: React.FC = () => {
                   >
                     <CurrencyDollarIcon className="w-5 h-5" />
                     <span>Budget</span>
+                  </Link>
+                  <Link
+                    to="/merchant"
+                    className="text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 block px-3 py-2 rounded-md text-base font-medium flex items-center space-x-2"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <BuildingStorefrontIcon className="w-5 h-5" />
+                    <span>Merchant Dashboard</span>
+                  </Link>
+                  <Link
+                    to="/api-docs"
+                    className="text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 block px-3 py-2 rounded-md text-base font-medium flex items-center space-x-2"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <CodeBracketIcon className="w-5 h-5" />
+                    <span>API Documentation</span>
+                  </Link>
+                  <Link
+                    to="/developer"
+                    className="text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 block px-3 py-2 rounded-md text-base font-medium flex items-center space-x-2"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <WrenchScrewdriverIcon className="w-5 h-5" />
+                    <span>Developer Dashboard</span>
                   </Link>
                   <Link
                     to="/security"

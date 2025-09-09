@@ -16,6 +16,7 @@ const paymentRoutes = require('./routes/payments');
 const groupRoutes = require('./routes/groups');
 const budgetRoutes = require('./routes/budgets');
 const notificationRoutes = require('./routes/notifications');
+const apiRoutes = require('./routes/api');
 
 // Import middleware
 const errorHandler = require('./middleware/errorHandler');
@@ -309,6 +310,9 @@ app.use('/api/payments', authMiddleware, paymentRoutes);
 app.use('/api/groups', authMiddleware, groupRoutes);
 app.use('/api/budgets', authMiddleware, budgetRoutes);
 app.use('/api/notifications', authMiddleware, notificationRoutes);
+
+// External API routes for developers
+app.use('/api/v1', apiRoutes);
 
 // WebSocket connection handling
 io.on('connection', (socket) => {

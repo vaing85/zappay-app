@@ -44,6 +44,8 @@ const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
 const TermsOfService = lazy(() => import('./pages/TermsOfService'));
 const SubscriptionPlans = lazy(() => import('./pages/SubscriptionPlans'));
 const MerchantDashboard = lazy(() => import('./pages/MerchantDashboard'));
+const APIDocumentation = lazy(() => import('./pages/APIDocumentation'));
+const DeveloperDashboard = lazy(() => import('./pages/DeveloperDashboard'));
 
 function App() {
   return (
@@ -85,6 +87,8 @@ function App() {
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-of-service" element={<TermsOfService />} />
             <Route path="/subscription-plans" element={<SubscriptionPlans />} />
+            <Route path="/api-docs" element={<APIDocumentation />} />
+            <Route path="/developer" element={<DeveloperDashboard />} />
                         </Routes>
                       </Suspense>
                     </main>
