@@ -111,13 +111,13 @@ const ComparisonCard: React.FC<ComparisonCardProps> = ({ title, data }) => {
         <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
           <p className="text-xs text-gray-600 dark:text-gray-400">
             {isPositive && (
-              <>📈 Your spending increased by {data.changePercentage.toFixed(1)}% compared to the previous period.</>
+              <>📈 Your spending increased by ${Math.abs(data.change).toFixed(2)} ({data.changePercentage.toFixed(1)}%) compared to the previous period. Consider reviewing your budget.</>
             )}
             {isNegative && (
-              <>📉 Great job! Your spending decreased by {Math.abs(data.changePercentage).toFixed(1)}% compared to the previous period.</>
+              <>📉 Great job! Your spending decreased by ${Math.abs(data.change).toFixed(2)} ({Math.abs(data.changePercentage).toFixed(1)}%) compared to the previous period. You're saving money!</>
             )}
             {isNeutral && (
-              <>➡️ Your spending remained the same compared to the previous period.</>
+              <>➡️ Your spending remained the same (${data.current.amount.toFixed(2)}) compared to the previous period. Consistent spending habits!</>
             )}
           </p>
         </div>

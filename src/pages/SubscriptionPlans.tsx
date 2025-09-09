@@ -14,6 +14,7 @@ import {
 import { useSubscription } from '../contexts/SubscriptionContext';
 import { useAuth } from '../contexts/AuthContext';
 import { SubscriptionTier } from '../types/Subscription';
+import { subscriptionService } from '../services/subscriptionService';
 import { toast } from 'react-toastify';
 
 const SubscriptionPlans: React.FC = () => {
@@ -288,27 +289,16 @@ const SubscriptionPlans: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                {[
-                  'Monthly Transactions',
-                  'Daily Withdrawal Limit',
-                  'Monthly Withdrawal Limit',
-                  'Advanced Analytics',
-                  'Priority Support',
-                  'Free Withdrawals',
-                  'Team Management',
-                  'API Access',
-                  'Custom Branding',
-                  'White Label'
-                ].map((feature) => (
-                  <tr key={feature}>
+                {subscriptionService.getFeatureComparison().map((comparison) => (
+                  <tr key={comparison.feature}>
                     <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
-                      {feature}
+                      {comparison.feature}
                     </td>
                     {plans.map((plan) => {
-                      const hasFeature = plan.features.some(f => 
-                        f.name.toLowerCase().includes(feature.toLowerCase()) ||
-                        feature.toLowerCase().includes(f.name.toLowerCase())
-                      );
+                      const hasFeature = plan.id === 'free' ? comparison.free :
+                                       plan.id === 'pro' ? comparison.pro :
+                                       plan.id === 'business' ? comparison.business :
+                                       plan.id === 'enterprise' ? comparison.enterprise : false;
                       
                       return (
                         <td key={plan.id} className="px-6 py-4 text-center">

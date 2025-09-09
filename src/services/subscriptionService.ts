@@ -427,14 +427,23 @@ class SubscriptionService {
   getFeatureComparison(): { feature: string; free: boolean; pro: boolean; business: boolean; enterprise: boolean }[] {
     const allFeatures = [
       'Basic Payments',
+      'QR Code Payments', 
+      'Basic Analytics',
       'Advanced Analytics',
+      'Email Support',
       'Priority Support',
       'Free Withdrawals',
+      'Budget Tools',
+      'Data Export',
       'Team Management',
       'API Access',
       'Custom Branding',
+      'Advanced Reporting',
+      'Dedicated Support',
+      'Merchant Tools',
       'White Label',
-      'Unlimited Everything'
+      'Custom Integrations',
+      'SLA Guarantee'
     ];
 
     return allFeatures.map(feature => ({
