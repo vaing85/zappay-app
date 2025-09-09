@@ -169,9 +169,20 @@ const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
             </label>
             {paymentMethods.length === 0 ? (
               <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <p className="text-sm text-yellow-800">
+                <p className="text-sm text-yellow-800 mb-3">
                   No payment methods available. Please add a payment method first.
                 </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    // Navigate to payment settings
+                    window.location.href = '/payment-settings';
+                  }}
+                  className="text-sm bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded-lg font-medium transition-colors"
+                >
+                  Add Payment Method
+                </button>
               </div>
             ) : (
               <select
