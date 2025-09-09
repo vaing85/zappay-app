@@ -44,7 +44,7 @@ const Navbar: React.FC = () => {
               <Link to="/" className="flex items-center space-x-2">
                 <BoltIcon className="w-8 h-8 text-yellow-500" />
                 <span className="text-2xl font-bold">
-                  <span className="text-yellow-500">Zap</span><span className="text-orange-600">Cash</span>
+                  <span className="text-yellow-500">Zap</span><span className="text-orange-600">Pay</span>
                 </span>
               </Link>
             </div>
@@ -67,7 +67,7 @@ const Navbar: React.FC = () => {
             <Link to="/" className="flex items-center space-x-2">
               <BoltIcon className="w-8 h-8 text-yellow-500" />
               <span className="text-2xl font-bold">
-                <span className="text-yellow-500">Zap</span><span className="text-orange-600">Cash</span>
+                <span className="text-yellow-500">Zap</span><span className="text-orange-600">Pay</span>
               </span>
             </Link>
           </div>
@@ -121,6 +121,14 @@ const Navbar: React.FC = () => {
                   >
                     <CreditCardIcon className="w-4 h-4" />
                     <span className="hidden 2xl:inline">Payments</span>
+                  </Link>
+                  <Link
+                    to="/profile"
+                    className="text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 px-2 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-1"
+                    title="Profile"
+                  >
+                    <UserIcon className="w-4 h-4" />
+                    <span className="hidden 2xl:inline">Profile</span>
                   </Link>
                   <Link
                     to="/budget"
@@ -277,6 +285,14 @@ const Navbar: React.FC = () => {
                     <span className="text-gray-700 dark:text-gray-300 text-sm font-medium">Notifications:</span>
                     <NotificationCenter />
                   </div>
+                  <Link
+                    to="/profile"
+                    className="text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 block px-3 py-2 rounded-md text-base font-medium flex items-center space-x-2"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <UserIcon className="w-5 h-5" />
+                    <span>Profile</span>
+                  </Link>
                   <div className="flex items-center justify-between px-3 py-2">
                     <span className="text-gray-700 dark:text-gray-300 text-sm font-medium">Theme:</span>
                     <ThemeToggle />
