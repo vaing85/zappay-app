@@ -70,7 +70,7 @@ const Register: React.FC = () => {
         <div className="text-center">
           <BoltIcon className="w-16 h-16 text-yellow-500 mx-auto mb-4 animate-pulse" />
           <h2 className="text-3xl font-bold">
-            <span className="text-yellow-500">Zap</span><span className="text-orange-600">Cash</span>
+            <span className="text-yellow-500">Zap</span><span className="text-orange-600">Pay</span>
           </h2>
           <p className="mt-2 text-sm text-gray-600">
             Create your account and start zapping payments
@@ -241,6 +241,16 @@ const Register: React.FC = () => {
                 Sign in to ZapPay
               </Link>
             </p>
+            <div className="mt-4 text-xs text-gray-500">
+              By creating an account, you agree to our{' '}
+              <Link to="/terms-of-service" className="text-orange-600 hover:text-orange-500 underline">
+                Terms of Service
+              </Link>{' '}
+              and{' '}
+              <Link to="/privacy-policy" className="text-orange-600 hover:text-orange-500 underline">
+                Privacy Policy
+              </Link>
+            </div>
           </div>
         </motion.form>
       </motion.div>

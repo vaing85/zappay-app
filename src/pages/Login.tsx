@@ -139,6 +139,16 @@ const Login: React.FC = () => {
                 Sign up for ZapPay
               </Link>
             </p>
+            <div className="mt-4 text-xs text-gray-500">
+              By signing in, you agree to our{' '}
+              <Link to="/terms-of-service" className="text-orange-600 hover:text-orange-500 underline">
+                Terms of Service
+              </Link>{' '}
+              and{' '}
+              <Link to="/privacy-policy" className="text-orange-600 hover:text-orange-500 underline">
+                Privacy Policy
+              </Link>
+            </div>
           </div>
         </motion.form>
 
