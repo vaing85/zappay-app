@@ -53,8 +53,14 @@ app.set('trust proxy', 1);
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: process.env.CORS_ORIGIN?.split(',') || ["http://localhost:3000"],
-    methods: ["GET", "POST", "PUT", "DELETE"]
+    origin: process.env.CORS_ORIGIN?.split(',') || [
+      "http://localhost:3000",
+      "https://zappay.site",
+      "https://zappayapp.netlify.app",
+      "https://zappay-app-frontend.netlify.app"
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true
   }
 });
 
@@ -72,7 +78,12 @@ app.use(helmet({
 
 // CORS configuration
 app.use(cors({
-  origin: process.env.CORS_ORIGIN?.split(',') || ["http://localhost:3000"],
+  origin: process.env.CORS_ORIGIN?.split(',') || [
+    "http://localhost:3000",
+    "https://zappay.site",
+    "https://zappayapp.netlify.app",
+    "https://zappay-app-frontend.netlify.app"
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
