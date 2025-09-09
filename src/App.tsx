@@ -45,6 +45,7 @@ const TermsOfService = lazy(() => import('./pages/TermsOfService'));
 const SubscriptionPlans = lazy(() => import('./pages/SubscriptionPlans'));
 const MerchantDashboard = lazy(() => import('./pages/MerchantDashboard'));
 const NotificationAnalytics = lazy(() => import('./pages/NotificationAnalytics'));
+const EnhancedSecurity = lazy(() => import('./pages/EnhancedSecurity'));
 const APIDocumentation = lazy(() => import('./pages/APIDocumentation'));
 const DeveloperDashboard = lazy(() => import('./pages/DeveloperDashboard'));
 
@@ -86,6 +87,7 @@ function App() {
                           <Route path="/payment-settings" element={<PaymentSettings />} />
                           <Route path="/merchant" element={<MerchantDashboard />} />
             <Route path="/notification-analytics" element={<NotificationAnalytics />} />
+            <Route path="/enhanced-security" element={<EnhancedSecurity />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-of-service" element={<TermsOfService />} />
             <Route path="/subscription-plans" element={<SubscriptionPlans />} />

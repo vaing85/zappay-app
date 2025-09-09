@@ -324,6 +324,14 @@ const Navbar: React.FC = () => {
                     <span>Security</span>
                   </Link>
                   <Link
+                    to="/enhanced-security"
+                    className="text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 block px-3 py-2 rounded-md text-base font-medium flex items-center space-x-2"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <ShieldCheckIcon className="w-5 h-5" />
+                    <span>Enhanced Security</span>
+                  </Link>
+                  <Link
                     to="/transaction-security"
                     className="text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 block px-3 py-2 rounded-md text-base font-medium flex items-center space-x-2"
                     onClick={() => setIsOpen(false)}
