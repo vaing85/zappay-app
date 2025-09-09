@@ -2,5 +2,16 @@
 # Serve static assets directly
 /static/*    /static/:splat   200
 
+# Serve favicon and other root assets directly
+/favicon.ico    /favicon.ico   200
+/favicon.png    /favicon.png   200
+/favicon.svg    /favicon.svg   200
+/logo192.png    /logo192.png   200
+/logo192.svg    /logo192.svg   200
+/logo512.png    /logo512.png   200
+/logo512.svg    /logo512.svg   200
+/manifest.json  /manifest.json 200
+/sw.js         /sw.js         200
+
 # Redirect all other requests to index.html for SPA routing
 /*    /index.html   200
