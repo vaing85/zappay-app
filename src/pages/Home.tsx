@@ -14,9 +14,9 @@ import {
   SparklesIcon,
   BanknotesIcon,
   CreditCardIcon,
-  ArrowTrendingUpIcon,
-  CheckIcon
+  ArrowTrendingUpIcon
 } from '@heroicons/react/24/outline';
+import { CheckIcon } from '@heroicons/react/24/solid';
 
 const Home: React.FC = memo(() => {
   // Memoize features to prevent recreation on every render
