@@ -10,7 +10,6 @@ export const mockUsers: User[] = [
     phoneNumber: '+1 (555) 123-4567',
     balance: 1250.75,
     createdAt: '2024-01-01T00:00:00Z',
-    dateOfBirth: '1985-03-15',
     address: {
       street: '123 Main Street',
       city: 'New York',
@@ -70,7 +69,6 @@ export const mockUsers: User[] = [
     phoneNumber: '+1 (555) 234-5678',
     balance: 3200.50,
     createdAt: '2024-01-15T00:00:00Z',
-    dateOfBirth: '1990-07-22',
     address: {
       street: '456 Oak Avenue',
       city: 'Los Angeles',
@@ -110,7 +108,6 @@ export const mockUsers: User[] = [
     phoneNumber: '+1 (555) 345-6789',
     balance: 89.25,
     createdAt: '2024-02-01T00:00:00Z',
-    dateOfBirth: '1988-11-08',
     address: {
       street: '789 Pine Street',
       city: 'Chicago',
@@ -150,7 +147,6 @@ export const mockUsers: User[] = [
     phoneNumber: '+1 (555) 456-7890',
     balance: 5675.00,
     createdAt: '2024-01-20T00:00:00Z',
-    dateOfBirth: '1992-05-12',
     address: {
       street: '321 Elm Street',
       city: 'Seattle',
@@ -190,7 +186,6 @@ export const mockUsers: User[] = [
     phoneNumber: '+1 (555) 567-8901',
     balance: 0.00,
     createdAt: '2024-02-10T00:00:00Z',
-    dateOfBirth: '1995-09-30',
     address: {
       street: '654 Maple Drive',
       city: 'Austin',

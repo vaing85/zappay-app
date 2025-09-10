@@ -1,4 +1,5 @@
 import { Alert } from 'react-native';
+import { useState, useEffect } from 'react';
 
 // Loading state interface
 export interface LoadingState {
@@ -99,11 +100,11 @@ export const updateLoadingProgress = (key: string, progress: number, message?: s
 
 // Loading hook helper
 export const useLoading = (key: string) => {
-  const [loadingState, setLoadingState] = React.useState<LoadingState>(
+  const [loadingState, setLoadingState] = useState<LoadingState>(
     LoadingService.getLoading(key) || { isLoading: false }
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     const unsubscribe = LoadingService.subscribe((loadingKey, state) => {
       if (loadingKey === key) {
         setLoadingState(state);

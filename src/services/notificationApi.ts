@@ -3,7 +3,7 @@ import { api } from './apiClient';
 // Types
 export interface Notification {
   id: string;
-  type: 'payment' | 'security' | 'general' | 'promotion';
+  type: 'payment' | 'security' | 'general' | 'promotion' | 'payment_received' | 'payment_sent' | 'payment_request' | 'split_bill' | 'qr_scan' | 'system' | 'reminder';
   title: string;
   message: string;
   isRead: boolean;

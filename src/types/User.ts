@@ -9,3 +9,6 @@ export interface User {
   isVerified: boolean;
   createdAt: string;
 }
+
+// Re-export Transaction type for backward compatibility
+export type { Transaction } from './Transaction';
