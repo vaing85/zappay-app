@@ -33,9 +33,10 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
+    "@expo/metro-config": "^0.17.8",
     "@types/react": "~18.2.45",
     "@types/react-dom": "^18.2.0",
-    "ajv": "^8.17.1",
+    "ajv": "^6.12.6",
     "autoprefixer": "^10.4.14",
     "metro": "^0.80.12",
     "postcss": "^8.4.24",
