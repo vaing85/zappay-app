@@ -14,12 +14,26 @@ const connectRedis = async () => {
             return false; // Stop trying to reconnect
           }
           return Math.min(retries * 100, 3000); // Exponential backoff
-        }
-      }
+        },
+        // Add security settings
+        tls: process.env.NODE_ENV === 'production' ? {} : undefined,
+        connectTimeout: 10000,
+        lazyConnect: true
+      },
+      // Add authentication and security
+      username: process.env.REDIS_USERNAME || undefined,
+      database: 0
     });
 
     redisClient.on('error', (err) => {
       console.warn('⚠️ Redis Client Error:', err.message);
+      // Log security-related errors
+      if (err.message.includes('AUTH') || err.message.includes('password')) {
+        console.error('🚨 Redis Authentication Error - Check credentials');
+      }
+      if (err.message.includes('ECONNREFUSED') || err.message.includes('timeout')) {
+        console.error('🚨 Redis Connection Error - Check network/firewall');
+      }
       // Don't throw error, just log it
     });
 
