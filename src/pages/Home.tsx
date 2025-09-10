@@ -378,13 +378,7 @@ const Home: React.FC = memo(() => {
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12">
         <div className="max-w-6xl mx-auto px-4">
-          <div className="grid md:grid-cols-3 gap-8">
-            <div>
-              <h3 className="text-lg font-semibold mb-4">ZapPay</h3>
-              <p className="text-gray-400 mb-4">
-                The complete payment platform for individuals and businesses. Send money instantly, accept payments, and grow your business.
-              </p>
-            </div>
+          <div className="grid md:grid-cols-2 gap-8">
             <div>
               <h3 className="text-lg font-semibold mb-4">Support</h3>
               <ul className="space-y-2">
