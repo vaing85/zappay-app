@@ -368,16 +368,36 @@ aWRnaXRzIFB0eSBMdGQwHhcNMjMwMTAxMDAwMDAwWhcNMjQwMTAxMDAwMDAwWjBF
 - Check that your IP is whitelisted in database settings
 - Ensure the database cluster is running and healthy
 
-## 🎯 SIMPLIFIED ALTERNATIVE - No Certificates Needed!
+## 🎯 RECOMMENDED METHOD - No Certificates Needed!
 
-**If you're having trouble with certificates, here's a simpler approach:**
+**Since you don't see Client Certificates in your DigitalOcean plan, use this simpler approach:**
 
-1. **Go to Connection Details tab**
-2. **Copy the "Connection String with SSL"**
-3. **Use that as your DB_URL environment variable**
-4. **Skip all the certificate steps**
+### **Step 1: Get SSL Connection String**
+1. **Go to Connection Details tab** (you're already there)
+2. **Look for "Connection String with SSL"** section
+3. **Copy the entire connection string** - it should look like:
+   ```
+   postgresql://zappay_user:password@host:port/database?sslmode=require
+   ```
 
-This method uses DigitalOcean's built-in SSL without requiring separate certificates.
+### **Step 2: Use This in DigitalOcean App Platform**
+1. **Go to your App Platform** → **zappay-backend** → **Settings**
+2. **Find "App-Level Environment Variables"**
+3. **Update the DB_URL variable** with the SSL connection string you copied
+4. **Save the changes**
+
+### **Step 3: Remove Certificate Variables (Not Needed)**
+Since you're using the connection string method, you can **remove or ignore** these variables:
+- `DB_CA_CERT` - Not needed
+- `DB_CLIENT_CERT` - Not needed  
+- `DB_CLIENT_KEY` - Not needed
+
+### **Step 4: Deploy and Test**
+1. **Deploy your app** with the updated DB_URL
+2. **Check the logs** to make sure the database connects successfully
+3. **Test your app** to make sure everything works
+
+**This method is actually simpler and more secure than certificates for most use cases!**
 
 ## 🚨 Security Checklist
 

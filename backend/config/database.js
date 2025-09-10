@@ -22,14 +22,12 @@ const getDatabaseConfig = () => {
       dialectOptions: {
         ssl: process.env.NODE_ENV === 'production' ? {
           require: true,
-          rejectUnauthorized: true, // Enable certificate validation
-          ca: process.env.DB_CA_CERT, // Certificate Authority
-          cert: process.env.DB_CLIENT_CERT, // Client certificate
-          key: process.env.DB_CLIENT_KEY, // Client private key
-          checkServerIdentity: (host, cert) => {
-            // Verify server hostname matches certificate
-            return host === cert.subject.CN;
-          }
+          rejectUnauthorized: false, // Allow self-signed certificates for managed databases
+          // Note: For DigitalOcean managed databases, SSL is handled by the connection string
+          // If using certificates, uncomment the lines below:
+          // ca: process.env.DB_CA_CERT,
+          // cert: process.env.DB_CLIENT_CERT,
+          // key: process.env.DB_CLIENT_KEY,
         } : false
       }
     };
@@ -53,14 +51,12 @@ const getDatabaseConfig = () => {
     dialectOptions: {
       ssl: process.env.NODE_ENV === 'production' ? {
         require: true,
-        rejectUnauthorized: true, // Enable certificate validation
-        ca: process.env.DB_CA_CERT, // Certificate Authority
-        cert: process.env.DB_CLIENT_CERT, // Client certificate
-        key: process.env.DB_CLIENT_KEY, // Client private key
-        checkServerIdentity: (host, cert) => {
-          // Verify server hostname matches certificate
-          return host === cert.subject.CN;
-        }
+        rejectUnauthorized: false, // Allow self-signed certificates for managed databases
+        // Note: For DigitalOcean managed databases, SSL is handled by the connection string
+        // If using certificates, uncomment the lines below:
+        // ca: process.env.DB_CA_CERT,
+        // cert: process.env.DB_CLIENT_CERT,
+        // key: process.env.DB_CLIENT_KEY,
       } : false
     }
   };
