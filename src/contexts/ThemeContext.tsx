@@ -69,6 +69,15 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     loadThemePreference();
   }, []);
 
+  // Apply dark class to HTML element when theme changes
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [isDarkMode]);
+
   const loadThemePreference = async () => {
     try {
       const savedTheme = await storage.getItem('theme');

@@ -19,17 +19,15 @@ const AppProviders: React.FC<AppProvidersProps> = ({ children }) => {
       <NotificationProvider>
         <PWAProvider>
           <AuthProvider>
-            <SubscriptionProvider>
-              <SecurityProvider>
-                <BudgetProvider>
-                  <TransactionSecurityProvider>
-                    <DataEncryptionProvider>
-                      {children}
-                    </DataEncryptionProvider>
-                  </TransactionSecurityProvider>
-                </BudgetProvider>
-              </SecurityProvider>
-            </SubscriptionProvider>
+            <SecurityProvider>
+              <BudgetProvider>
+                <TransactionSecurityProvider>
+                  <DataEncryptionProvider>
+                    {children}
+                  </DataEncryptionProvider>
+                </TransactionSecurityProvider>
+              </BudgetProvider>
+            </SecurityProvider>
           </AuthProvider>
         </PWAProvider>
       </NotificationProvider>
