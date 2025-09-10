@@ -108,19 +108,64 @@ Add these non-secret variables:
 
 #### Step 3: Generate Client Certificates (Required for App Authentication)
 
-**Option A: Using DigitalOcean's Built-in Certificate Generation (Recommended)**
+**🎯 SIMPLE GUIDE - Generate Client Certificates on DigitalOcean**
 
-1. **Generate Client Certificate in DigitalOcean**
-   - In your database cluster, go to **Settings** tab
-   - Scroll down to **Client Certificates** section
-   - Click **Generate Certificate**
-   - Enter a name like "zappay-app-client"
-   - Click **Generate**
+**Step 3A: Navigate to Settings**
+1. **You should already be in your database cluster page**
+   - If not, go to: DigitalOcean Dashboard → Databases → zappay-postgres
 
-2. **Download Client Certificate Files**
-   - Download the **Client Certificate** file (save as `client-cert.pem`)
-   - Download the **Client Private Key** file (save as `client-key.pem`)
-   - **Important:** Keep these files secure and never commit them to Git
+2. **Click the "Settings" tab**
+   - Look for the word "Settings" at the top of the page
+   - It's usually next to "Overview", "Connection Details", etc.
+
+**Step 3B: Find Client Certificates Section**
+1. **Scroll down on the Settings page**
+   - Look for a section called "Client Certificates"
+   - It might be near the bottom of the page
+
+2. **Look for a button that says "Generate Certificate" or "Add Certificate"**
+   - This button should be in the Client Certificates section
+
+**Step 3C: Generate the Certificate**
+1. **Click "Generate Certificate" button**
+   - A popup or form should appear
+
+2. **Enter a name for your certificate**
+   - Type: `zappay-app-client`
+   - This is just a label to identify the certificate
+
+3. **Click "Generate" or "Create"**
+   - DigitalOcean will create the certificate for you
+
+**Step 3D: Download the Files**
+1. **After generation, you should see two download links:**
+   - **Client Certificate** - Click to download (save as `client-cert.pem`)
+   - **Client Private Key** - Click to download (save as `client-key.pem`)
+
+2. **Save both files to your computer**
+   - Remember where you saved them
+   - You'll need to copy their contents later
+
+**🔍 What to Look For:**
+- The Client Certificates section might look like this:
+  ```
+  Client Certificates
+  ┌─────────────────────────────────────┐
+  │ Certificate Name: [zappay-app-client] │
+  │ [Generate Certificate] [Button]      │
+  └─────────────────────────────────────┘
+  ```
+
+**❓ If You Can't Find Client Certificates Section:**
+- Some DigitalOcean database plans don't have this feature
+- In that case, you can use the connection string method (see Alternative Method below)
+
+**Alternative Method - Using Connection String:**
+If you can't find the Client Certificates section, you can use the SSL connection string from DigitalOcean:
+1. Go to **Connection Details** tab
+2. Look for **"Connection String with SSL"**
+3. Copy that connection string - it contains the SSL settings
+4. Use that connection string as your `DB_URL` instead of the certificate method
 
 **Option B: Generate Your Own Client Certificates (Advanced)**
 
@@ -276,6 +321,29 @@ aWRnaXRzIFB0eSBMdGQwHhcNMjMwMTAxMDAwMDAwWhcNMjQwMTAxMDAwMDAwWjBF
 
 ## 🔧 Troubleshooting Common Issues
 
+### 🚨 "I Can't Find Client Certificates Section!"
+
+**This is the most common issue. Here's what to do:**
+
+1. **Check Your Database Plan:**
+   - Not all DigitalOcean database plans have client certificate generation
+   - Basic plans might not have this feature
+
+2. **Look in Different Places:**
+   - Try looking under "Security" tab instead of "Settings"
+   - Some clusters have it under "Access Control"
+   - Check if there's a "Certificates" or "SSL" section
+
+3. **Use the Alternative Method:**
+   - Go to **Connection Details** tab
+   - Look for **"Connection String with SSL"**
+   - Copy that entire connection string
+   - Use it as your `DB_URL` environment variable instead of certificates
+
+4. **Contact DigitalOcean Support:**
+   - If you still can't find it, contact their support
+   - Ask them to enable client certificate generation for your database
+
 ### Issue 1: "Certificate not found" Error
 **Solution:**
 - Ensure you copied the entire certificate including headers
@@ -299,6 +367,17 @@ aWRnaXRzIFB0eSBMdGQwHhcNMjMwMTAxMDAwMDAwWhcNMjQwMTAxMDAwMDAwWjBF
 - Verify the database host and port are correct
 - Check that your IP is whitelisted in database settings
 - Ensure the database cluster is running and healthy
+
+## 🎯 SIMPLIFIED ALTERNATIVE - No Certificates Needed!
+
+**If you're having trouble with certificates, here's a simpler approach:**
+
+1. **Go to Connection Details tab**
+2. **Copy the "Connection String with SSL"**
+3. **Use that as your DB_URL environment variable**
+4. **Skip all the certificate steps**
+
+This method uses DigitalOcean's built-in SSL without requiring separate certificates.
 
 ## 🚨 Security Checklist
 
