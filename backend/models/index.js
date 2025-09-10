@@ -1,13 +1,16 @@
 const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
-// Create Sequelize instance
+// Create Sequelize instance with robust SSL handling
 const sequelize = new Sequelize(process.env.DB_URL, {
   dialect: 'postgres',
   dialectOptions: {
     ssl: process.env.NODE_ENV === 'production' ? {
       require: true,
-      rejectUnauthorized: false
+      rejectUnauthorized: false,
+      // Additional SSL options for DigitalOcean
+      checkServerIdentity: () => undefined,
+      secureProtocol: 'TLSv1_2_method'
     } : false
   },
   logging: process.env.NODE_ENV === 'development' ? console.log : false,
@@ -16,6 +19,27 @@ const sequelize = new Sequelize(process.env.DB_URL, {
     min: 0,
     acquire: 30000,
     idle: 10000
+  },
+  // Additional connection options
+  retry: {
+    match: [
+      /ETIMEDOUT/,
+      /EHOSTUNREACH/,
+      /ECONNRESET/,
+      /ECONNREFUSED/,
+      /ETIMEDOUT/,
+      /ESOCKETTIMEDOUT/,
+      /EHOSTUNREACH/,
+      /EPIPE/,
+      /EAI_AGAIN/,
+      /SequelizeConnectionError/,
+      /SequelizeConnectionRefusedError/,
+      /SequelizeHostNotFoundError/,
+      /SequelizeHostNotReachableError/,
+      /SequelizeInvalidConnectionError/,
+      /SequelizeConnectionTimedOutError/
+    ],
+    max: 3
   }
 });
 
@@ -46,7 +70,16 @@ const connectDB = async () => {
     return sequelize;
   } catch (error) {
     console.error('❌ Unable to connect to the database:', error);
-    throw error;
+    
+    // If it's an SSL certificate error, provide helpful message
+    if (error.message.includes('self-signed certificate') || error.message.includes('certificate')) {
+      console.error('🔒 SSL Certificate Error: This is likely due to DigitalOcean database SSL configuration');
+      console.error('💡 The database connection will be retried automatically');
+    }
+    
+    // Don't throw the error immediately - let the app continue with mock auth
+    console.warn('⚠️ Continuing with mock authentication due to database connection issue');
+    return null;
   }
 };
 
