@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { storage } from '../utils/storage';
 
 interface Notification {
   id: string;
@@ -58,7 +58,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const loadNotifications = async () => {
     try {
-      const savedNotifications = await AsyncStorage.getItem('notifications');
+      const savedNotifications = await storage.getItem('notifications');
       if (savedNotifications) {
         const parsed = JSON.parse(savedNotifications).map((n: any) => ({
           ...n,
@@ -73,7 +73,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const saveNotifications = async () => {
     try {
-      await AsyncStorage.setItem('notifications', JSON.stringify(notifications));
+      await storage.setItem('notifications', JSON.stringify(notifications));
     } catch (error) {
       console.error('Error saving notifications:', error);
     }

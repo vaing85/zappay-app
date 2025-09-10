@@ -19,3 +19,13 @@ export interface AppNotification {
   isRead?: boolean;
   isArchived?: boolean;
 }
+
+export interface AppNotificationSettings {
+  pushNotifications: boolean;
+  emailNotifications: boolean;
+  smsNotifications: boolean;
+  marketingEmails: boolean;
+  securityAlerts: boolean;
+  paymentUpdates: boolean;
+  systemUpdates: boolean;
+}

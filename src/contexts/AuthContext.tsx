@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { storage } from '../utils/storage';
 import { Alert } from 'react-native';
 import { authService } from '../services/authService';
 
@@ -57,9 +57,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const checkAuthStatus = async () => {
     try {
-      const token = await AsyncStorage.getItem('authToken');
-      const userData = await AsyncStorage.getItem('userData');
-      const biometricEnabled = await AsyncStorage.getItem('biometricEnabled');
+        const token = await storage.getItem('authToken');
+      const userData = await storage.getItem('userData');
+      const biometricEnabled = await storage.getItem('biometricEnabled');
 
       if (token && userData) {
         setUser(JSON.parse(userData));
@@ -81,8 +81,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (response.success) {
         const { token, user: userData } = response.data;
         
-        await AsyncStorage.setItem('authToken', token);
-        await AsyncStorage.setItem('userData', JSON.stringify(userData));
+        await storage.setItem('authToken', token);
+        await storage.setItem('userData', JSON.stringify(userData));
         
         setUser(userData);
         setIsAuthenticated(true);
@@ -105,8 +105,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (response.success) {
         const { token, user: newUser } = response.data;
         
-        await AsyncStorage.setItem('authToken', token);
-        await AsyncStorage.setItem('userData', JSON.stringify(newUser));
+        await storage.setItem('authToken', token);
+        await storage.setItem('userData', JSON.stringify(newUser));
         
         setUser(newUser);
         setIsAuthenticated(true);
@@ -123,8 +123,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = async () => {
     try {
-      await AsyncStorage.removeItem('authToken');
-      await AsyncStorage.removeItem('userData');
+      await storage.removeItem('authToken');
+      await storage.removeItem('userData');
       
       setUser(null);
       setIsAuthenticated(false);
@@ -136,7 +136,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const enableBiometric = async () => {
     try {
-      await AsyncStorage.setItem('biometricEnabled', 'true');
+      await storage.setItem('biometricEnabled', 'true');
       setIsBiometricEnabled(true);
       Alert.alert('Success', 'Biometric authentication enabled (mock)');
     } catch (error) {

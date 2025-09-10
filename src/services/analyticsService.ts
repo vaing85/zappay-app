@@ -16,89 +16,113 @@ class AnalyticsService {
         id: '1',
         userId,
         amount: 150.00,
+        currency: 'USD',
         type: 'send',
         recipient: 'Coffee Shop',
         note: 'Morning coffee',
         timestamp: '2024-01-15T08:30:00Z',
         category: 'Food & Dining',
-        status: 'completed'
+        status: 'completed',
+        createdAt: '2024-01-15T08:30:00Z',
+        updatedAt: '2024-01-15T08:30:00Z'
       },
       {
         id: '2',
         userId,
         amount: 75.50,
+        currency: 'USD',
         type: 'send',
         recipient: 'Gas Station',
         note: 'Fuel',
         timestamp: '2024-01-14T16:45:00Z',
         category: 'Transportation',
-        status: 'completed'
+        status: 'completed',
+        createdAt: '2024-01-14T16:45:00Z',
+        updatedAt: '2024-01-14T16:45:00Z'
       },
       {
         id: '3',
         userId,
         amount: 299.99,
+        currency: 'USD',
         type: 'send',
         recipient: 'Online Store',
         note: 'Electronics',
         timestamp: '2024-01-13T20:15:00Z',
         category: 'Shopping',
-        status: 'completed'
+        status: 'completed',
+        createdAt: '2024-01-13T20:15:00Z',
+        updatedAt: '2024-01-13T20:15:00Z'
       },
       {
         id: '4',
         userId,
         amount: 1200.00,
+        currency: 'USD',
         type: 'receive',
         sender: 'Employer',
         note: 'Salary',
         timestamp: '2024-01-01T09:00:00Z',
         category: 'Income',
-        status: 'completed'
+        status: 'completed',
+        createdAt: '2024-01-01T09:00:00Z',
+        updatedAt: '2024-01-01T09:00:00Z'
       },
       {
         id: '5',
         userId,
         amount: 89.99,
+        currency: 'USD',
         type: 'send',
         recipient: 'Streaming Service',
         note: 'Monthly subscription',
         timestamp: '2024-01-10T12:00:00Z',
         category: 'Entertainment',
-        status: 'completed'
+        status: 'completed',
+        createdAt: '2024-01-10T12:00:00Z',
+        updatedAt: '2024-01-10T12:00:00Z'
       },
       {
         id: '6',
         userId,
         amount: 45.00,
+        currency: 'USD',
         type: 'send',
         recipient: 'Grocery Store',
         note: 'Weekly groceries',
         timestamp: '2024-01-12T14:30:00Z',
         category: 'Food & Dining',
-        status: 'completed'
+        status: 'completed',
+        createdAt: '2024-01-12T14:30:00Z',
+        updatedAt: '2024-01-12T14:30:00Z'
       },
       {
         id: '7',
         userId,
         amount: 200.00,
+        currency: 'USD',
         type: 'send',
         recipient: 'Utility Company',
         note: 'Electric bill',
         timestamp: '2024-01-05T10:00:00Z',
         category: 'Utilities',
-        status: 'completed'
+        status: 'completed',
+        createdAt: '2024-01-05T10:00:00Z',
+        updatedAt: '2024-01-05T10:00:00Z'
       },
       {
         id: '8',
         userId,
         amount: 350.00,
+        currency: 'USD',
         type: 'send',
         recipient: 'Gym Membership',
         note: 'Monthly membership',
         timestamp: '2024-01-08T18:00:00Z',
         category: 'Health & Fitness',
-        status: 'completed'
+        status: 'completed',
+        createdAt: '2024-01-08T18:00:00Z',
+        updatedAt: '2024-01-08T18:00:00Z'
       }
     ];
 
@@ -109,7 +133,7 @@ class AnalyticsService {
     const transactions = this.getTransactionsByUser(userId)
       .filter(t => {
         if (t.type !== 'send') return false;
-        const transactionDate = new Date(t.timestamp);
+        const transactionDate = new Date(t.timestamp || t.createdAt);
         return transactionDate >= startDate && transactionDate <= endDate;
       });
 
@@ -159,7 +183,7 @@ class AnalyticsService {
       const transactions = this.getTransactionsByUser(userId)
         .filter(t => {
           if (t.type !== 'send') return false;
-          const transactionDate = new Date(t.timestamp);
+          const transactionDate = new Date(t.timestamp || t.createdAt);
           return transactionDate >= date && transactionDate < nextMonth;
         });
 
@@ -187,7 +211,7 @@ class AnalyticsService {
     
     const transactions = this.getTransactionsByUser(userId)
       .filter(t => {
-        const transactionDate = new Date(t.timestamp);
+        const transactionDate = new Date(t.timestamp || t.createdAt);
         return transactionDate >= startDate && transactionDate <= endDate;
       });
 
@@ -298,14 +322,14 @@ class AnalyticsService {
       const currentTransactions = this.getTransactionsByUser(userId)
         .filter(t => {
           if (t.type !== 'send') return false;
-          const transactionDate = new Date(t.timestamp);
+          const transactionDate = new Date(t.timestamp || t.createdAt);
           return transactionDate >= currentMonth && transactionDate < nextMonth;
         });
       
       const previousTransactions = this.getTransactionsByUser(userId)
         .filter(t => {
           if (t.type !== 'send') return false;
-          const transactionDate = new Date(t.timestamp);
+          const transactionDate = new Date(t.timestamp || t.createdAt);
           return transactionDate >= previousMonth && transactionDate < previousNextMonth;
         });
 
@@ -335,14 +359,14 @@ class AnalyticsService {
       const currentTransactions = this.getTransactionsByUser(userId)
         .filter(t => {
           if (t.type !== 'send') return false;
-          const transactionDate = new Date(t.timestamp);
+          const transactionDate = new Date(t.timestamp || t.createdAt);
           return transactionDate >= currentYear && transactionDate < nextYear;
         });
       
       const previousTransactions = this.getTransactionsByUser(userId)
         .filter(t => {
           if (t.type !== 'send') return false;
-          const transactionDate = new Date(t.timestamp);
+          const transactionDate = new Date(t.timestamp || t.createdAt);
           return transactionDate >= previousYear && transactionDate < previousNextYear;
         });
 

@@ -1,5 +1,5 @@
 import { api } from './apiClient';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { storage } from '../utils/storage';
 
 // Types
 export interface LoginRequest {
@@ -51,8 +51,8 @@ export const authApi = {
       
       if (response.data.success) {
         // Store token and user data
-        await AsyncStorage.setItem('authToken', response.data.data.token);
-        await AsyncStorage.setItem('userData', JSON.stringify(response.data.data.user));
+        await storage.setItem('authToken', response.data.data.token);
+        await storage.setItem('userData', JSON.stringify(response.data.data.user));
       }
       
       return response.data;
@@ -68,8 +68,8 @@ export const authApi = {
       
       if (response.data.success) {
         // Store token and user data
-        await AsyncStorage.setItem('authToken', response.data.data.token);
-        await AsyncStorage.setItem('userData', JSON.stringify(response.data.data.user));
+        await storage.setItem('authToken', response.data.data.token);
+        await storage.setItem('userData', JSON.stringify(response.data.data.user));
       }
       
       return response.data;
@@ -86,8 +86,8 @@ export const authApi = {
       console.error('Logout error:', error);
     } finally {
       // Clear stored data regardless of API response
-      await AsyncStorage.removeItem('authToken');
-      await AsyncStorage.removeItem('userData');
+      await storage.removeItem('authToken');
+      await storage.removeItem('userData');
     }
   },
 
@@ -107,7 +107,7 @@ export const authApi = {
       const response = await api.post<{ success: boolean; data: { token: string } }>('/auth/refresh');
       
       if (response.data.success) {
-        await AsyncStorage.setItem('authToken', response.data.data.token);
+        await storage.setItem('authToken', response.data.data.token);
         return response.data.data.token;
       }
       
@@ -120,7 +120,7 @@ export const authApi = {
   // Check if user is authenticated
   isAuthenticated: async (): Promise<boolean> => {
     try {
-      const token = await AsyncStorage.getItem('authToken');
+      const token = await storage.getItem('authToken');
       return !!token;
     } catch (error) {
       return false;
@@ -130,7 +130,7 @@ export const authApi = {
   // Get stored user data
   getStoredUser: async (): Promise<User | null> => {
     try {
-      const userData = await AsyncStorage.getItem('userData');
+      const userData = await storage.getItem('userData');
       return userData ? JSON.parse(userData) : null;
     } catch (error) {
       return null;
@@ -144,7 +144,7 @@ export const authApi = {
       
       if (response.data.success) {
         // Update stored user data
-        await AsyncStorage.setItem('userData', JSON.stringify(response.data.data));
+        await storage.setItem('userData', JSON.stringify(response.data.data));
       }
       
       return response.data.data;

@@ -66,10 +66,8 @@ class ChatbotService {
 
     // Add welcome message
     this.addMessage(sessionId, {
-      id: `msg_${Date.now()}`,
       type: 'bot',
       content: "👋 Hi! I'm your ZapPay AI assistant. How can I help you today?",
-      timestamp: new Date(),
       suggestions: [
         "How do I send money?",
         "I can't log in",

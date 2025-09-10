@@ -461,7 +461,7 @@ const Dashboard: React.FC = memo(() => {
                       }
                     </p>
                     <p className="text-sm text-gray-500 dark:text-gray-400">{transaction.note}</p>
-                    <p className="text-xs text-gray-400 dark:text-gray-500">{formatDate(transaction.timestamp)}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500">{formatDate(transaction.timestamp || transaction.createdAt)}</p>
                   </div>
                 </div>
                 <span className={`font-semibold ${
