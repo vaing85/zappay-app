@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { storage } from '../utils/storage';
 
 // API Configuration
-const API_BASE_URL = __DEV__ 
+const API_BASE_URL = process.env.NODE_ENV === 'development'
   ? 'http://localhost:5000/api' // Development
   : 'https://zappay.site/api'; // Production
 
