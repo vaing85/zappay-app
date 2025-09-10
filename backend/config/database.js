@@ -22,10 +22,14 @@ const getDatabaseConfig = () => {
       dialectOptions: {
         ssl: process.env.NODE_ENV === 'production' ? {
           require: true,
-          rejectUnauthorized: false,
-          // Completely bypass SSL certificate validation for managed databases
-          checkServerIdentity: () => undefined,
-          agent: false
+          rejectUnauthorized: true, // Enable certificate validation
+          ca: process.env.DB_CA_CERT, // Certificate Authority
+          cert: process.env.DB_CLIENT_CERT, // Client certificate
+          key: process.env.DB_CLIENT_KEY, // Client private key
+          checkServerIdentity: (host, cert) => {
+            // Verify server hostname matches certificate
+            return host === cert.subject.CN;
+          }
         } : false
       }
     };
@@ -49,9 +53,14 @@ const getDatabaseConfig = () => {
     dialectOptions: {
       ssl: process.env.NODE_ENV === 'production' ? {
         require: true,
-        rejectUnauthorized: false,
-        checkServerIdentity: () => undefined,
-        agent: false
+        rejectUnauthorized: true, // Enable certificate validation
+        ca: process.env.DB_CA_CERT, // Certificate Authority
+        cert: process.env.DB_CLIENT_CERT, // Client certificate
+        key: process.env.DB_CLIENT_KEY, // Client private key
+        checkServerIdentity: (host, cert) => {
+          // Verify server hostname matches certificate
+          return host === cert.subject.CN;
+        }
       } : false
     }
   };
@@ -91,46 +100,16 @@ const connectDB = async () => {
   } catch (error) {
     console.error('❌ Unable to connect to the database:', error.message);
     
-    // Handle SSL certificate errors with aggressive bypass
+    // Log SSL/TLS connection issues for debugging
     if (error.message.includes('self-signed certificate') || 
         error.message.includes('certificate') || 
         error.message.includes('SSL') ||
         error.message.includes('TLS')) {
       
-      console.warn('⚠️ SSL/TLS issue detected. Attempting connection with SSL completely disabled...');
-      
-      try {
-        // Create a new connection with SSL completely disabled
-        const sequelizeNoSSL = new Sequelize({
-          url: process.env.DB_URL,
-          dialect: 'postgres',
-          logging: false,
-          pool: {
-            max: 20,
-            min: 0,
-            acquire: 30000,
-            idle: 10000
-          },
-          dialectOptions: {
-            ssl: false // Completely disable SSL
-          }
-        });
-        
-        await sequelizeNoSSL.authenticate();
-        console.log('✅ Database connection established without SSL');
-        
-        if (process.env.NODE_ENV === 'production') {
-          await sequelizeNoSSL.sync({ alter: true });
-          console.log('✅ Database synchronized');
-        }
-        
-        return sequelizeNoSSL;
-      } catch (noSSLError) {
-        console.error('❌ Database connection failed even without SSL:', noSSLError.message);
-        console.error('📝 This might be a network connectivity or credential issue.');
-        console.error('📝 Please check your database configuration.');
-        throw noSSLError;
-      }
+      console.error('🚨 SSL/TLS connection failed. Check your database certificates and configuration.');
+      console.error('📝 Required environment variables: DB_CA_CERT, DB_CLIENT_CERT, DB_CLIENT_KEY');
+      console.error('📝 Ensure your database supports SSL and certificates are valid.');
+      console.error('📝 For DigitalOcean managed databases, use the provided connection string with SSL.');
     }
     
     throw error;

@@ -9,12 +9,17 @@ services:
       POSTGRES_DB: zappay_production
       POSTGRES_USER: zappay_user
       POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256 --auth-local=scram-sha-256"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-    ports:
-      - "5432:5432"
+      - ./postgresql.conf:/etc/postgresql/postgresql.conf
+    # Remove port exposure for security - only accessible within Docker network
+    # ports:
+    #   - "5432:5432"
     restart: unless-stopped
+    networks:
+      - zappay_internal
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U zappay_user -d zappay_production"]
       interval: 30s
@@ -25,12 +30,16 @@ services:
   redis:
     image: redis:7-alpine
     container_name: zappay_redis
-    command: redis-server --requirepass ${REDIS_PASSWORD}
+    command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes --appendfsync everysec
     volumes:
       - redis_data:/data
-    ports:
-      - "6379:6379"
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    # Remove port exposure for security - only accessible within Docker network
+    # ports:
+    #   - "6379:6379"
     restart: unless-stopped
+    networks:
+      - zappay_internal
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 30s
@@ -62,6 +71,9 @@ services:
       redis:
         condition: service_healthy
     restart: unless-stopped
+    networks:
+      - zappay_internal
+      - default
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
       interval: 30s
@@ -85,3 +97,8 @@ services:
 volumes:
   postgres_data:
   redis_data:
+
+networks:
+  zappay_internal:
+    driver: bridge
+    internal: true
