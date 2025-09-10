@@ -36,6 +36,14 @@ class RealtimeNotificationManager {
       return;
     }
 
+    // Disable WebSocket connection for now to prevent errors
+    const enableWebSocket = false;
+    
+    if (!enableWebSocket) {
+      console.log('WebSocket disabled - running in offline mode');
+      return;
+    }
+
     this.isConnecting = true;
 
     try {
