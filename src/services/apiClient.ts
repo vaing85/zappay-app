@@ -1,10 +1,9 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { storage } from '../utils/storage';
+import { API_CONFIG } from '../config/api';
 
 // API Configuration
-const API_BASE_URL = process.env.NODE_ENV === 'development'
-  ? 'http://localhost:5000/api' // Development
-  : 'https://zappay.site/api'; // Production
+const API_BASE_URL = API_CONFIG.BASE_URL;
 
 // Create axios instance
 const apiClient: AxiosInstance = axios.create({

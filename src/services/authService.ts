@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { API_CONFIG } from '../config/api';
 
-const API_BASE_URL = 'https://api.zappay.site/v1';
+const API_BASE_URL = API_CONFIG.BASE_URL;
 
 interface LoginResponse {
   success: boolean;
@@ -28,7 +29,7 @@ class AuthService {
 
   async login(email: string, password: string): Promise<LoginResponse> {
     try {
-      const response = await this.api.post('/auth/login', {
+      const response = await this.api.post('/api/auth/login', {
         email,
         password,
       });
@@ -53,7 +54,7 @@ class AuthService {
     password: string;
   }): Promise<RegisterResponse> {
     try {
-      const response = await this.api.post('/auth/register', userData);
+      const response = await this.api.post('/api/auth/register', userData);
 
       return {
         success: true,
