@@ -27,6 +27,12 @@ export interface Transaction {
   recurringId?: string;
   parentTransactionId?: string;
   attachments?: TransactionAttachment[];
+  // Additional properties for backward compatibility
+  userId?: string;
+  sender?: string;
+  recipient?: string;
+  note?: string;
+  timestamp?: string;
 }
 
 export interface TransactionAttachment {

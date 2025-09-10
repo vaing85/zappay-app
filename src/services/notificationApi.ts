@@ -9,6 +9,14 @@ export interface Notification {
   isRead: boolean;
   isArchived: boolean;
   createdAt: string;
+  userId?: string;
+  priority?: 'low' | 'medium' | 'high' | 'urgent';
+  category?: string;
+  actionUrl?: string;
+  actionText?: string;
+  icon?: string;
+  metadata?: Record<string, any>;
+  expiresAt?: string;
   data?: any;
 }
 

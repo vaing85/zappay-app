@@ -9,6 +9,17 @@ interface Notification {
   timestamp: Date;
   read: boolean;
   data?: any;
+  userId?: string;
+  priority?: 'low' | 'medium' | 'high' | 'urgent';
+  category?: string;
+  actionUrl?: string;
+  actionText?: string;
+  icon?: string;
+  metadata?: Record<string, any>;
+  expiresAt?: string;
+  createdAt?: string;
+  isRead?: boolean;
+  isArchived?: boolean;
 }
 
 interface NotificationContextType {
