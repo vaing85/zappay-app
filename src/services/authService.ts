@@ -29,7 +29,7 @@ class AuthService {
 
   async login(email: string, password: string): Promise<LoginResponse> {
     try {
-      const response = await this.api.post('/api/v1/auth/login', {
+      const response = await this.api.post(API_CONFIG.ENDPOINTS.AUTH.LOGIN, {
         email,
         password,
       });
@@ -57,7 +57,7 @@ class AuthService {
     password: string;
   }): Promise<RegisterResponse> {
     try {
-      const response = await this.api.post('/api/v1/auth/register', userData);
+      const response = await this.api.post(API_CONFIG.ENDPOINTS.AUTH.REGISTER, userData);
 
       return {
         success: true,

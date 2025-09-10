@@ -31,13 +31,13 @@ export const API_CONFIG = {
   ENDPOINTS: {
     // Authentication
     AUTH: {
-      LOGIN: '/api/auth/login',
-      REGISTER: '/api/auth/register',
-      LOGOUT: '/api/auth/logout',
-      REFRESH: '/api/auth/refresh',
-      VERIFY_EMAIL: '/api/auth/verify-email',
-      FORGOT_PASSWORD: '/api/auth/forgot-password',
-      RESET_PASSWORD: '/api/auth/reset-password',
+      LOGIN: '/api/v1/auth/login',
+      REGISTER: '/api/v1/auth/register',
+      LOGOUT: '/api/v1/auth/logout',
+      REFRESH: '/api/v1/auth/refresh',
+      VERIFY_EMAIL: '/api/v1/auth/verify-email',
+      FORGOT_PASSWORD: '/api/v1/auth/forgot-password',
+      RESET_PASSWORD: '/api/v1/auth/reset-password',
     },
     
     // Users
