@@ -47,8 +47,8 @@ apiClient.interceptors.response.use(
       
       try {
         // Clear stored token
-        await AsyncStorage.removeItem('authToken');
-        await AsyncStorage.removeItem('userData');
+        await storage.removeItem('authToken');
+        await storage.removeItem('userData');
         
         // You might want to redirect to login screen here
         // navigationRef.current?.reset({

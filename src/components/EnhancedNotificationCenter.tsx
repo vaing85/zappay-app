@@ -24,7 +24,7 @@ import {
   ChevronUpIcon
 } from '@heroicons/react/24/outline';
 import { useAuth } from '../contexts/AuthContext';
-import { useNotifications } from '../contexts/NotificationContext';
+import { useNotifications } from '../store/notificationStore';
 import { AppNotification, AppNotificationSettings } from '../types/Notification';
 import { enhancedNotificationService, NotificationChannel, NotificationTemplate, NotificationAnalytics } from '../services/enhancedNotificationService';
 import { realtimeNotificationManager } from '../services/realtimeNotificationManager';
@@ -86,7 +86,7 @@ const EnhancedNotificationCenter: React.FC = () => {
         filtered = notifications.filter(n => !n.isArchived);
     }
 
-    setFilteredNotifications(filtered);
+    setFilteredNotifications(filtered as AppNotification[]);
   }, [notifications, activeTab]);
 
   // Set up real-time notifications
@@ -164,10 +164,18 @@ const EnhancedNotificationCenter: React.FC = () => {
       icon: '🧪',
       metadata: {
         test: true
-      }
+      },
+      timestamp: new Date(),
+      read: false
     };
 
-    addNotification(testNotification);
+    addNotification({
+      ...testNotification,
+      id: `test_${Date.now()}`,
+      isRead: false,
+      isArchived: false,
+      createdAt: new Date().toISOString()
+    });
   };
 
   return (
@@ -333,7 +341,7 @@ const EnhancedNotificationCenter: React.FC = () => {
                       key={notification.id}
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      className={`p-4 border-l-4 ${getPriorityColor(notification.priority)} ${
+                      className={`p-4 border-l-4 ${getPriorityColor(notification.priority || 'medium')} ${
                         !notification.isRead ? 'bg-blue-50 dark:bg-blue-900/10' : ''
                       }`}
                     >
@@ -363,7 +371,7 @@ const EnhancedNotificationCenter: React.FC = () => {
                           </p>
                           <div className="flex items-center justify-between mt-2">
                             <span className="text-xs text-gray-500 dark:text-gray-500">
-                              {new Date(notification.createdAt).toLocaleString()}
+                              {new Date(notification.createdAt || notification.timestamp).toLocaleString()}
                             </span>
                             <div className="flex items-center space-x-2">
                               {notification.actionText && (

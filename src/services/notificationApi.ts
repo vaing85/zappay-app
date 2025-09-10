@@ -27,6 +27,9 @@ export interface NotificationSettings {
   paymentNotifications: boolean;
   securityNotifications: boolean;
   marketingNotifications: boolean;
+  pushNotifications: boolean;
+  soundEnabled: boolean;
+  vibrationEnabled: boolean;
   quietHours: {
     enabled: boolean;
     start: string; // HH:mm format

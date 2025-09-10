@@ -1,27 +1,27 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { storage } from '../utils/storage';
-import { Alert } from 'react-native';
+// Web-compatible alert - using browser's built-in alert for now
+const Alert = {
+  alert: (title: string, message?: string) => {
+    if (message) {
+      alert(`${title}: ${message}`);
+    } else {
+      alert(title);
+    }
+  }
+};
 import { authService } from '../services/authService';
-
-interface User {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  balance: number;
-  profilePicture?: string;
-  isVerified: boolean;
-  createdAt: string;
-}
+import { User } from '../types/User';
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  loading: boolean; // Alias for isLoading for backward compatibility
   login: (email: string, password: string) => Promise<void>;
   register: (userData: RegisterData) => Promise<void>;
   logout: () => Promise<void>;
+  updateUser: (userData: Partial<User>) => Promise<void>;
   enableBiometric: () => Promise<void>;
   biometricLogin: () => Promise<void>;
   isBiometricEnabled: boolean;
@@ -78,7 +78,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsLoading(true);
       const response = await authService.login(email, password);
       
-      if (response.success) {
+      if (response.success && response.data) {
         const { token, user: userData } = response.data;
         
         await storage.setItem('authToken', token);
@@ -102,7 +102,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsLoading(true);
       const response = await authService.register(userData);
       
-      if (response.success) {
+      if (response.success && response.data) {
         const { token, user: newUser } = response.data;
         
         await storage.setItem('authToken', token);
@@ -154,13 +154,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const updateUser = async (userData: Partial<User>) => {
+    try {
+      if (user) {
+        const updatedUser = { ...user, ...userData };
+        setUser(updatedUser);
+        await storage.setItem('userData', JSON.stringify(updatedUser));
+      }
+    } catch (error) {
+      console.error('Error updating user:', error);
+      throw error;
+    }
+  };
+
   const value: AuthContextType = {
     user,
     isAuthenticated,
     isLoading,
+    loading: isLoading, // Alias for backward compatibility
     login,
     register,
     logout,
+    updateUser,
     enableBiometric,
     biometricLogin,
     isBiometricEnabled,

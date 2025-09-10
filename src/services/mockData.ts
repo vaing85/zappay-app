@@ -9,6 +9,7 @@ export const mockUsers: User[] = [
     email: 'demo@zappay.com',
     phoneNumber: '+1 (555) 123-4567',
     balance: 1250.75,
+    isVerified: true,
     createdAt: '2024-01-01T00:00:00Z',
     address: {
       street: '123 Main Street',
@@ -62,12 +63,13 @@ export const mockUsers: User[] = [
     }
   },
   {
-    id: '1', 
+    id: '2', 
     firstName: 'Sarah',
     lastName: 'Wilson',
     email: 'user2@zappay.com',
     phoneNumber: '+1 (555) 234-5678',
     balance: 3200.50,
+    isVerified: true,
     createdAt: '2024-01-15T00:00:00Z',
     address: {
       street: '456 Oak Avenue',
@@ -98,15 +100,36 @@ export const mockUsers: User[] = [
       identity: true,
       address: false,
       bankAccount: false
+    },
+    verificationLevel: 'verified',
+    bankAccount: {
+      routingNumber: '021000022',
+      accountNumber: '2345678901',
+      accountType: 'checking',
+      bankName: 'Wells Fargo',
+      isVerified: false,
+      lastVerified: '2024-01-10T10:30:00Z'
+    },
+    withdrawalPreferences: {
+      defaultMethod: 'ach',
+      achEnabled: true,
+      debitCardEnabled: true
+    },
+    limits: {
+      dailyDeposit: 3000,
+      monthlyDeposit: 15000,
+      dailyWithdrawal: 1500,
+      monthlyWithdrawal: 7500
     }
   },
   {
-    id: '1', 
+    id: '3', 
     firstName: 'Mike',
     lastName: 'Johnson',
     email: 'user3@zappay.com',
     phoneNumber: '+1 (555) 345-6789',
     balance: 89.25,
+    isVerified: false,
     createdAt: '2024-02-01T00:00:00Z',
     address: {
       street: '789 Pine Street',
@@ -137,15 +160,36 @@ export const mockUsers: User[] = [
       identity: false,
       address: true,
       bankAccount: false
+    },
+    verificationLevel: 'basic',
+    bankAccount: {
+      routingNumber: '021000023',
+      accountNumber: '3456789012',
+      accountType: 'savings',
+      bankName: 'Bank of America',
+      isVerified: false,
+      lastVerified: '2024-01-05T10:30:00Z'
+    },
+    withdrawalPreferences: {
+      defaultMethod: 'ach',
+      achEnabled: true,
+      debitCardEnabled: false
+    },
+    limits: {
+      dailyDeposit: 1000,
+      monthlyDeposit: 5000,
+      dailyWithdrawal: 500,
+      monthlyWithdrawal: 2500
     }
   },
   {
-    id: '1', 
+    id: '4', 
     firstName: 'Emma',
     lastName: 'Davis',
     email: 'user4@zappay.com',
     phoneNumber: '+1 (555) 456-7890',
     balance: 5675.00,
+    isVerified: true,
     createdAt: '2024-01-20T00:00:00Z',
     address: {
       street: '321 Elm Street',
@@ -176,15 +220,36 @@ export const mockUsers: User[] = [
       identity: true,
       address: true,
       bankAccount: false
+    },
+    verificationLevel: 'premium',
+    bankAccount: {
+      routingNumber: '021000024',
+      accountNumber: '4567890123',
+      accountType: 'checking',
+      bankName: 'US Bank',
+      isVerified: true,
+      lastVerified: '2024-01-20T10:30:00Z'
+    },
+    withdrawalPreferences: {
+      defaultMethod: 'ach',
+      achEnabled: true,
+      debitCardEnabled: true
+    },
+    limits: {
+      dailyDeposit: 10000,
+      monthlyDeposit: 50000,
+      dailyWithdrawal: 5000,
+      monthlyWithdrawal: 25000
     }
   },
   {
-    id: '1', 
+    id: '5', 
     firstName: 'Alex',
     lastName: 'Brown',
     email: 'user5@zappay.com',
     phoneNumber: '+1 (555) 567-8901',
     balance: 0.00,
+    isVerified: false,
     createdAt: '2024-02-10T00:00:00Z',
     address: {
       street: '654 Maple Drive',
@@ -215,6 +280,26 @@ export const mockUsers: User[] = [
       identity: false,
       address: false,
       bankAccount: false
+    },
+    verificationLevel: 'basic',
+    bankAccount: {
+      routingNumber: '021000025',
+      accountNumber: '5678901234',
+      accountType: 'checking',
+      bankName: 'Capital One',
+      isVerified: false,
+      lastVerified: '2024-02-01T10:30:00Z'
+    },
+    withdrawalPreferences: {
+      defaultMethod: 'ach',
+      achEnabled: true,
+      debitCardEnabled: true
+    },
+    limits: {
+      dailyDeposit: 500,
+      monthlyDeposit: 2500,
+      dailyWithdrawal: 250,
+      monthlyWithdrawal: 1250
     }
   },
 ];

@@ -1,9 +1,9 @@
-import React, { Suspense, lazy } from 'react';
+import React, { lazy } from 'react';
 // Force rebuild for Netlify static asset fix - v7 - HTML cache busting
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
-import { store } from './store/store';
+import store from './store/store';
 import AppProviders from './components/AppProviders';
 import { WebSocketProvider } from './contexts/WebSocketContext';
 import { RealtimeNotificationProvider } from './contexts/RealtimeNotificationContext';
@@ -22,9 +22,9 @@ import ChatbotToggle from './components/ChatbotToggle';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 
-// Lazy load pages for better performance
-const Home = lazy(() => import('./pages/Home'));
-const Login = lazy(() => import('./pages/Login'));
+// Import pages directly
+import Home from './pages/Home';
+import Login from './pages/Login';
 const Register = lazy(() => import('./pages/Register'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const SendMoney = lazy(() => import('./pages/SendMoney'));
@@ -67,7 +67,6 @@ function App() {
                   <div className="App min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
                     <Navbar />
                     <main className="container mx-auto px-4 py-8">
-                      <Suspense fallback={<LoadingSpinner />}>
                         <Routes>
                           <Route path="/" element={<Home />} />
                           <Route path="/login" element={<Login />} />
@@ -97,7 +96,6 @@ function App() {
             <Route path="/developer" element={<DeveloperDashboard />} />
             <Route path="/contact-support" element={<ContactSupport />} />
                         </Routes>
-                      </Suspense>
                     </main>
                     <ToastContainer
                       position="top-right"

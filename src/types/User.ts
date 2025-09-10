@@ -36,6 +36,7 @@ export interface User {
     bankName: string;
     accountType: string;
     accountNumber: string;
+    routingNumber?: string;
     isVerified: boolean;
     lastVerified?: string;
   };

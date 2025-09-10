@@ -114,11 +114,16 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   };
 
   const requestPermissions = async (): Promise<boolean> => {
-    return new Promise((resolve) => {
-      PushNotification.requestPermissions().then((permissions) => {
-        resolve(permissions.alert && permissions.badge && permissions.sound);
-      });
-    });
+    try {
+      if ('Notification' in window) {
+        const permission = await Notification.requestPermission();
+        return permission === 'granted';
+      }
+      return false;
+    } catch (error) {
+      console.error('Error requesting notification permissions:', error);
+      return false;
+    }
   };
 
   const value: NotificationContextType = {

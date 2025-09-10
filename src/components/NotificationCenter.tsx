@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNotifications } from '../contexts/NotificationContext';
+import { useNotifications } from '../store/notificationStore';
 import { 
   BellIcon, 
   XMarkIcon, 
@@ -70,7 +70,7 @@ const NotificationCenter: React.FC = () => {
     if (settings) {
       updateSettings({ soundEnabled: !settings.soundEnabled });
       if (!settings.soundEnabled) {
-        playNotificationSound('system');
+        playNotificationSound();
       }
     }
   };
@@ -216,14 +216,14 @@ const NotificationCenter: React.FC = () => {
                       onClick={() => handleNotificationClick(notification)}
                     >
                       <div className="flex items-start space-x-3">
-                        <div className="text-2xl">{getCategoryIcon(notification.category)}</div>
+                        <div className="text-2xl">{getCategoryIcon(notification.category || 'general')}</div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between">
                             <h4 className="text-sm font-medium text-gray-900 dark:text-white truncate">
                               {notification.title}
                             </h4>
                             <div className="flex items-center space-x-2">
-                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(notification.priority)}`}>
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(notification.priority || 'medium')}`}>
                                 {notification.priority}
                               </span>
                               {!notification.isRead && (

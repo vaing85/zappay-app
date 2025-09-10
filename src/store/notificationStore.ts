@@ -211,7 +211,21 @@ export const useNotificationStore = create<NotificationStore>((set, get) => ({
 }));
 
 // Selectors
-export const useNotifications = () => useNotificationStore((state) => state.notifications);
+export const useNotifications = () => useNotificationStore((state) => ({
+  notifications: state.notifications,
+  unreadCount: state.unreadCount,
+  settings: state.settings,
+  markAsRead: state.markAsRead,
+  markAllAsRead: state.markAllAsRead,
+  archiveNotification: state.archiveNotification,
+  deleteNotification: state.deleteNotification,
+  updateSettings: state.updateSettings,
+  addNotification: state.addNotification,
+  playNotificationSound: () => {
+    // Mock implementation - in real app, this would play a sound
+    console.log('Playing notification sound');
+  },
+}));
 
 export const useUnreadCount = () => useNotificationStore((state) => state.unreadCount);
 

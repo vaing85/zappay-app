@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
-    "target": "es2017",
+    "target": "es2020",
+    "module": "es2020",
     "lib": [
-      "es2017",
+      "es2020",
       "dom",
       "dom.iterable"
     ],
@@ -39,7 +40,9 @@
     "ZapPayMobile",
     "babel.config.js",
     "metro.config.js",
-    "jest.config.js"
+    "jest.config.js",
+    "src/screens/**/*",
+    "src/navigation/**/*"
   ],
   "extends": "expo/tsconfig.base"
 }

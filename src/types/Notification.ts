@@ -28,4 +28,11 @@ export interface AppNotificationSettings {
   securityAlerts: boolean;
   paymentUpdates: boolean;
   systemUpdates: boolean;
+  userId: string;
+  soundEnabled: boolean;
+  quietHours: {
+    enabled: boolean;
+    start: string;
+    end: string;
+  };
 }
