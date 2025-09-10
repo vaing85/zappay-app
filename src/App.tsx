@@ -1,4 +1,4 @@
-import React, { lazy } from 'react';
+import React, { lazy, Suspense } from 'react';
 // Force rebuild for Netlify static asset fix - v7 - HTML cache busting
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
@@ -67,35 +67,44 @@ function App() {
                   <div className="App min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
                     <Navbar />
                     <main className="container mx-auto px-4 py-8">
-                        <Routes>
-                          <Route path="/" element={<Home />} />
-                          <Route path="/login" element={<Login />} />
-                          <Route path="/register" element={<Register />} />
-                          <Route path="/dashboard" element={<Dashboard />} />
-                          <Route path="/send" element={<SendMoney />} />
-                          <Route path="/history" element={<TransactionHistory />} />
-                          <Route path="/profile" element={<Profile />} />
-                          <Route path="/qr" element={<QRPayment />} />
-                          <Route path="/advanced" element={<AdvancedPayments />} />
-                          <Route path="/split-bills" element={<SplitBills />} />
-                          <Route path="/payment-requests" element={<PaymentRequests />} />
-                          <Route path="/analytics" element={<Analytics />} />
-                          <Route path="/groups" element={<Groups />} />
-                          <Route path="/budget" element={<Budget />} />
-                          <Route path="/security" element={<Security />} />
-                          <Route path="/transaction-security" element={<TransactionSecurity />} />
-                          <Route path="/data-encryption" element={<DataEncryption />} />
-                          <Route path="/payment-settings" element={<PaymentSettings />} />
-                          <Route path="/merchant" element={<MerchantDashboard />} />
-            <Route path="/notification-analytics" element={<NotificationAnalytics />} />
-            <Route path="/enhanced-security" element={<EnhancedSecurity />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/terms-of-service" element={<TermsOfService />} />
-            <Route path="/subscription-plans" element={<SubscriptionPlans />} />
-            <Route path="/api-docs" element={<APIDocumentation />} />
-            <Route path="/developer" element={<DeveloperDashboard />} />
-            <Route path="/contact-support" element={<ContactSupport />} />
-                        </Routes>
+                        <Suspense fallback={
+                          <div className="flex items-center justify-center min-h-96">
+                            <div className="text-center">
+                              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500 mx-auto mb-4"></div>
+                              <p className="text-gray-600 dark:text-gray-400">Loading page...</p>
+                            </div>
+                          </div>
+                        }>
+                          <Routes>
+                            <Route path="/" element={<Home />} />
+                            <Route path="/login" element={<Login />} />
+                            <Route path="/register" element={<Register />} />
+                            <Route path="/dashboard" element={<Dashboard />} />
+                            <Route path="/send" element={<SendMoney />} />
+                            <Route path="/history" element={<TransactionHistory />} />
+                            <Route path="/profile" element={<Profile />} />
+                            <Route path="/qr" element={<QRPayment />} />
+                            <Route path="/advanced" element={<AdvancedPayments />} />
+                            <Route path="/split-bills" element={<SplitBills />} />
+                            <Route path="/payment-requests" element={<PaymentRequests />} />
+                            <Route path="/analytics" element={<Analytics />} />
+                            <Route path="/groups" element={<Groups />} />
+                            <Route path="/budget" element={<Budget />} />
+                            <Route path="/security" element={<Security />} />
+                            <Route path="/transaction-security" element={<TransactionSecurity />} />
+                            <Route path="/data-encryption" element={<DataEncryption />} />
+                            <Route path="/payment-settings" element={<PaymentSettings />} />
+                            <Route path="/merchant" element={<MerchantDashboard />} />
+                            <Route path="/notification-analytics" element={<NotificationAnalytics />} />
+                            <Route path="/enhanced-security" element={<EnhancedSecurity />} />
+                            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                            <Route path="/terms-of-service" element={<TermsOfService />} />
+                            <Route path="/subscription-plans" element={<SubscriptionPlans />} />
+                            <Route path="/api-docs" element={<APIDocumentation />} />
+                            <Route path="/developer" element={<DeveloperDashboard />} />
+                            <Route path="/contact-support" element={<ContactSupport />} />
+                          </Routes>
+                        </Suspense>
                     </main>
                     <ToastContainer
                       position="top-right"
