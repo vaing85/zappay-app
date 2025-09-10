@@ -62,8 +62,18 @@ router.post('/auth/login', async (req, res) => {
       });
     }
 
-    // Real database authentication
-    const { User } = require('../models');
+    // Check if database is available
+    let User;
+    try {
+      const models = require('../models');
+      User = models.User;
+    } catch (error) {
+      console.error('Database models not available:', error);
+      return res.status(500).json({
+        success: false,
+        error: 'Database not available'
+      });
+    }
     
     // Find user by email
     const user = await User.findOne({ where: { email } });
@@ -140,8 +150,18 @@ router.post('/auth/register', async (req, res) => {
       });
     }
 
-    // Real database registration
-    const { User } = require('../models');
+    // Check if database is available
+    let User;
+    try {
+      const models = require('../models');
+      User = models.User;
+    } catch (error) {
+      console.error('Database models not available:', error);
+      return res.status(500).json({
+        success: false,
+        error: 'Database not available'
+      });
+    }
     
     // Check if user already exists
     const existingUser = await User.findOne({ where: { email } });
