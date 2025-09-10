@@ -388,7 +388,7 @@ const Home: React.FC = memo(() => {
             <div>
               <h3 className="text-lg font-semibold mb-4">Support</h3>
               <ul className="space-y-2">
-                <li><a href="mailto:support@zappay.site" className="text-gray-400 hover:text-white transition-colors">Contact Support</a></li>
+                <li><Link to="/contact-support" className="text-gray-400 hover:text-white transition-colors">Contact Support</Link></li>
                 <li><a href="mailto:business@zappay.site" className="text-gray-400 hover:text-white transition-colors">Business Inquiries</a></li>
                 <li><a href="mailto:privacy@zappay.site" className="text-gray-400 hover:text-white transition-colors">Privacy Inquiries</a></li>
                 <li><Link to="/subscription-plans" className="text-gray-400 hover:text-white transition-colors">Upgrade Account</Link></li>

@@ -18,6 +18,7 @@ import OfflineIndicator from './components/OfflineIndicator';
 import UpdateAvailable from './components/UpdateAvailable';
 import LoadingSpinner from './components/LoadingSpinner';
 import ErrorBoundary from './components/ErrorBoundary';
+import ChatbotToggle from './components/ChatbotToggle';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 
@@ -48,6 +49,7 @@ const NotificationAnalytics = lazy(() => import('./pages/NotificationAnalytics')
 const EnhancedSecurity = lazy(() => import('./pages/EnhancedSecurity'));
 const APIDocumentation = lazy(() => import('./pages/APIDocumentation'));
 const DeveloperDashboard = lazy(() => import('./pages/DeveloperDashboard'));
+const ContactSupport = lazy(() => import('./pages/ContactSupport'));
 
 function App() {
   return (
@@ -93,6 +95,7 @@ function App() {
             <Route path="/subscription-plans" element={<SubscriptionPlans />} />
             <Route path="/api-docs" element={<APIDocumentation />} />
             <Route path="/developer" element={<DeveloperDashboard />} />
+            <Route path="/contact-support" element={<ContactSupport />} />
                         </Routes>
                       </Suspense>
                     </main>
@@ -113,6 +116,9 @@ function App() {
                     <InstallPrompt />
                     <OfflineIndicator />
                     <UpdateAvailable />
+                    
+                    {/* AI Chatbot */}
+                    <ChatbotToggle />
                   </div>
                 </ErrorBoundary>
               </Router>
