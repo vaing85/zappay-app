@@ -29,19 +29,22 @@ class AuthService {
 
   async login(email: string, password: string): Promise<LoginResponse> {
     try {
-      const response = await this.api.post('/api/auth/login', {
+      const response = await this.api.post('/api/v1/auth/login', {
         email,
         password,
       });
 
       return {
         success: true,
-        data: response.data,
+        data: {
+          token: response.data.token,
+          user: response.data.user
+        },
       };
     } catch (error: any) {
       return {
         success: false,
-        error: error.response?.data?.message || 'Login failed',
+        error: error.response?.data?.error || 'Login failed',
       };
     }
   }
@@ -54,16 +57,19 @@ class AuthService {
     password: string;
   }): Promise<RegisterResponse> {
     try {
-      const response = await this.api.post('/api/auth/register', userData);
+      const response = await this.api.post('/api/v1/auth/register', userData);
 
       return {
         success: true,
-        data: response.data,
+        data: {
+          token: response.data.token,
+          user: response.data.user
+        },
       };
     } catch (error: any) {
       return {
         success: false,
-        error: error.response?.data?.message || 'Registration failed',
+        error: error.response?.data?.error || 'Registration failed',
       };
     }
   }
