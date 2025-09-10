@@ -62,27 +62,64 @@ router.post('/auth/login', async (req, res) => {
       });
     }
 
-    // Mock authentication - in production, verify against database
-    if (email === 'demo@zappay.com' && password === 'demo123') {
-      const token = 'zappay_demo_token_' + Date.now();
-      
-      res.json({
-        success: true,
-        token,
-        user: {
-          id: 'user_demo_123',
-          email: 'demo@zappay.com',
-          firstName: 'Demo',
-          lastName: 'User'
-        },
-        expiresIn: 3600 // 1 hour
-      });
-    } else {
-      res.status(401).json({
+    // Real database authentication
+    const { User } = require('../models');
+    
+    // Find user by email
+    const user = await User.findOne({ where: { email } });
+    
+    if (!user) {
+      return res.status(401).json({
         success: false,
         error: 'Invalid credentials'
       });
     }
+    
+    // Check if user is active
+    if (!user.isActive) {
+      return res.status(401).json({
+        success: false,
+        error: 'Account is deactivated'
+      });
+    }
+    
+    // Verify password
+    const isValidPassword = await user.validatePassword(password);
+    
+    if (!isValidPassword) {
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid credentials'
+      });
+    }
+    
+    // Update last login
+    await user.update({ lastLoginAt: new Date() });
+    
+    // Generate JWT token
+    const jwt = require('jsonwebtoken');
+    const token = jwt.sign(
+      { 
+        userId: user.id, 
+        email: user.email 
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+    );
+    
+    res.json({
+      success: true,
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        balance: user.balance,
+        isActive: user.isActive
+      },
+      expiresIn: 3600 * 24 * 7 // 7 days
+    });
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({
@@ -103,18 +140,52 @@ router.post('/auth/register', async (req, res) => {
       });
     }
 
-    // Mock registration - in production, create user in database
-    const token = 'zappay_demo_token_' + Date.now();
+    // Real database registration
+    const { User } = require('../models');
+    
+    // Check if user already exists
+    const existingUser = await User.findOne({ where: { email } });
+    
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        error: 'User with this email already exists'
+      });
+    }
+    
+    // Create new user
+    const user = await User.create({
+      email,
+      password,
+      firstName,
+      lastName,
+      phoneNumber: req.body.phoneNumber || '',
+      balance: 0.00,
+      isActive: true
+    });
+    
+    // Generate JWT token
+    const jwt = require('jsonwebtoken');
+    const token = jwt.sign(
+      { 
+        userId: user.id, 
+        email: user.email 
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+    );
     
     res.status(201).json({
       success: true,
       message: 'User registered successfully',
       token,
       user: {
-        id: 'user_' + Date.now(),
-        email,
-        firstName,
-        lastName
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        balance: user.balance,
+        isActive: user.isActive
       }
     });
   } catch (error) {

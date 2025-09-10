@@ -11,6 +11,7 @@ require('dotenv').config();
 // Import routes
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
+const userManagementRoutes = require('./routes/userManagement');
 const transactionRoutes = require('./routes/transactions');
 const paymentRoutes = require('./routes/payments');
 const groupRoutes = require('./routes/groups');
@@ -25,10 +26,10 @@ const authMiddleware = require('./middleware/auth');
 // Import database connections with error handling
 let connectDB, connectRedis;
 try {
-  const dbConfig = require('./config/database');
-  connectDB = dbConfig.connectDB;
+  const { connectDB: dbConnect } = require('./models');
+  connectDB = dbConnect;
 } catch (error) {
-  console.warn('⚠️ Database config not available:', error.message);
+  console.warn('⚠️ Database models not available:', error.message);
   connectDB = async () => {
     console.warn('⚠️ Database connection skipped');
     return null;
@@ -305,6 +306,7 @@ app.post('/sms-test', async (req, res) => {
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', authMiddleware, userRoutes);
+app.use('/api/user-management', userManagementRoutes);
 app.use('/api/transactions', authMiddleware, transactionRoutes);
 app.use('/api/payments', authMiddleware, paymentRoutes);
 app.use('/api/groups', authMiddleware, groupRoutes);
