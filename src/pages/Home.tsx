@@ -1,3 +1,4 @@
+// Force rebuild for Netlify static asset fix - v9 - Footer update
 import React, { memo, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
