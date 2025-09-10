@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2017",
     "lib": [
+      "es2017",
       "dom",
-      "dom.iterable",
-      "es6"
+      "dom.iterable"
     ],
     "allowJs": true,
     "skipLibCheck": true,
@@ -12,15 +12,33 @@
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
-    "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    }
   },
   "include": [
-    "src"
+    "src/**/*",
+    "App.tsx",
+    "App.mobile.tsx",
+    "App.web.tsx",
+    "SimpleApp.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+    "backend",
+    "build",
+    "zappay-mobile",
+    "ZapPayMobile",
+    "babel.config.js",
+    "metro.config.js",
+    "jest.config.js"
   ]
 }

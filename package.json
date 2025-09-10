@@ -1,82 +1,46 @@
 {
-  "name": "zappay-app",
+  "name": "zappay",
   "version": "1.0.0",
-  "description": "ZapPay - Lightning fast peer-to-peer payment application",
-  "private": true,
-  "homepage": ".",
-  "dependencies": {
-    "@heroicons/react": "^2.0.18",
-    "@reduxjs/toolkit": "^1.9.7",
-    "@stripe/react-stripe-js": "^4.0.0",
-    "@stripe/stripe-js": "^7.9.0",
-    "@types/qrcode": "^1.5.5",
-    "@types/recharts": "^1.8.29",
-    "axios": "^1.6.0",
-    "chart.js": "^4.5.0",
-    "cors": "^2.8.5",
-    "date-fns": "^2.30.0",
-    "express": "^5.1.0",
-    "framer-motion": "^10.16.4",
-    "jsqr": "^1.4.0",
-    "qrcode": "^1.5.4",
-    "react": "^18.3.1",
-    "react-chartjs-2": "^5.3.0",
-    "react-dom": "^18.3.1",
-    "react-redux": "^8.1.3",
-    "react-router-dom": "^6.17.0",
-    "react-scripts": "^5.0.1",
-    "react-toastify": "^9.1.3",
-    "recharts": "^3.1.2",
-    "socket.io": "^4.8.1",
-    "socket.io-client": "^4.8.1",
-    "stripe": "^18.5.0",
-    "typescript": "^4.9.5",
-    "web-vitals": "^2.1.4"
-  },
-  "devDependencies": {
-    "@testing-library/jest-dom": "^6.8.0",
-    "@testing-library/react": "^16.3.0",
-    "@testing-library/user-event": "^14.6.1",
-    "@types/jest": "^30.0.0",
-    "@types/node": "^20.0.0",
-    "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.0",
-    "autoprefixer": "^10.4.15",
-    "concurrently": "^9.2.1",
-    "gh-pages": "^6.3.0",
-    "jest-environment-jsdom": "^30.1.2",
-    "postcss": "^8.4.31",
-    "tailwindcss": "^3.4.0"
-  },
-  "resolutions": {
-    "nth-check": "^2.1.1",
-    "css-select": "^5.1.0",
-    "postcss": "^8.4.31"
-  },
+  "main": "src/index.tsx",
   "scripts": {
-    "start": "cd backend && node server-simple.js",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "build:analyze": "npm run build && npx webpack-bundle-analyzer build/static/js/*.js",
-    "build:production": "set GENERATE_SOURCEMAP=false && npm run build",
-    "preview": "serve -s build -l 3000",
-    "deploy:netlify": "netlify deploy --prod --dir=build",
-    "deploy:vercel": "vercel --prod",
-    "audit:security": "npm audit --audit-level moderate",
-    "lint:fix": "eslint src --ext .js,.jsx,.ts,.tsx --fix",
-    "type-check": "tsc --noEmit",
-    "server": "node server.js",
-    "dev": "concurrently \"npm run server\" \"npm start\"",
-    "deploy": "node scripts/deploy.js",
-    "generate-icons": "node scripts/generate-icons.js",
-    "build:appstore": "npm run build && npm run generate-icons"
+    "mobile": "expo start",
+    "mobile:android": "expo start --android",
+    "mobile:ios": "expo start --ios",
+    "mobile:web": "expo start --web"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+  "dependencies": {
+    "@heroicons/react": "^2.0.18",
+    "@reduxjs/toolkit": "^1.9.3",
+    "@stripe/stripe-js": "^2.1.11",
+    "axios": "^1.11.0",
+    "expo": "~51.0.28",
+    "expo-status-bar": "~1.12.1",
+    "framer-motion": "^10.16.4",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-native": "0.74.5",
+    "react-redux": "^8.0.5",
+    "react-router-dom": "^6.8.0",
+    "react-scripts": "5.0.1",
+    "react-toastify": "^9.1.3",
+    "redux-persist": "^6.0.0",
+    "socket.io-client": "^4.7.4",
+    "zustand": "^4.3.6"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0",
+    "@types/react": "~18.2.45",
+    "@types/react-dom": "^18.2.0",
+    "ajv": "^8.17.1",
+    "autoprefixer": "^10.4.14",
+    "metro": "^0.80.12",
+    "postcss": "^8.4.24",
+    "tailwindcss": "^3.3.0",
+    "typescript": "^4.9.5"
   },
   "browserslist": {
     "production": [
@@ -89,5 +53,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "private": true
 }
