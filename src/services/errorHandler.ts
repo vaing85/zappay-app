@@ -150,7 +150,7 @@ export class ErrorHandler {
 
   // Log error for debugging
   static logError(error: any, context?: string): void {
-    if (__DEV__) {
+    if (process.env.NODE_ENV === 'development') {
       console.error(`[ErrorHandler${context ? ` - ${context}` : ''}]:`, error);
     }
   }
