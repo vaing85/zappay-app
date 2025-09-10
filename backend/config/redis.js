@@ -4,20 +4,26 @@ let redisClient;
 
 const connectRedis = async () => {
   try {
+    // Check if Redis URL is available
+    if (!process.env.REDIS_URL) {
+      console.warn('⚠️ REDIS_URL not set, skipping Redis connection');
+      return null;
+    }
+
     redisClient = redis.createClient({
-      url: process.env.REDIS_URL || 'redis://localhost:6379',
+      url: process.env.REDIS_URL,
       password: process.env.REDIS_PASSWORD || undefined,
       socket: {
         reconnectStrategy: (retries) => {
-          if (retries > 3) {
-            console.warn('⚠️ Redis reconnection failed after 3 attempts');
+          if (retries > 2) {
+            console.warn('⚠️ Redis reconnection failed after 2 attempts, disabling Redis');
             return false; // Stop trying to reconnect
           }
-          return Math.min(retries * 100, 3000); // Exponential backoff
+          return Math.min(retries * 200, 2000); // Faster backoff
         },
         // Add security settings
         tls: process.env.NODE_ENV === 'production' ? {} : undefined,
-        connectTimeout: 10000,
+        connectTimeout: 5000, // Shorter timeout
         lazyConnect: true
       },
       // Add authentication and security
@@ -27,12 +33,13 @@ const connectRedis = async () => {
 
     redisClient.on('error', (err) => {
       console.warn('⚠️ Redis Client Error:', err.message);
-      // Log security-related errors
+      // Log specific error types
       if (err.message.includes('AUTH') || err.message.includes('password')) {
         console.error('🚨 Redis Authentication Error - Check credentials');
-      }
-      if (err.message.includes('ECONNREFUSED') || err.message.includes('timeout')) {
+      } else if (err.message.includes('ECONNREFUSED') || err.message.includes('timeout')) {
         console.error('🚨 Redis Connection Error - Check network/firewall');
+      } else if (err.message.includes('Socket closed')) {
+        console.warn('⚠️ Redis socket closed - Redis may be unavailable');
       }
       // Don't throw error, just log it
     });
@@ -45,10 +52,22 @@ const connectRedis = async () => {
       console.warn('⚠️ Redis Client Disconnected');
     });
 
-    await redisClient.connect();
+    redisClient.on('end', () => {
+      console.warn('⚠️ Redis Client Connection Ended');
+    });
+
+    // Try to connect with a timeout
+    await Promise.race([
+      redisClient.connect(),
+      new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Redis connection timeout')), 5000)
+      )
+    ]);
+    
     return redisClient;
   } catch (error) {
     console.warn('⚠️ Redis connection failed:', error.message);
+    console.warn('⚠️ Continuing without Redis - caching will be disabled');
     // Don't throw error, just return null
     return null;
   }
