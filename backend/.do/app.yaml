@@ -52,6 +52,34 @@ services:
     value: https://zappay.com
   - key: CORS_ORIGIN
     value: https://zappay.com,https://www.zappay.com
+  
+  # Database Security Configuration
+  - key: DB_CA_CERT
+    value: ${DB_CA_CERT}
+  - key: DB_CLIENT_CERT
+    value: ${DB_CLIENT_CERT}
+  - key: DB_CLIENT_KEY
+    value: ${DB_CLIENT_KEY}
+  
+  # Redis Security Configuration
+  - key: REDIS_PASSWORD
+    value: ${REDIS_PASSWORD}
+  - key: REDIS_USERNAME
+    value: ${REDIS_USERNAME}
+  
+  # Security Headers and Rate Limiting
+  - key: BCRYPT_ROUNDS
+    value: "12"
+  - key: RATE_LIMIT_WINDOW_MS
+    value: "900000"
+  - key: RATE_LIMIT_MAX_REQUESTS
+    value: "100"
+  
+  # Logging and Monitoring
+  - key: LOG_LEVEL
+    value: "info"
+  - key: LOG_FILE
+    value: "/var/log/zappay/app.log"
 
 databases:
 - name: zappay-postgres
