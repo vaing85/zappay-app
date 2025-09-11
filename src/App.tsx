@@ -50,6 +50,7 @@ const EnhancedSecurity = lazy(() => import('./pages/EnhancedSecurity'));
 const APIDocumentation = lazy(() => import('./pages/APIDocumentation'));
 const DeveloperDashboard = lazy(() => import('./pages/DeveloperDashboard'));
 const ContactSupport = lazy(() => import('./pages/ContactSupport'));
+const TestPage = lazy(() => import('./pages/TestPage'));
 
 function App() {
   return (
@@ -103,6 +104,7 @@ function App() {
                             <Route path="/api-docs" element={<APIDocumentation />} />
                             <Route path="/developer" element={<DeveloperDashboard />} />
                             <Route path="/contact-support" element={<ContactSupport />} />
+                            <Route path="/test" element={<TestPage />} />
                           </Routes>
                         </Suspense>
                     </main>
