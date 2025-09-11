@@ -76,7 +76,7 @@ class AuthService {
 
   async refreshToken(token: string): Promise<LoginResponse> {
     try {
-      const response = await this.api.post('/auth/refresh', {
+      const response = await this.api.post(API_CONFIG.ENDPOINTS.AUTH.REFRESH, {
         token,
       });
 
@@ -94,7 +94,7 @@ class AuthService {
 
   async logout(token: string): Promise<{ success: boolean }> {
     try {
-      await this.api.post('/auth/logout', {
+      await this.api.post(API_CONFIG.ENDPOINTS.AUTH.LOGOUT, {
         token,
       });
 
