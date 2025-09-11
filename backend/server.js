@@ -31,6 +31,7 @@ const apiRoutes = require('./routes/api');
 // Import middleware
 const errorHandler = require('./middleware/errorHandler');
 const authMiddleware = require('./middleware/auth');
+const conditionalAuth = require('./middleware/conditionalAuth');
 const logger = require('./middleware/logger');
 const { performanceMonitor, healthCheck, errorTracker } = require('./middleware/monitoring');
 
@@ -374,8 +375,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', authMiddleware, userRoutes);
 app.use('/api/user-management', userManagementRoutes);
 app.use('/api/transactions', authMiddleware, transactionRoutes);
-app.use('/api/payments', paymentPublicRoutes); // Public payment methods
-app.use('/api/payments', authMiddleware, paymentRoutes); // Protected payment operations
+app.use('/api/payments', conditionalAuth, paymentRoutes); // Payment routes with conditional auth
 app.use('/api', webhookRoutes); // Webhooks don't need auth middleware
 app.use('/api/groups', authMiddleware, groupRoutes);
 app.use('/api/budgets', authMiddleware, budgetRoutes);

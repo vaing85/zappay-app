@@ -210,7 +210,7 @@ router.post('/p2p', paymentLimiter, authenticateToken, async (req, res) => {
   }
 });
 
-// GET /api/payments/methods/:country - Get available payment methods for country
+// GET /api/payments/methods/:country - Get available payment methods for country (public)
 router.get('/methods/:country', async (req, res) => {
   try {
     const { country } = req.params;
@@ -303,7 +303,7 @@ router.get('/balance/:walletId', authenticateToken, async (req, res) => {
   }
 });
 
-// GET /api/payments/health - Public health check for Rapyd
+// GET /api/payments/health - Public health check for Rapyd (public)
 router.get('/health', async (req, res) => {
   try {
     // Test Rapyd connection by getting payment methods for US
