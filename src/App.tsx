@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from 'react';
-// Force rebuild for Netlify static asset fix - v8 - API URL cache busting
+// Force rebuild for Netlify static asset fix - v9 - Routing fix attempt
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
