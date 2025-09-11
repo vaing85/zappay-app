@@ -9,7 +9,7 @@ const { Server } = require('socket.io');
 require('dotenv').config();
 
 // Import routes
-const authRoutes = require('./routes/auth');
+const authRoutes = require('./routes/auth-simple');
 const userRoutes = require('./routes/users');
 const userManagementRoutes = require('./routes/userManagement');
 const transactionRoutes = require('./routes/transactions');

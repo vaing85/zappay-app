@@ -1,7 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
-const { models } = require('../config/database');
+const { User } = require('../models');
 const authMiddleware = require('../middleware/auth');
 const { sendVerificationEmail } = require('../services/emailService');
 const { sendSMS } = require('../services/smsService');
@@ -34,7 +34,7 @@ router.post('/register', [
   body('lastName').trim().isLength({ min: 2, max: 50 }).withMessage('Last name must be 2-50 characters'),
   body('email').isEmail().normalizeEmail().withMessage('Please provide a valid email'),
   body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters'),
-  body('phoneNumber').isMobilePhone().withMessage('Please provide a valid phone number')
+  body('phoneNumber').isLength({ min: 10, max: 20 }).withMessage('Please provide a valid phone number')
 ], async (req, res) => {
   try {
     // Check validation errors
@@ -50,7 +50,7 @@ router.post('/register', [
     const { firstName, lastName, email, password, phoneNumber } = req.body;
 
     // Check if user already exists
-    const existingUser = await models.User.findOne({ where: { email } });
+    const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
       return res.status(400).json({
         success: false,
@@ -59,7 +59,7 @@ router.post('/register', [
     }
 
     // Create new user
-    const user = await models.User.create({
+    const user = await User.create({
       firstName,
       lastName,
       email,
@@ -117,7 +117,7 @@ router.post('/login', [
     const { email, password } = req.body;
 
     // Find user by email
-    const user = await models.User.findOne({ where: { email } });
+    const user = await User.findOne({ where: { email } });
     if (!user) {
       return res.status(401).json({
         success: false,
@@ -192,7 +192,7 @@ router.post('/refresh', async (req, res) => {
     }
 
     // Find user
-    const user = await models.User.findByPk(decoded.userId);
+    const user = await User.findByPk(decoded.userId);
     if (!user || !user.isActive) {
       return res.status(401).json({
         success: false,
@@ -252,7 +252,7 @@ router.post('/verify-email', [
 
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await models.User.findByPk(decoded.userId);
+    const user = await User.findByPk(decoded.userId);
 
     if (!user) {
       return res.status(400).json({
@@ -292,7 +292,7 @@ router.post('/forgot-password', [
   try {
     const { email } = req.body;
 
-    const user = await models.User.findOne({ where: { email } });
+    const user = await User.findOne({ where: { email } });
     if (!user) {
       // Don't reveal if user exists or not
       return res.json({
@@ -348,7 +348,7 @@ router.post('/reset-password', [
       });
     }
 
-    const user = await models.User.findByPk(decoded.userId);
+    const user = await User.findByPk(decoded.userId);
     if (!user) {
       return res.status(400).json({
         success: false,

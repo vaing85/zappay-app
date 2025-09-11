@@ -37,14 +37,14 @@ class AuthService {
       return {
         success: true,
         data: {
-          token: response.data.token,
-          user: response.data.user
+          token: response.data.data?.token || response.data.token,
+          user: response.data.data?.user || response.data.user
         },
       };
     } catch (error: any) {
       return {
         success: false,
-        error: error.response?.data?.error || 'Login failed',
+        error: error.response?.data?.message || error.response?.data?.error || 'Login failed',
       };
     }
   }
@@ -62,14 +62,14 @@ class AuthService {
       return {
         success: true,
         data: {
-          token: response.data.token,
-          user: response.data.user
+          token: response.data.data?.token || response.data.token,
+          user: response.data.data?.user || response.data.user
         },
       };
     } catch (error: any) {
       return {
         success: false,
-        error: error.response?.data?.error || 'Registration failed',
+        error: error.response?.data?.message || error.response?.data?.error || 'Registration failed',
       };
     }
   }
