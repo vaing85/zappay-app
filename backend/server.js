@@ -73,7 +73,16 @@ const io = new Server(server, {
       "https://zappayapp.netlify.app",
       "https://zappay-app-frontend.netlify.app"
     ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: [
+      "Origin",
+      "X-Requested-With", 
+      "Content-Type",
+      "Accept",
+      "Authorization",
+      "Cache-Control",
+      "Pragma"
+    ],
     credentials: true
   }
 });
@@ -104,19 +113,68 @@ app.use(helmet({
 
 // CORS configuration
 const corsOptions = {
-  origin: process.env.CORS_ORIGIN?.split(',') || [
-    "http://localhost:3000",
-    "https://zappay.site",
-    "https://zappayapp.netlify.app",
-    "https://zappay-app-frontend.netlify.app"
-  ],
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    const allowedOrigins = process.env.CORS_ORIGIN?.split(',') || [
+      "http://localhost:3000",
+      "https://zappay.site",
+      "https://zappayapp.netlify.app",
+      "https://zappay-app-frontend.netlify.app"
+    ];
+    
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
-  optionsSuccessStatus: 200
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: [
+    'Origin',
+    'X-Requested-With',
+    'Content-Type',
+    'Accept',
+    'Authorization',
+    'Cache-Control',
+    'Pragma',
+    'Date',
+    'If-Modified-Since',
+    'If-None-Match',
+    'X-CSRF-Token'
+  ],
+  exposedHeaders: [
+    'Content-Length',
+    'Content-Type',
+    'Date',
+    'Server',
+    'X-Request-ID'
+  ],
+  optionsSuccessStatus: 200,
+  maxAge: 86400 // 24 hours
 };
 
 app.use(cors(corsOptions));
+
+// Additional CORS headers middleware for extra validation
+app.use((req, res, next) => {
+  // Set additional CORS headers
+  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, Date, If-Modified-Since, If-None-Match, X-CSRF-Token');
+  res.header('Access-Control-Max-Age', '86400');
+  
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+  
+  next();
+});
 
 // Handle preflight requests explicitly
 app.options('*', cors(corsOptions));
