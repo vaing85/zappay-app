@@ -10,7 +10,7 @@ import {
   DevicePhoneMobileIcon
 } from '@heroicons/react/24/outline';
 import { usePayment } from '../contexts/PaymentContext';
-import { PaymentMethod } from '../services/paymentService';
+import { RapydPaymentMethod } from '../services/rapydPaymentService';
 import StripeCardInput from './StripeCardInput';
 
 interface PaymentMethodsManagerProps {
@@ -22,14 +22,13 @@ const PaymentMethodsManager: React.FC<PaymentMethodsManagerProps> = ({ className
     paymentMethods, 
     isLoading, 
     error, 
-    addPaymentMethod, 
-    removePaymentMethod, 
-    setDefaultPaymentMethod 
+    createWallet, 
+    getPaymentMethods
   } = usePayment();
   
   const [showAddForm, setShowAddForm] = useState(false);
   const [newMethod, setNewMethod] = useState({
-    type: 'card' as PaymentMethod['type'],
+    type: 'card' as string,
     name: '',
     email: '',
     phone: '',
@@ -44,7 +43,7 @@ const PaymentMethodsManager: React.FC<PaymentMethodsManagerProps> = ({ className
   });
   const [cardElement, setCardElement] = useState<any>(null);
 
-  const getMethodIcon = (type: PaymentMethod['type']) => {
+  const getMethodIcon = (type: string) => {
     switch (type) {
       case 'card':
         return <CreditCardIcon className="w-6 h-6" />;
@@ -59,7 +58,7 @@ const PaymentMethodsManager: React.FC<PaymentMethodsManagerProps> = ({ className
     }
   };
 
-  const getMethodColor = (type: PaymentMethod['type']) => {
+  const getMethodColor = (type: string) => {
     switch (type) {
       case 'card':
         return 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20';
@@ -82,16 +81,18 @@ const PaymentMethodsManager: React.FC<PaymentMethodsManagerProps> = ({ className
     }
 
     try {
-      await addPaymentMethod(
-        newMethod.type,
-        newMethod.name,
-        {
-          cardElement: cardElement,
-          email: newMethod.email,
-          phone: newMethod.phone,
-          address: newMethod.address
-        }
-      );
+      // Create wallet for the user
+      await createWallet({
+        firstName: newMethod.name.split(' ')[0] || 'John',
+        lastName: newMethod.name.split(' ')[1] || 'Doe',
+        email: newMethod.email,
+        phoneNumber: newMethod.phone,
+        country: newMethod.address.country || 'US',
+        currency: 'USD'
+      });
+      
+      // Load available payment methods
+      await getPaymentMethods(newMethod.address.country || 'US');
       
       setNewMethod({
         type: 'card',
@@ -124,12 +125,14 @@ const PaymentMethodsManager: React.FC<PaymentMethodsManagerProps> = ({ className
 
   const handleRemoveMethod = async (id: string) => {
     if (window.confirm('Are you sure you want to remove this payment method?')) {
-      await removePaymentMethod(id);
+      // For now, just show a message since Rapyd handles payment methods differently
+      console.log('Payment method removal not implemented for Rapyd');
     }
   };
 
   const handleSetDefault = async (id: string) => {
-    await setDefaultPaymentMethod(id);
+    // For now, just show a message since Rapyd handles payment methods differently
+    console.log('Default payment method setting not implemented for Rapyd');
   };
 
   if (isLoading) {

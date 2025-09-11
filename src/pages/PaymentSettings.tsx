@@ -13,7 +13,7 @@ import {
 
 const PaymentSettings: React.FC = () => {
   const { user } = useAuth();
-  const { paymentMethods, addPaymentMethod } = usePayment();
+  const { paymentMethods, createWallet, getPaymentMethods } = usePayment();
   const [showAddForm, setShowAddForm] = useState(false);
 
   if (!user) {
@@ -22,22 +22,20 @@ const PaymentSettings: React.FC = () => {
 
   const handleQuickAdd = async () => {
     try {
-      // Add a demo payment method for testing
-      await addPaymentMethod('card', 'Demo Card', {
-        cardElement: null,
+      // Create a wallet for the user
+      await createWallet({
+        firstName: user.firstName || 'John',
+        lastName: user.lastName || 'Doe',
         email: user.email,
-        phone: user.phoneNumber || '',
-        address: {
-          line1: '123 Demo St',
-          line2: '',
-          city: 'Demo City',
-          state: 'DC',
-          postal_code: '12345',
-          country: 'US'
-        }
+        phoneNumber: user.phoneNumber || '',
+        country: user.address?.country || 'US',
+        currency: 'USD'
       });
+      
+      // Load available payment methods
+      await getPaymentMethods(user.address?.country || 'US');
     } catch (error) {
-      console.error('Failed to add payment method:', error);
+      console.error('Error setting up payment methods:', error);
     }
   };
 

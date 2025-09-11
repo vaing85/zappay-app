@@ -14,6 +14,7 @@ const userRoutes = require('./routes/users');
 const userManagementRoutes = require('./routes/userManagement');
 const transactionRoutes = require('./routes/transactions');
 const paymentRoutes = require('./routes/payments');
+const webhookRoutes = require('./routes/webhooks');
 const groupRoutes = require('./routes/groups');
 const budgetRoutes = require('./routes/budgets');
 const notificationRoutes = require('./routes/notifications');
@@ -373,6 +374,7 @@ app.use('/api/users', authMiddleware, userRoutes);
 app.use('/api/user-management', userManagementRoutes);
 app.use('/api/transactions', authMiddleware, transactionRoutes);
 app.use('/api/payments', authMiddleware, paymentRoutes);
+app.use('/api', webhookRoutes); // Webhooks don't need auth middleware
 app.use('/api/groups', authMiddleware, groupRoutes);
 app.use('/api/budgets', authMiddleware, budgetRoutes);
 app.use('/api/notifications', authMiddleware, notificationRoutes);

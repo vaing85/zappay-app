@@ -1,7 +1,7 @@
 // Rapyd Payment Service
 // Handles all payment operations using Rapyd API
 
-import { apiClient } from './apiClient';
+import apiClient from './apiClient';
 
 export interface RapydPaymentMethod {
   id: string;
@@ -18,6 +18,14 @@ export interface RapydPaymentMethod {
   supports_void: boolean;
   countries: string[];
   currencies: string[];
+  // Optional properties for display
+  last4?: string;
+  brand?: string;
+  expiryMonth?: number;
+  expiryYear?: number;
+  isDefault?: boolean;
+  isVerified?: boolean;
+  createdAt?: Date;
 }
 
 export interface RapydPayment {

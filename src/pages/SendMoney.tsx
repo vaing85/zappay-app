@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 
 const SendMoney: React.FC = () => {
   const { user } = useAuth();
-  const { paymentMethods, processPayment, isLoading } = usePayment();
+  const { paymentMethods, createPayment, isLoading } = usePayment();
   const [recipient, setRecipient] = useState('');
   const [amount, setAmount] = useState('');
   const [note, setNote] = useState('');
@@ -47,13 +47,16 @@ const SendMoney: React.FC = () => {
     setLoading(true);
     
     try {
-      const result = await processPayment(
-        sendAmount,
-        recipient, // In a real app, this would be a user ID
-        recipient + '@example.com', // In a real app, this would be the actual email
-        note || `Payment to ${recipient}`,
-        selectedPaymentMethod
-      );
+      const result = await createPayment({
+        amount: sendAmount,
+        currency: 'USD',
+        paymentMethod: selectedPaymentMethod,
+        description: note || `Payment to ${recipient}`,
+        metadata: {
+          recipient: recipient,
+          type: 'send_money'
+        }
+      });
 
       if (result.success) {
         toast.success(`⚡ $${sendAmount} zapped to ${recipient}`);

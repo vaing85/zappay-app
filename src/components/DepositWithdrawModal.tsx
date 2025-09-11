@@ -18,7 +18,7 @@ const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
   type 
 }) => {
   const { user, updateUser } = useAuth();
-  const { paymentMethods, processDeposit } = usePayment();
+  const { paymentMethods, createPayment, createWallet } = usePayment();
   const [amount, setAmount] = useState('');
   const [selectedMethod, setSelectedMethod] = useState('');
   const [withdrawalMethod, setWithdrawalMethod] = useState<'ach' | 'debit_card'>('ach');
@@ -66,12 +66,17 @@ const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
 
     try {
       if (isDeposit) {
-        // Use real Stripe integration for deposits
-        const result = await processDeposit(
-          transactionAmount,
-          selectedMethod,
-          notes || 'Account Deposit'
-        );
+        // Use Rapyd integration for deposits
+        const result = await createPayment({
+          amount: transactionAmount,
+          currency: 'USD',
+          paymentMethod: selectedMethod,
+          description: notes || 'Account Deposit',
+          metadata: {
+            type: 'deposit',
+            userId: user?.id
+          }
+        });
 
         if (result.success) {
           // Update user balance
