@@ -42,12 +42,12 @@ const RAPYD_CONFIG = {
  * @param {string} path - API path
  * @param {string} body - Request body
  * @param {string} salt - Random salt
- * @returns {string} Signature
+ * @returns {string} Signature (BASE64 encoded)
  */
 function generateSignature(method, path, body, salt) {
   const timestamp = Math.floor(Date.now() / 1000);
   const toSign = method + path + salt + timestamp + RAPYD_CONFIG.ACCESS_KEY + RAPYD_CONFIG.SECRET_KEY + body;
-  return crypto.createHmac('sha256', RAPYD_CONFIG.SECRET_KEY).update(toSign).digest('hex');
+  return crypto.createHmac('sha256', RAPYD_CONFIG.SECRET_KEY).update(toSign).digest('base64');
 }
 
 /**
@@ -81,15 +81,17 @@ function getRapydHeaders(method, path, body) {
 
 /**
  * Validate Rapyd webhook signature
- * @param {string} signature - Webhook signature
+ * @param {string} signature - Webhook signature (BASE64 encoded)
  * @param {string} body - Webhook body
  * @param {string} salt - Webhook salt
  * @param {string} timestamp - Webhook timestamp
+ * @param {string} urlPath - Webhook URL path
  * @returns {boolean} Valid signature
  */
-function validateWebhookSignature(signature, body, salt, timestamp) {
-  const toSign = body + salt + timestamp + RAPYD_CONFIG.WEBHOOK_SECRET;
-  const expectedSignature = crypto.createHmac('sha256', RAPYD_CONFIG.WEBHOOK_SECRET).update(toSign).digest('hex');
+function validateWebhookSignature(signature, body, salt, timestamp, urlPath = '/api/payments/webhook') {
+  // Rapyd signature format: BASE64(HASH(url_path + salt + timestamp + access_key + secret_key + body_string))
+  const toSign = urlPath + salt + timestamp + RAPYD_CONFIG.ACCESS_KEY + RAPYD_CONFIG.SECRET_KEY + body;
+  const expectedSignature = crypto.createHmac('sha256', RAPYD_CONFIG.SECRET_KEY).update(toSign).digest('base64');
   return signature === expectedSignature;
 }
 

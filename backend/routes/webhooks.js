@@ -11,13 +11,27 @@ router.post('/payments/webhook', express.raw({ type: 'application/json' }), asyn
     const salt = req.headers['rapyd-salt'];
     const timestamp = req.headers['rapyd-timestamp'];
 
+    // Log webhook headers for debugging
+    logger.info('Webhook received', {
+      headers: {
+        'rapyd-signature': signature ? 'present' : 'missing',
+        'rapyd-salt': salt ? 'present' : 'missing',
+        'rapyd-timestamp': timestamp ? 'present' : 'missing',
+        'content-type': req.headers['content-type']
+      },
+      bodyLength: body ? body.length : 0
+    });
+
     // Validate webhook signature
-    const isValid = validateWebhookSignature(signature, body, salt, timestamp);
+    const urlPath = req.originalUrl; // Get the full URL path
+    const isValid = validateWebhookSignature(signature, body, salt, timestamp, urlPath);
     if (!isValid) {
       logger.error('Invalid webhook signature', {
         signature,
         salt,
-        timestamp
+        timestamp,
+        urlPath,
+        expectedFormat: 'BASE64(HASH(url_path + salt + timestamp + access_key + secret_key + body_string))'
       });
       return res.status(400).json({ error: 'Invalid signature' });
     }
@@ -176,5 +190,45 @@ async function handleRefundCompleted(refund) {
   // - Send notification
   // await processCompletedRefund(refund);
 }
+
+// Test webhook signature generation (for debugging)
+router.post('/test-signature', express.raw({ type: 'application/json' }), async (req, res) => {
+  try {
+    const { generateSignature, generateSalt } = require('../config/rapyd');
+    
+    const body = req.body;
+    const salt = generateSalt();
+    const timestamp = Math.floor(Date.now() / 1000);
+    const urlPath = '/api/payments/webhook';
+    
+    // Generate test signature
+    const signature = generateSignature('POST', urlPath, body, salt);
+    
+    res.json({
+      success: true,
+      testData: {
+        urlPath,
+        salt,
+        timestamp,
+        body: body.toString(),
+        generatedSignature: signature,
+        headers: {
+          'rapyd-signature': signature,
+          'rapyd-salt': salt,
+          'rapyd-timestamp': timestamp,
+          'Content-Type': 'application/json'
+        }
+      },
+      instructions: {
+        message: 'Use these values to test webhook signature validation',
+        webhookUrl: 'https://zappayapp-ie9d2.ondigitalocean.app/api/payments/webhook',
+        testWith: 'Use the generated signature, salt, and timestamp in webhook headers'
+      }
+    });
+  } catch (error) {
+    logger.error('Test signature generation error', { error: error.message });
+    res.status(500).json({ error: 'Test signature generation failed' });
+  }
+});
 
 module.exports = router;
