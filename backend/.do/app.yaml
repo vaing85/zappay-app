@@ -49,9 +49,9 @@ services:
   - key: TWILIO_PHONE_NUMBER
     value: ${TWILIO_PHONE_NUMBER}
   - key: FRONTEND_URL
-    value: https://zappay.com
+    value: https://zappay.site
   - key: CORS_ORIGIN
-    value: https://zappay.com,https://www.zappay.com
+    value: https://zappay.site,https://www.zappay.site
   
   # Database Security Configuration
   - key: DB_CA_CERT

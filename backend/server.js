@@ -22,6 +22,8 @@ const apiRoutes = require('./routes/api');
 // Import middleware
 const errorHandler = require('./middleware/errorHandler');
 const authMiddleware = require('./middleware/auth');
+const logger = require('./middleware/logger');
+const { performanceMonitor, healthCheck, errorTracker } = require('./middleware/monitoring');
 
 // Import database connections with error handling
 let connectDB, connectRedis;
@@ -74,8 +76,20 @@ app.use(helmet({
       styleSrc: ["'self'", "'unsafe-inline'"],
       scriptSrc: ["'self'"],
       imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'", "https://api.stripe.com"],
+      frameSrc: ["'self'", "https://js.stripe.com"],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: [],
     },
   },
+  hsts: {
+    maxAge: 31536000,
+    includeSubDomains: true,
+    preload: true
+  },
+  noSniff: true,
+  xssFilter: true,
+  referrerPolicy: { policy: "strict-origin-when-cross-origin" }
 }));
 
 // CORS configuration
@@ -112,25 +126,28 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Compression middleware
-app.use(compression());
+app.use(compression({
+  level: 6,
+  threshold: 1024,
+  filter: (req, res) => {
+    if (req.headers['x-no-compression']) {
+      return false;
+    }
+    return compression.filter(req, res);
+  }
+}));
 
 // Logging middleware
 if (process.env.NODE_ENV === 'production') {
   app.use(morgan('combined'));
+  app.use(logger.requestLogger);
+  app.use(performanceMonitor);
 } else {
   app.use(morgan('dev'));
 }
 
 // Health check endpoint
-app.get('/health', (req, res) => {
-  res.status(200).json({
-    status: 'OK',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    environment: process.env.NODE_ENV,
-        message: 'ZapPay Backend is running with full integration!'
-  });
-});
+app.get('/health', healthCheck);
 
 // Favicon endpoint to prevent 404 errors
 app.get('/favicon.ico', (req, res) => {
@@ -369,6 +386,7 @@ app.use('*', (req, res) => {
 });
 
 // Error handling middleware
+app.use(errorTracker);
 app.use(errorHandler);
 
 // Database and Redis connection
@@ -449,3 +467,4 @@ process.on('SIGINT', () => {
 startServer();
 
 module.exports = { app, server, io };
+
