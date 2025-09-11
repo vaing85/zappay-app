@@ -23,7 +23,9 @@ const AppProviders: React.FC<AppProvidersProps> = ({ children }) => {
               <BudgetProvider>
                 <TransactionSecurityProvider>
                   <DataEncryptionProvider>
-                    {children}
+                    <SubscriptionProvider>
+                      {children}
+                    </SubscriptionProvider>
                   </DataEncryptionProvider>
                 </TransactionSecurityProvider>
               </BudgetProvider>
