@@ -2,16 +2,9 @@ const authenticateToken = require('./auth');
 
 // Middleware that applies authentication conditionally
 const conditionalAuth = (req, res, next) => {
-  // List of public routes that don't require authentication
-  const publicRoutes = [
-    '/api/payments/methods',
-    '/api/payments/health'
-  ];
-  
   // Check if the current route is public
-  const isPublicRoute = publicRoutes.some(route => 
-    req.path.startsWith(route)
-  );
+  const isPublicRoute = req.path.startsWith('/api/payments/methods/') || 
+                       req.path === '/api/payments/health';
   
   console.log(`🔍 Conditional Auth - Path: ${req.path}, IsPublic: ${isPublicRoute}`);
   
