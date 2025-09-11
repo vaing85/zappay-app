@@ -1,26 +1,42 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { useAuth } from './AuthContext';
-import { paymentService, PaymentMethod, Transaction, PaymentIntent, PaymentResult } from '../services/paymentService';
+import { rapydPaymentService, RapydPaymentMethod, RapydPayment, RapydP2PTransfer, RapydWallet } from '../services/rapydPaymentService';
 
 interface PaymentContextType {
-  paymentMethods: PaymentMethod[];
-  transactions: Transaction[];
+  paymentMethods: RapydPaymentMethod[];
+  transactions: any[];
   isLoading: boolean;
   error: string | null;
-  addPaymentMethod: (type: PaymentMethod['type'], name: string, details: any) => Promise<PaymentMethod>;
-  removePaymentMethod: (id: string) => Promise<boolean>;
-  setDefaultPaymentMethod: (id: string) => Promise<boolean>;
-  processPayment: (amount: number, recipientId: string, recipientEmail: string, description: string, paymentMethodId: string) => Promise<PaymentResult>;
-  processDeposit: (amount: number, paymentMethodId: string, description?: string) => Promise<PaymentResult>;
-  getTransactions: (limit?: number) => Promise<Transaction[]>;
-  getTransaction: (id: string) => Promise<Transaction | null>;
-  refundTransaction: (transactionId: string, amount?: number) => Promise<PaymentResult>;
-  getPaymentStats: () => Promise<{
-    totalSent: number;
-    totalReceived: number;
-    totalFees: number;
-    transactionCount: number;
-  }>;
+  wallet: RapydWallet | null;
+  createWallet: (customerData: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNumber?: string;
+    country?: string;
+    currency?: string;
+  }) => Promise<{ success: boolean; data?: RapydWallet; error?: string }>;
+  createPayment: (paymentData: {
+    amount: number;
+    currency: string;
+    paymentMethod: string;
+    description?: string;
+    metadata?: Record<string, any>;
+    redirectUrl?: string;
+    cancelUrl?: string;
+  }) => Promise<{ success: boolean; data?: RapydPayment; error?: string }>;
+  createP2PPayment: (p2pData: {
+    toWalletId: string;
+    amount: number;
+    currency: string;
+    description?: string;
+    metadata?: Record<string, any>;
+  }) => Promise<{ success: boolean; data?: RapydP2PTransfer; error?: string }>;
+  getPaymentMethods: (country: string) => Promise<{ success: boolean; data?: RapydPaymentMethod[]; error?: string }>;
+  getWalletBalance: (walletId: string) => Promise<{ success: boolean; data?: any; error?: string }>;
+  getPaymentStatus: (paymentId: string) => Promise<{ success: boolean; data?: RapydPayment; error?: string }>;
+  refundPayment: (paymentId: string, amount: number, reason?: string) => Promise<{ success: boolean; data?: any; error?: string }>;
+  testConnection: () => Promise<{ success: boolean; message?: string; error?: string }>;
   refreshData: () => Promise<void>;
 }
 
@@ -31,240 +47,180 @@ interface PaymentProviderProps {
 }
 
 export const PaymentProvider: React.FC<PaymentProviderProps> = ({ children }) => {
-  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [paymentMethods, setPaymentMethods] = useState<RapydPaymentMethod[]>([]);
+  const [transactions, setTransactions] = useState<any[]>([]);
+  const [wallet, setWallet] = useState<RapydWallet | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
 
-  const addPaymentMethod = useCallback(async (
-    type: PaymentMethod['type'],
-    name: string,
-    details: any
-  ): Promise<PaymentMethod> => {
-    try {
-      setError(null);
-      const paymentMethod = await paymentService.addPaymentMethod(type, name, details);
-      setPaymentMethods(prev => [...prev, paymentMethod]);
-      return paymentMethod;
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to add payment method';
-      setError(errorMessage);
-      throw new Error(errorMessage);
-    }
-  }, []);
-
-  const removePaymentMethod = useCallback(async (id: string): Promise<boolean> => {
-    try {
-      setError(null);
-      // In a real app, this would call the API to remove the payment method
-      setPaymentMethods(prev => prev.filter(pm => pm.id !== id));
-      return true;
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to remove payment method';
-      setError(errorMessage);
-      return false;
-    }
-  }, []);
-
-  const setDefaultPaymentMethod = useCallback(async (id: string): Promise<boolean> => {
-    try {
-      setError(null);
-      setPaymentMethods(prev => 
-        prev.map(pm => ({ ...pm, isDefault: pm.id === id }))
-      );
-      return true;
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to set default payment method';
-      setError(errorMessage);
-      return false;
-    }
-  }, []);
-
-  const processPayment = useCallback(async (
-    amount: number,
-    recipientId: string,
-    recipientEmail: string,
-    description: string,
-    paymentMethodId: string
-  ): Promise<PaymentResult> => {
+  const createWallet = useCallback(async (customerData: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNumber?: string;
+    country?: string;
+    currency?: string;
+  }) => {
     try {
       setError(null);
       setIsLoading(true);
-
-      // Create payment intent
-      const paymentIntent = await paymentService.createPaymentIntent(
-        amount,
-        recipientId,
-        recipientEmail,
-        description,
-        paymentMethodId,
-        { senderId: user?.id }
-      );
-
-      // Process payment
-      const result = await paymentService.processPayment(paymentIntent.id);
-
-      if (result.success) {
-        // Refresh transactions
-        await getTransactions();
+      const result = await rapydPaymentService.createCustomerWallet(customerData);
+      if (result.success && result.data) {
+        setWallet(result.data);
       }
-
       return result;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Payment processing failed';
+      const errorMessage = err instanceof Error ? err.message : 'Wallet creation failed';
       setError(errorMessage);
-      return {
-        success: false,
-        error: errorMessage
-      };
+      return { success: false, error: errorMessage };
     } finally {
       setIsLoading(false);
     }
-  }, [user]);
+  }, []);
 
-  const processDeposit = useCallback(async (
-    amount: number,
-    paymentMethodId: string,
-    description: string = 'Account Deposit'
-  ): Promise<PaymentResult> => {
-    if (!user) {
-      return {
-        success: false,
-        error: 'User not authenticated'
-      };
-    }
-
+  const createPayment = useCallback(async (paymentData: {
+    amount: number;
+    currency: string;
+    paymentMethod: string;
+    description?: string;
+    metadata?: Record<string, any>;
+    redirectUrl?: string;
+    cancelUrl?: string;
+  }) => {
     try {
       setError(null);
       setIsLoading(true);
-
-      // Process deposit using Stripe
-      const result = await paymentService.processDeposit(
-        amount,
-        paymentMethodId,
-        user.id,
-        user.email,
-        description
-      );
-
+      const result = await rapydPaymentService.createPayment(paymentData);
       if (result.success) {
-        // Refresh transactions and update user balance
-        // Note: In a real app, this would be handled by the backend
-        // and the user balance would be updated via a separate API call
+        // Refresh transactions
+        await refreshData();
       }
-
       return result;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Deposit processing failed';
+      const errorMessage = err instanceof Error ? err.message : 'Payment creation failed';
       setError(errorMessage);
-      return {
-        success: false,
-        error: errorMessage
-      };
+      return { success: false, error: errorMessage };
     } finally {
       setIsLoading(false);
     }
-  }, [user]);
-
-  const getTransactions = useCallback(async (limit: number = 50): Promise<Transaction[]> => {
-    if (!user) return [];
-
-    try {
-      setError(null);
-      const userTransactions = await paymentService.getTransactions(user.id, limit);
-      setTransactions(userTransactions);
-      return userTransactions;
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load transactions';
-      setError(errorMessage);
-      return [];
-    }
-  }, [user]);
-
-  const getTransaction = useCallback(async (id: string): Promise<Transaction | null> => {
-    try {
-      setError(null);
-      return await paymentService.getTransaction(id);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load transaction';
-      setError(errorMessage);
-      return null;
-    }
   }, []);
 
-  const refundTransaction = useCallback(async (transactionId: string, amount?: number): Promise<PaymentResult> => {
+  const createP2PPayment = useCallback(async (p2pData: {
+    toWalletId: string;
+    amount: number;
+    currency: string;
+    description?: string;
+    metadata?: Record<string, any>;
+  }) => {
     try {
       setError(null);
       setIsLoading(true);
-
-      const result = await paymentService.refundTransaction(transactionId, amount);
-
+      const result = await rapydPaymentService.createP2PPayment(p2pData);
       if (result.success) {
         // Refresh transactions
-        await getTransactions();
+        await refreshData();
       }
+      return result;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'P2P payment creation failed';
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
+  const getPaymentMethods = useCallback(async (country: string) => {
+    try {
+      setError(null);
+      const result = await rapydPaymentService.getPaymentMethods(country);
+      if (result.success && result.data) {
+        setPaymentMethods(result.data);
+      }
+      return result;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load payment methods';
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
+    }
+  }, []);
+
+  const getWalletBalance = useCallback(async (walletId: string) => {
+    try {
+      setError(null);
+      return await rapydPaymentService.getWalletBalance(walletId);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load wallet balance';
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
+    }
+  }, []);
+
+  const getPaymentStatus = useCallback(async (paymentId: string) => {
+    try {
+      setError(null);
+      return await rapydPaymentService.getPaymentStatus(paymentId);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load payment status';
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
+    }
+  }, []);
+
+  const refundPayment = useCallback(async (paymentId: string, amount: number, reason?: string) => {
+    try {
+      setError(null);
+      setIsLoading(true);
+      const result = await rapydPaymentService.refundPayment(paymentId, amount, reason);
+      if (result.success) {
+        // Refresh transactions
+        await refreshData();
+      }
       return result;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Refund failed';
       setError(errorMessage);
-      return {
-        success: false,
-        error: errorMessage
-      };
+      return { success: false, error: errorMessage };
     } finally {
       setIsLoading(false);
     }
   }, []);
 
-  const getPaymentStats = useCallback(async () => {
-    if (!user) {
-      return {
-        totalSent: 0,
-        totalReceived: 0,
-        totalFees: 0,
-        transactionCount: 0
-      };
-    }
-
+  const testConnection = useCallback(async () => {
     try {
       setError(null);
-      return await paymentService.getPaymentStats(user.id);
+      return await rapydPaymentService.testConnection();
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load payment stats';
+      const errorMessage = err instanceof Error ? err.message : 'Connection test failed';
       setError(errorMessage);
-      return {
-        totalSent: 0,
-        totalReceived: 0,
-        totalFees: 0,
-        transactionCount: 0
-      };
+      return { success: false, error: errorMessage };
     }
-  }, [user]);
+  }, []);
 
   const refreshData = useCallback(async () => {
-    if (!user || !user.id) return;
+    if (!user) return;
 
     try {
       setIsLoading(true);
       setError(null);
 
-      // Load payment methods and transactions in parallel
-      const [methods, userTransactions] = await Promise.all([
-        paymentService.getPaymentMethods(user.id),
-        paymentService.getTransactions(user.id)
-      ]);
+      // Load payment methods for user's country (default to US)
+      const country = user.address?.country || 'US';
+      await getPaymentMethods(country);
 
-      setPaymentMethods(methods);
-      setTransactions(userTransactions);
+      // If user has a wallet, load balance
+      if (wallet?.id) {
+        await getWalletBalance(wallet.id);
+      }
+
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to refresh payment data';
       setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
-  }, [user]);
+  }, [user, wallet, getPaymentMethods, getWalletBalance]);
 
   // Load data when user changes
   useEffect(() => {
@@ -273,6 +229,7 @@ export const PaymentProvider: React.FC<PaymentProviderProps> = ({ children }) =>
     } else {
       setPaymentMethods([]);
       setTransactions([]);
+      setWallet(null);
     }
   }, [user, refreshData]);
 
@@ -281,15 +238,15 @@ export const PaymentProvider: React.FC<PaymentProviderProps> = ({ children }) =>
     transactions,
     isLoading,
     error,
-    addPaymentMethod,
-    removePaymentMethod,
-    setDefaultPaymentMethod,
-    processPayment,
-    processDeposit,
-    getTransactions,
-    getTransaction,
-    refundTransaction,
-    getPaymentStats,
+    wallet,
+    createWallet,
+    createPayment,
+    createP2PPayment,
+    getPaymentMethods,
+    getWalletBalance,
+    getPaymentStatus,
+    refundPayment,
+    testConnection,
     refreshData,
   };
 

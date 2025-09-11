@@ -1,11 +1,20 @@
 const express = require('express');
 const router = express.Router();
-const stripeService = require('../services/stripePaymentService');
+const rapydService = require('../services/rapydPaymentService');
+const { authenticateToken } = require('../middleware/auth');
 
-// POST /api/payments/create-intent - Create payment intent
-router.post('/create-intent', async (req, res) => {
+// POST /api/payments/create - Create payment
+router.post('/create', authenticateToken, async (req, res) => {
   try {
-    const { amount, currency = 'usd', metadata = {} } = req.body;
+    const { 
+      amount, 
+      currency = 'USD', 
+      paymentMethod, 
+      description, 
+      metadata = {},
+      redirectUrl,
+      cancelUrl
+    } = req.body;
 
     if (!amount || amount <= 0) {
       return res.status(400).json({
@@ -14,22 +23,47 @@ router.post('/create-intent', async (req, res) => {
       });
     }
 
-    const result = await stripeService.createPaymentIntent(amount, currency, metadata);
+    if (!paymentMethod) {
+      return res.status(400).json({
+        success: false,
+        message: 'Payment method is required'
+      });
+    }
+
+    const paymentData = {
+      amount,
+      currency,
+      paymentMethod,
+      customerId: req.user.id,
+      description,
+      metadata: {
+        ...metadata,
+        userId: req.user.id,
+        userEmail: req.user.email
+      },
+      redirectUrl,
+      cancelUrl
+    };
+
+    const result = await rapydService.createPayment(paymentData);
 
     if (result.success) {
       res.json({
         success: true,
-        clientSecret: result.clientSecret,
-        paymentIntentId: result.paymentIntentId
+        paymentId: result.paymentId,
+        status: result.status,
+        redirectUrl: result.redirectUrl,
+        data: result.data
       });
     } else {
       res.status(400).json({
         success: false,
-        message: result.error
+        message: result.error,
+        details: result.details
       });
     }
   } catch (error) {
-    console.error('Payment intent creation error:', error);
+    console.error('Payment creation error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error'
@@ -37,25 +71,27 @@ router.post('/create-intent', async (req, res) => {
   }
 });
 
-// GET /api/payments/intent/:id - Retrieve payment intent
-router.get('/intent/:id', async (req, res) => {
+// GET /api/payments/status/:id - Get payment status
+router.get('/status/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
-    const result = await stripeService.retrievePaymentIntent(id);
+    const result = await rapydService.getPaymentStatus(id);
 
     if (result.success) {
       res.json({
         success: true,
-        paymentIntent: result.paymentIntent
+        status: result.status,
+        data: result.data
       });
     } else {
       res.status(400).json({
         success: false,
-        message: result.error
+        message: result.error,
+        details: result.details
       });
     }
   } catch (error) {
-    console.error('Payment intent retrieval error:', error);
+    console.error('Payment status retrieval error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error'
@@ -63,33 +99,53 @@ router.get('/intent/:id', async (req, res) => {
   }
 });
 
-// POST /api/payments/create-customer - Create Stripe customer
-router.post('/create-customer', async (req, res) => {
+// POST /api/payments/create-wallet - Create customer wallet
+router.post('/create-wallet', authenticateToken, async (req, res) => {
   try {
-    const { email, name, metadata = {} } = req.body;
+    const { 
+      firstName, 
+      lastName, 
+      email, 
+      phoneNumber, 
+      country, 
+      currency = 'USD' 
+    } = req.body;
 
-    if (!email) {
+    if (!email || !firstName || !lastName) {
       return res.status(400).json({
         success: false,
-        message: 'Email is required'
+        message: 'Email, first name, and last name are required'
       });
     }
 
-    const result = await stripeService.createCustomer(email, name, metadata);
+    const customerData = {
+      customerId: req.user.id,
+      firstName,
+      lastName,
+      email,
+      phoneNumber: phoneNumber || req.user.phoneNumber,
+      country: country || 'US',
+      currency
+    };
+
+    const result = await rapydService.createCustomerWallet(customerData);
 
     if (result.success) {
       res.json({
         success: true,
-        customer: result.customer
+        customerId: result.customerId,
+        walletId: result.walletId,
+        data: result.data
       });
     } else {
       res.status(400).json({
         success: false,
-        message: result.error
+        message: result.error,
+        details: result.details
       });
     }
   } catch (error) {
-    console.error('Customer creation error:', error);
+    console.error('Wallet creation error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error'
@@ -97,34 +153,55 @@ router.post('/create-customer', async (req, res) => {
   }
 });
 
-// POST /api/payments/setup-intent - Create setup intent for saving payment methods
-router.post('/setup-intent', async (req, res) => {
+// POST /api/payments/p2p - Create P2P payment
+router.post('/p2p', authenticateToken, async (req, res) => {
   try {
-    const { customerId, metadata = {} } = req.body;
+    const { 
+      toWalletId, 
+      amount, 
+      currency = 'USD', 
+      description, 
+      metadata = {} 
+    } = req.body;
 
-    if (!customerId) {
+    if (!toWalletId || !amount || amount <= 0) {
       return res.status(400).json({
         success: false,
-        message: 'Customer ID is required'
+        message: 'Valid recipient wallet ID and amount are required'
       });
     }
 
-    const result = await stripeService.createSetupIntent(customerId, metadata);
+    const p2pData = {
+      fromWalletId: req.user.walletId, // Assuming walletId is stored in user
+      toWalletId,
+      amount,
+      currency,
+      description: description || 'ZapPay P2P Transfer',
+      metadata: {
+        ...metadata,
+        fromUserId: req.user.id,
+        toUserId: req.body.toUserId
+      }
+    };
+
+    const result = await rapydService.createP2PPayment(p2pData);
 
     if (result.success) {
       res.json({
         success: true,
-        clientSecret: result.clientSecret,
-        setupIntentId: result.setupIntentId
+        transferId: result.transferId,
+        status: result.status,
+        data: result.data
       });
     } else {
       res.status(400).json({
         success: false,
-        message: result.error
+        message: result.error,
+        details: result.details
       });
     }
   } catch (error) {
-    console.error('Setup intent creation error:', error);
+    console.error('P2P payment creation error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error'
@@ -132,21 +209,23 @@ router.post('/setup-intent', async (req, res) => {
   }
 });
 
-// GET /api/payments/methods/:customerId - List customer payment methods
-router.get('/methods/:customerId', async (req, res) => {
+// GET /api/payments/methods/:country - Get available payment methods for country
+router.get('/methods/:country', async (req, res) => {
   try {
-    const { customerId } = req.params;
-    const result = await stripeService.listPaymentMethods(customerId);
+    const { country } = req.params;
+    const result = await rapydService.getPaymentMethods(country);
 
     if (result.success) {
       res.json({
         success: true,
-        paymentMethods: result.paymentMethods
+        paymentMethods: result.paymentMethods,
+        data: result.data
       });
     } else {
       res.status(400).json({
         success: false,
-        message: result.error
+        message: result.error,
+        details: result.details
       });
     }
   } catch (error) {
@@ -158,29 +237,126 @@ router.get('/methods/:customerId', async (req, res) => {
   }
 });
 
-// POST /api/payments/test - Test Stripe connection
-router.post('/test', async (req, res) => {
+// POST /api/payments/refund - Refund a payment
+router.post('/refund', authenticateToken, async (req, res) => {
   try {
-    // Test Stripe connection by creating a small payment intent
-    const result = await stripeService.createPaymentIntent(1, 'usd', { test: true });
+    const { paymentId, amount, reason } = req.body;
+
+    if (!paymentId || !amount || amount <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Valid payment ID and amount are required'
+      });
+    }
+
+    const result = await rapydService.refundPayment(paymentId, amount, reason);
 
     if (result.success) {
       res.json({
         success: true,
-        message: 'Stripe connection successful',
-        timestamp: new Date().toISOString()
+        refundId: result.refundId,
+        status: result.status,
+        data: result.data
       });
     } else {
       res.status(400).json({
         success: false,
-        message: `Stripe connection failed: ${result.error}`
+        message: result.error,
+        details: result.details
       });
     }
   } catch (error) {
-    console.error('Stripe test error:', error);
+    console.error('Payment refund error:', error);
     res.status(500).json({
       success: false,
-      message: 'Stripe test failed'
+      message: 'Internal server error'
+    });
+  }
+});
+
+// GET /api/payments/balance/:walletId - Get wallet balance
+router.get('/balance/:walletId', authenticateToken, async (req, res) => {
+  try {
+    const { walletId } = req.params;
+    const result = await rapydService.getWalletBalance(walletId);
+
+    if (result.success) {
+      res.json({
+        success: true,
+        balance: result.balance,
+        data: result.data
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: result.error,
+        details: result.details
+      });
+    }
+  } catch (error) {
+    console.error('Wallet balance retrieval error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+// GET /api/payments/health - Public health check for Rapyd
+router.get('/health', async (req, res) => {
+  try {
+    // Test Rapyd connection by getting payment methods for US
+    const result = await rapydService.getPaymentMethods('US');
+
+    if (result.success) {
+      res.json({
+        success: true,
+        message: 'Rapyd connection successful',
+        timestamp: new Date().toISOString(),
+        availableMethods: result.paymentMethods?.length || 0,
+        status: 'healthy'
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: `Rapyd connection failed: ${result.error}`,
+        status: 'unhealthy'
+      });
+    }
+  } catch (error) {
+    console.error('Rapyd health check error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Rapyd health check failed',
+      status: 'error'
+    });
+  }
+});
+
+// POST /api/payments/test - Test Rapyd connection (requires auth)
+router.post('/test', async (req, res) => {
+  try {
+    // Test Rapyd connection by getting payment methods for US
+    const result = await rapydService.getPaymentMethods('US');
+
+    if (result.success) {
+      res.json({
+        success: true,
+        message: 'Rapyd connection successful',
+        timestamp: new Date().toISOString(),
+        availableMethods: result.paymentMethods?.length || 0
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: `Rapyd connection failed: ${result.error}`
+      });
+    }
+  } catch (error) {
+    console.error('Rapyd test error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Rapyd test failed'
     });
   }
 });

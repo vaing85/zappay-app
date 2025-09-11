@@ -30,12 +30,19 @@ services:
     value: ${zappay-postgres.DATABASE_URL}
   - key: REDIS_URL
     value: ${zappay-redis.REDIS_URL}
-  - key: STRIPE_SECRET_KEY
-    value: ${STRIPE_SECRET_KEY}
-  - key: STRIPE_PUBLISHABLE_KEY
-    value: ${STRIPE_PUBLISHABLE_KEY}
-  - key: STRIPE_WEBHOOK_SECRET
-    value: ${STRIPE_WEBHOOK_SECRET}
+  # Rapyd Payment Configuration
+  - key: RAPYD_ACCESS_KEY
+    value: ${RAPYD_ACCESS_KEY}
+  - key: RAPYD_SECRET_KEY
+    value: ${RAPYD_SECRET_KEY}
+  - key: RAPYD_BASE_URL
+    value: https://sandboxapi.rapyd.net
+  - key: RAPYD_WEBHOOK_SECRET
+    value: ${RAPYD_WEBHOOK_SECRET}
+  - key: RAPYD_MERCHANT_ACCOUNT
+    value: ${RAPYD_MERCHANT_ACCOUNT}
+  - key: RAPYD_P2P_ENABLED
+    value: "true"
   - key: SENDGRID_API_KEY
     value: ${SENDGRID_API_KEY}
   - key: FROM_EMAIL

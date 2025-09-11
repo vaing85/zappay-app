@@ -1,8 +1,8 @@
 // Payment Processing Service
 // This service handles all payment operations including processing, validation, and integration
-// Now integrated with Stripe for real payment processing
+// Now integrated with Rapyd for real payment processing
 
-import { stripePaymentService, StripePaymentMethod, StripePaymentIntent, StripeCharge, StripeRefund } from './stripePaymentService';
+import { apiClient } from './apiClient';
 
 export interface PaymentMethod {
   id: string;
@@ -62,9 +62,10 @@ export interface Transaction {
 }
 
 export interface PaymentGatewayConfig {
-  stripe: {
-    publishableKey: string;
+  rapyd: {
+    accessKey: string;
     secretKey: string;
+    baseUrl: string;
     webhookSecret: string;
   };
   paypal: {
@@ -87,10 +88,11 @@ class PaymentService {
 
   constructor() {
     this.config = {
-      stripe: {
-        publishableKey: process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY || 'pk_test_...',
-        secretKey: process.env.REACT_APP_STRIPE_SECRET_KEY || 'sk_test_...',
-        webhookSecret: process.env.REACT_APP_STRIPE_WEBHOOK_SECRET || 'whsec_...'
+      rapyd: {
+        accessKey: process.env.REACT_APP_RAPYD_ACCESS_KEY || 'rapyd_access_key',
+        secretKey: process.env.REACT_APP_RAPYD_SECRET_KEY || 'rapyd_secret_key',
+        baseUrl: process.env.REACT_APP_RAPYD_BASE_URL || 'https://sandboxapi.rapyd.net',
+        webhookSecret: process.env.REACT_APP_RAPYD_WEBHOOK_SECRET || 'rapyd_webhook_secret'
       },
       paypal: {
         clientId: process.env.REACT_APP_PAYPAL_CLIENT_ID || 'paypal_client_id',
