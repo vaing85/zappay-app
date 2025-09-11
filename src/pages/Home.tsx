@@ -381,9 +381,12 @@ const Home: React.FC = memo(() => {
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-8">
             <div>
-              <h3 className="text-lg font-semibold mb-4">Support</h3>
+              <h3 className="text-lg font-semibold mb-4">Support & Help</h3>
               <ul className="space-y-2">
                 <li><Link to="/contact-support" className="text-gray-400 hover:text-white transition-colors">Contact Support</Link></li>
+                <li><Link to="/api-docs" className="text-gray-400 hover:text-white transition-colors">API Documentation</Link></li>
+                <li><Link to="/developer" className="text-gray-400 hover:text-white transition-colors">Developer Resources</Link></li>
+                <li><a href="mailto:help@zappay.site" className="text-gray-400 hover:text-white transition-colors">Help Center</a></li>
                 <li><a href="mailto:business@zappay.site" className="text-gray-400 hover:text-white transition-colors">Business Inquiries</a></li>
                 <li><a href="mailto:privacy@zappay.site" className="text-gray-400 hover:text-white transition-colors">Privacy Inquiries</a></li>
                 <li><Link to="/subscription-plans" className="text-gray-400 hover:text-white transition-colors">Upgrade Account</Link></li>
@@ -400,6 +403,21 @@ const Home: React.FC = memo(() => {
                 <li>
                   <Link to="/terms-of-service" className="text-gray-400 hover:text-white transition-colors">
                     Terms of Service
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/security" className="text-gray-400 hover:text-white transition-colors">
+                    Security Center
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/data-encryption" className="text-gray-400 hover:text-white transition-colors">
+                    Data Protection
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/transaction-security" className="text-gray-400 hover:text-white transition-colors">
+                    Transaction Security
                   </Link>
                 </li>
               </ul>
