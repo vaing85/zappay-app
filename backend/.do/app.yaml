@@ -1,7 +1,7 @@
-name: zappay-backend
+name: zappay-api
 services:
 - name: api
-  source_dir: /backend
+  source_dir: /
   github:
     repo: vaing85/zappay-app
     branch: main
@@ -9,40 +9,29 @@ services:
   environment_slug: node-js
   instance_count: 1
   instance_size_slug: basic-xxs
-  http_port: 3001
-  health_check:
-    http_path: /health
-    initial_delay_seconds: 10
-    period_seconds: 10
-    timeout_seconds: 5
-    success_threshold: 1
-    failure_threshold: 3
+  routes:
+  - path: /
   envs:
   - key: NODE_ENV
     value: production
   - key: PORT
     value: "3001"
+  - key: HOST
+    value: "0.0.0.0"
+  - key: DB_URL
+    value: ${db.DATABASE_URL}
+  - key: REDIS_URL
+    value: ${redis.DATABASE_URL}
   - key: JWT_SECRET
     value: ${JWT_SECRET}
   - key: REFRESH_TOKEN_SECRET
     value: ${REFRESH_TOKEN_SECRET}
-  - key: DB_URL
-    value: ${zappay-postgres.DATABASE_URL}
-  - key: REDIS_URL
-    value: ${zappay-redis.REDIS_URL}
-  # Rapyd Payment Configuration
-  - key: RAPYD_ACCESS_KEY
-    value: ${RAPYD_ACCESS_KEY}
-  - key: RAPYD_SECRET_KEY
-    value: ${RAPYD_SECRET_KEY}
-  - key: RAPYD_BASE_URL
-    value: https://sandboxapi.rapyd.net
-  - key: RAPYD_WEBHOOK_SECRET
-    value: ${RAPYD_WEBHOOK_SECRET}
-  - key: RAPYD_MERCHANT_ACCOUNT
-    value: ${RAPYD_MERCHANT_ACCOUNT}
-  - key: RAPYD_P2P_ENABLED
-    value: "true"
+  - key: STRIPE_SECRET_KEY
+    value: ${STRIPE_SECRET_KEY}
+  - key: STRIPE_PUBLISHABLE_KEY
+    value: ${STRIPE_PUBLISHABLE_KEY}
+  - key: STRIPE_WEBHOOK_SECRET
+    value: ${STRIPE_WEBHOOK_SECRET}
   - key: SENDGRID_API_KEY
     value: ${SENDGRID_API_KEY}
   - key: FROM_EMAIL
@@ -55,48 +44,55 @@ services:
     value: ${TWILIO_AUTH_TOKEN}
   - key: TWILIO_PHONE_NUMBER
     value: ${TWILIO_PHONE_NUMBER}
-  - key: FRONTEND_URL
-    value: https://zappay.site
   - key: CORS_ORIGIN
-    value: https://zappay.site,https://www.zappay.site
-  
-  # Database Security Configuration
-  - key: DB_CA_CERT
-    value: ${DB_CA_CERT}
-  - key: DB_CLIENT_CERT
-    value: ${DB_CLIENT_CERT}
-  - key: DB_CLIENT_KEY
-    value: ${DB_CLIENT_KEY}
-  
-  # Redis Security Configuration
-  - key: REDIS_PASSWORD
-    value: ${REDIS_PASSWORD}
-  - key: REDIS_USERNAME
-    value: ${REDIS_USERNAME}
-  
-  # Security Headers and Rate Limiting
+    value: https://zappay.com,https://www.zappay.com
+  - key: FRONTEND_URL
+    value: https://zappay.com
+  - key: LOG_LEVEL
+    value: info
+  - key: RATE_LIMIT_MAX_REQUESTS
+    value: "200"
+  - key: MAX_REQUEST_SIZE
+    value: "10485760"
   - key: BCRYPT_ROUNDS
     value: "12"
-  - key: RATE_LIMIT_WINDOW_MS
-    value: "900000"
-  - key: RATE_LIMIT_MAX_REQUESTS
-    value: "100"
-  
-  # Logging and Monitoring
-  - key: LOG_LEVEL
-    value: "info"
-  - key: LOG_FILE
-    value: "/var/log/zappay/app.log"
+  - key: DB_SSL_REJECT_UNAUTHORIZED
+    value: "true"
+  health_check:
+    http_path: /health
+    initial_delay_seconds: 10
+    period_seconds: 10
+    timeout_seconds: 5
+    success_threshold: 1
+    failure_threshold: 3
+  alerts:
+  - type: cpu
+    disabled: false
+    value: 80
+  - type: memory
+    disabled: false
+    value: 80
+  - type: disk
+    disabled: false
+    value: 80
+  - type: latency
+    disabled: false
+    value: 500
+  - type: error_rate
+    disabled: false
+    value: 0.05
 
 databases:
-- name: zappay-postgres
+- name: db
   engine: PG
-  version: "14"
+  version: "15"
   size: db-s-1vcpu-1gb
   num_nodes: 1
+  region: nyc1
 
-- name: zappay-redis
+- name: redis
   engine: REDIS
   version: "7"
   size: db-s-1vcpu-1gb
   num_nodes: 1
+  region: nyc1

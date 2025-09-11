@@ -10,7 +10,17 @@
     "build": "echo 'No build step required'",
     "migrate": "node scripts/migrate.js",
     "seed": "node seed-users.js",
-    "healthcheck": "node healthcheck.js"
+    "healthcheck": "node healthcheck.js",
+    "setup:prod": "node setup-production-db.js",
+    "test:prod": "node test-production.js",
+    "test:rapyd": "node test-rapyd-production.js",
+    "verify:rapyd": "node verify-rapyd-production.js",
+    "deploy": "bash deploy-production.sh",
+    "pm2:start": "pm2 start ecosystem.config.js",
+    "pm2:stop": "pm2 stop zappay-api",
+    "pm2:restart": "pm2 restart zappay-api",
+    "pm2:logs": "pm2 logs zappay-api",
+    "pm2:monit": "pm2 monit"
   },
   "dependencies": {
     "@adyen/api-library": "^29.1.0",
@@ -32,7 +42,8 @@
     "sequelize": "^6.35.0",
     "socket.io": "^4.7.4",
     "stripe": "^14.7.0",
-    "twilio": "^4.19.0"
+    "twilio": "^4.19.0",
+    "winston": "^3.11.0"
   },
   "devDependencies": {
     "jest": "^29.7.0",

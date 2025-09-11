@@ -27,6 +27,7 @@ const groupRoutes = require('./routes/groups');
 const budgetRoutes = require('./routes/budgets');
 const notificationRoutes = require('./routes/notifications');
 const apiRoutes = require('./routes/api');
+const rapydWebhookRoutes = require('./routes/rapyd-webhooks');
 
 // Import middleware
 const errorHandler = require('./middleware/errorHandler');
@@ -34,6 +35,15 @@ const authMiddleware = require('./middleware/auth');
 const conditionalAuth = require('./middleware/conditionalAuth');
 const logger = require('./middleware/logger');
 const { performanceMonitor, healthCheck, errorTracker } = require('./middleware/monitoring');
+const productionSecurity = require('./middleware/productionSecurity');
+const { 
+  performanceMonitor: prodPerformanceMonitor, 
+  errorTracker: prodErrorTracker, 
+  healthCheck: prodHealthCheck,
+  metrics,
+  requestLogger: prodRequestLogger,
+  securityLogger
+} = require('./middleware/productionMonitoring');
 
 // Import database connections with error handling
 let connectDB, connectRedis;
@@ -63,6 +73,11 @@ const app = express();
 
 // Trust proxy for DigitalOcean App Platform
 app.set('trust proxy', 1);
+
+// Apply production security middleware
+if (process.env.NODE_ENV === 'production') {
+  productionSecurity(app);
+}
 
 const server = createServer(app);
 const io = new Server(server, {
@@ -201,14 +216,21 @@ app.use(compression({
 // Logging middleware
 if (process.env.NODE_ENV === 'production') {
   app.use(morgan('combined'));
-  app.use(logger.requestLogger);
-  app.use(performanceMonitor);
+  app.use(prodRequestLogger);
+  app.use(prodPerformanceMonitor);
 } else {
   app.use(morgan('dev'));
+  app.use(logger.requestLogger);
+  app.use(performanceMonitor);
 }
 
 // Health check endpoint
-app.get('/health', healthCheck);
+app.get('/health', process.env.NODE_ENV === 'production' ? prodHealthCheck : healthCheck);
+
+// Metrics endpoint (production only)
+if (process.env.NODE_ENV === 'production') {
+  app.get('/metrics', metrics);
+}
 
 // Rapyd health check endpoint (public)
 app.get('/rapyd-health', async (req, res) => {
@@ -435,6 +457,7 @@ app.use('/api/user-management', userManagementRoutes);
 app.use('/api/transactions', authMiddleware, transactionRoutes);
 app.use('/api/payments', conditionalAuth, paymentRoutes); // Payment routes with conditional auth
 app.use('/api', webhookRoutes); // Webhooks don't need auth middleware
+app.use('/api/payments/webhook', rapydWebhookRoutes); // Rapyd webhooks
 app.use('/api/groups', authMiddleware, groupRoutes);
 app.use('/api/budgets', authMiddleware, budgetRoutes);
 app.use('/api/notifications', authMiddleware, notificationRoutes);
@@ -495,7 +518,11 @@ app.use('*', (req, res) => {
 });
 
 // Error handling middleware
-app.use(errorTracker);
+if (process.env.NODE_ENV === 'production') {
+  app.use(prodErrorTracker);
+} else {
+  app.use(errorTracker);
+}
 app.use(errorHandler);
 
 // Database and Redis connection
