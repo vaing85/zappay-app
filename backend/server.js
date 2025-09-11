@@ -21,6 +21,7 @@ const userRoutes = require('./routes/users');
 const userManagementRoutes = require('./routes/userManagement');
 const transactionRoutes = require('./routes/transactions');
 const paymentRoutes = require('./routes/payments');
+const paymentPublicRoutes = require('./routes/payments-public');
 const webhookRoutes = require('./routes/webhooks');
 const groupRoutes = require('./routes/groups');
 const budgetRoutes = require('./routes/budgets');
@@ -101,7 +102,7 @@ app.use(helmet({
 }));
 
 // CORS configuration
-app.use(cors({
+const corsOptions = {
   origin: process.env.CORS_ORIGIN?.split(',') || [
     "http://localhost:3000",
     "https://zappay.site",
@@ -110,8 +111,14 @@ app.use(cors({
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-}));
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
+
+// Handle preflight requests explicitly
+app.options('*', cors(corsOptions));
 
 // Apply general rate limiting to all API routes
 app.use('/api', generalLimiter);
@@ -367,7 +374,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', authMiddleware, userRoutes);
 app.use('/api/user-management', userManagementRoutes);
 app.use('/api/transactions', authMiddleware, transactionRoutes);
-app.use('/api/payments', authMiddleware, paymentRoutes);
+app.use('/api/payments', paymentPublicRoutes); // Public payment methods
+app.use('/api/payments', authMiddleware, paymentRoutes); // Protected payment operations
 app.use('/api', webhookRoutes); // Webhooks don't need auth middleware
 app.use('/api/groups', authMiddleware, groupRoutes);
 app.use('/api/budgets', authMiddleware, budgetRoutes);
