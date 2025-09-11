@@ -5,6 +5,7 @@ const { User } = require('../models');
 const authMiddleware = require('../middleware/auth');
 const { sendVerificationEmail } = require('../services/emailService');
 const { sendSMS } = require('../services/smsService');
+const { authLimiter, passwordResetLimiter } = require('../middleware/rateLimiting');
 
 const router = express.Router();
 
@@ -29,7 +30,7 @@ const generateRefreshToken = (userId) => {
 // @route   POST /api/auth/register
 // @desc    Register a new user
 // @access  Public
-router.post('/register', [
+router.post('/register', authLimiter, [
   body('firstName').trim().isLength({ min: 2, max: 50 }).withMessage('First name must be 2-50 characters'),
   body('lastName').trim().isLength({ min: 2, max: 50 }).withMessage('Last name must be 2-50 characters'),
   body('email').isEmail().normalizeEmail().withMessage('Please provide a valid email'),
@@ -99,7 +100,7 @@ router.post('/register', [
 // @route   POST /api/auth/login
 // @desc    Login user
 // @access  Public
-router.post('/login', [
+router.post('/login', authLimiter, [
   body('email').isEmail().normalizeEmail().withMessage('Please provide a valid email'),
   body('password').notEmpty().withMessage('Password is required')
 ], async (req, res) => {
@@ -286,7 +287,7 @@ router.post('/verify-email', [
 // @route   POST /api/auth/forgot-password
 // @desc    Send password reset email
 // @access  Public
-router.post('/forgot-password', [
+router.post('/forgot-password', passwordResetLimiter, [
   body('email').isEmail().normalizeEmail().withMessage('Please provide a valid email')
 ], async (req, res) => {
   try {
@@ -331,7 +332,7 @@ router.post('/forgot-password', [
 // @route   POST /api/auth/reset-password
 // @desc    Reset user password
 // @access  Public
-router.post('/reset-password', [
+router.post('/reset-password', passwordResetLimiter, [
   body('token').notEmpty().withMessage('Reset token is required'),
   body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters')
 ], async (req, res) => {

@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 const { validateWebhookSignature } = require('../config/rapyd');
 const logger = require('../middleware/logger');
+const { webhookLimiter } = require('../middleware/rateLimiting');
 
 // Rapyd webhook handler
-router.post('/payments/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+router.post('/payments/webhook', webhookLimiter, express.raw({ type: 'application/json' }), async (req, res) => {
   try {
     const signature = req.headers['rapyd-signature'];
     const body = req.body;

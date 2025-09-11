@@ -2,7 +2,8 @@ const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
 // Create Sequelize instance with robust SSL handling
-const sequelize = new Sequelize(process.env.DB_URL, {
+const dbUrl = process.env.DB_URL || 'postgresql://zappay_user:password@localhost:5432/zappay_dev';
+const sequelize = new Sequelize(dbUrl, {
   dialect: 'postgres',
   dialectOptions: {
     ssl: process.env.NODE_ENV === 'production' ? {
@@ -60,6 +61,12 @@ Notification.associate({ User, Transaction, Group, Budget, Notification });
 // Database connection function
 const connectDB = async () => {
   try {
+    // Check if we have a valid database URL
+    if (!process.env.DB_URL) {
+      console.warn('⚠️ No database URL provided, using mock authentication');
+      return null;
+    }
+    
     await sequelize.authenticate();
     console.log('✅ Database connection established successfully');
     

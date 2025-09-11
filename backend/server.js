@@ -3,7 +3,14 @@ const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
 const morgan = require('morgan');
-const rateLimit = require('express-rate-limit');
+const { 
+  generalLimiter, 
+  authLimiter, 
+  paymentLimiter, 
+  webhookLimiter, 
+  passwordResetLimiter, 
+  adminLimiter 
+} = require('./middleware/rateLimiting');
 const { createServer } = require('http');
 const { Server } = require('socket.io');
 require('dotenv').config();
@@ -106,21 +113,8 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100, // limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again later.',
-  standardHeaders: true,
-  legacyHeaders: false,
-  // Trust proxy for DigitalOcean App Platform
-  trustProxy: true,
-  // Skip successful requests from rate limiting
-  skipSuccessfulRequests: false,
-  // Skip failed requests from rate limiting
-  skipFailedRequests: false
-});
-app.use(limiter);
+// Apply general rate limiting to all API routes
+app.use('/api', generalLimiter);
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
@@ -447,12 +441,17 @@ const startServer = async () => {
     console.log(`🔗 Host: ${process.env.HOST || '0.0.0.0'}`);
     
     // Log environment variables (without sensitive data)
-    console.log('📝 Environment check:');
-    console.log(`  - NODE_ENV: ${process.env.NODE_ENV || 'not set'}`);
-    console.log(`  - PORT: ${process.env.PORT || 'not set (using default 3001)'}`);
-    console.log(`  - DB_URL: ${process.env.DB_URL ? 'set' : 'not set'}`);
-    console.log(`  - REDIS_URL: ${process.env.REDIS_URL ? 'set' : 'not set'}`);
-    console.log(`  - STRIPE_SECRET_KEY: ${process.env.STRIPE_SECRET_KEY ? 'set' : 'not set'}`);
+    // Only log environment info in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log('📝 Environment check:');
+      console.log(`  - NODE_ENV: ${process.env.NODE_ENV || 'not set'}`);
+      console.log(`  - PORT: ${process.env.PORT || 'not set (using default 3001)'}`);
+      console.log(`  - DB_URL: ${process.env.DB_URL ? 'set' : 'not set'}`);
+      console.log(`  - REDIS_URL: ${process.env.REDIS_URL ? 'set' : 'not set'}`);
+      console.log(`  - STRIPE_SECRET_KEY: ${process.env.STRIPE_SECRET_KEY ? 'set' : 'not set'}`);
+    } else {
+      console.log('📝 Environment: Production mode - security logging disabled');
+    }
     
     // Try to connect to databases, but don't fail if they don't exist yet
     try {

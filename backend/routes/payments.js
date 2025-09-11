@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const rapydService = require('../services/rapydPaymentService');
-const { authenticateToken } = require('../middleware/auth');
+const authenticateToken = require('../middleware/auth');
+const { paymentLimiter, webhookLimiter } = require('../middleware/rateLimiting');
 
 // POST /api/payments/create - Create payment
-router.post('/create', authenticateToken, async (req, res) => {
+router.post('/create', paymentLimiter, authenticateToken, async (req, res) => {
   try {
     const { 
       amount, 
@@ -100,7 +101,7 @@ router.get('/status/:id', authenticateToken, async (req, res) => {
 });
 
 // POST /api/payments/create-wallet - Create customer wallet
-router.post('/create-wallet', authenticateToken, async (req, res) => {
+router.post('/create-wallet', paymentLimiter, authenticateToken, async (req, res) => {
   try {
     const { 
       firstName, 
@@ -154,7 +155,7 @@ router.post('/create-wallet', authenticateToken, async (req, res) => {
 });
 
 // POST /api/payments/p2p - Create P2P payment
-router.post('/p2p', authenticateToken, async (req, res) => {
+router.post('/p2p', paymentLimiter, authenticateToken, async (req, res) => {
   try {
     const { 
       toWalletId, 
@@ -238,7 +239,7 @@ router.get('/methods/:country', async (req, res) => {
 });
 
 // POST /api/payments/refund - Refund a payment
-router.post('/refund', authenticateToken, async (req, res) => {
+router.post('/refund', paymentLimiter, authenticateToken, async (req, res) => {
   try {
     const { paymentId, amount, reason } = req.body;
 
