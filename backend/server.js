@@ -144,6 +144,53 @@ if (process.env.NODE_ENV === 'production') {
 // Health check endpoint
 app.get('/health', healthCheck);
 
+// Rapyd health check endpoint (public)
+app.get('/rapyd-health', async (req, res) => {
+  try {
+    // Check if Rapyd environment variables are set
+    const hasAccessKey = !!process.env.RAPYD_ACCESS_KEY;
+    const hasSecretKey = !!process.env.RAPYD_SECRET_KEY;
+    const hasBaseUrl = !!process.env.RAPYD_BASE_URL;
+    
+    if (!hasAccessKey || !hasSecretKey || !hasBaseUrl) {
+      return res.status(400).json({
+        success: false,
+        message: 'Rapyd environment variables not set',
+        hasAccessKey,
+        hasSecretKey,
+        hasBaseUrl
+      });
+    }
+
+    const rapydService = require('./services/rapydPaymentService');
+    const result = await rapydService.getPaymentMethods('US');
+
+    if (result.success) {
+      res.json({
+        success: true,
+        message: 'Rapyd connection successful',
+        timestamp: new Date().toISOString(),
+        availableMethods: result.paymentMethods?.length || 0,
+        status: 'healthy'
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: `Rapyd connection failed: ${result.error}`,
+        status: 'unhealthy'
+      });
+    }
+  } catch (error) {
+    console.error('Rapyd health check error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Rapyd health check failed',
+      error: error.message,
+      status: 'error'
+    });
+  }
+});
+
 // Favicon endpoint to prevent 404 errors
 app.get('/favicon.ico', (req, res) => {
   res.status(204).end(); // No Content - prevents 404 errors
@@ -216,53 +263,6 @@ app.get('/stripe-test', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Stripe test failed',
-      error: error.message
-    });
-  }
-});
-
-// Rapyd health check endpoint (public)
-app.get('/rapyd-health', async (req, res) => {
-  try {
-    // Check if Rapyd environment variables are set
-    const hasAccessKey = !!process.env.RAPYD_ACCESS_KEY;
-    const hasSecretKey = !!process.env.RAPYD_SECRET_KEY;
-    const hasBaseUrl = !!process.env.RAPYD_BASE_URL;
-    
-    if (!hasAccessKey || !hasSecretKey || !hasBaseUrl) {
-      return res.status(400).json({
-        success: false,
-        message: 'Rapyd environment variables not set',
-        hasAccessKey,
-        hasSecretKey,
-        hasBaseUrl
-      });
-    }
-
-    const rapydService = require('./services/rapydPaymentService');
-    const result = await rapydService.getPaymentMethods('US');
-
-    if (result.success) {
-      res.json({
-        success: true,
-        message: 'Rapyd connection successful',
-        timestamp: new Date().toISOString(),
-        availableMethods: result.paymentMethods?.length || 0,
-        status: 'healthy'
-      });
-    } else {
-      res.status(400).json({
-        success: false,
-        message: `Rapyd connection failed: ${result.error}`,
-        status: 'unhealthy'
-      });
-    }
-  } catch (error) {
-    console.error('Rapyd health check error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Rapyd health check failed',
-      status: 'error',
       error: error.message
     });
   }
