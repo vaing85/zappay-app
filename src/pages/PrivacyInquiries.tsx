@@ -331,3 +331,4 @@ const PrivacyInquiries: React.FC = () => {
 };
 
 export default PrivacyInquiries;
+

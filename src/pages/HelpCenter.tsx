@@ -296,3 +296,4 @@ const HelpCenter: React.FC = () => {
 };
 
 export default HelpCenter;
+

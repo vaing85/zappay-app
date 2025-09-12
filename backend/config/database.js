@@ -22,7 +22,7 @@ const getDatabaseConfig = () => {
       dialectOptions: {
         ssl: process.env.NODE_ENV === 'production' ? {
           require: true,
-          rejectUnauthorized: process.env.DB_SSL_REJECT_UNAUTHORIZED !== 'false', // Default to true for security
+          rejectUnauthorized: false, // Set to false for DigitalOcean managed databases
           // Use certificates if available, otherwise fall back to connection string SSL
           ...(process.env.DB_CA_CERT && {
             ca: process.env.DB_CA_CERT,
@@ -52,7 +52,7 @@ const getDatabaseConfig = () => {
     dialectOptions: {
       ssl: process.env.NODE_ENV === 'production' ? {
         require: true,
-        rejectUnauthorized: process.env.DB_SSL_REJECT_UNAUTHORIZED !== 'false', // Default to true for security
+        rejectUnauthorized: false, // Set to false for DigitalOcean managed databases
         // Use certificates if available, otherwise fall back to connection string SSL
         ...(process.env.DB_CA_CERT && {
           ca: process.env.DB_CA_CERT,
@@ -104,10 +104,10 @@ const connectDB = async () => {
         error.message.includes('SSL') ||
         error.message.includes('TLS')) {
       
-      console.error('🚨 SSL/TLS connection failed. Check your database certificates and configuration.');
-      console.error('📝 Required environment variables: DB_CA_CERT, DB_CLIENT_CERT, DB_CLIENT_KEY');
-      console.error('📝 Ensure your database supports SSL and certificates are valid.');
-      console.error('📝 For DigitalOcean managed databases, use the provided connection string with SSL.');
+      console.error('🔒 SSL Certificate Error: This is likely due to DigitalOcean database SSL configuration');
+      console.error('📝 For DigitalOcean managed databases, the connection string should include SSL parameters');
+      console.error('📝 Check that DB_URL includes sslmode=require or similar SSL configuration');
+      console.error('📝 If using individual variables, ensure DB_SSL_REJECT_UNAUTHORIZED is set correctly');
     }
     
     throw error;

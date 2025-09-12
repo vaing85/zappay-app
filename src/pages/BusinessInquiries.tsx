@@ -301,3 +301,4 @@ const BusinessInquiries: React.FC = () => {
 };
 
 export default BusinessInquiries;
+
