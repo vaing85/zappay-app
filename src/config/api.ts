@@ -3,13 +3,9 @@
 
 // Get the API base URL from environment variables
 const getApiBaseUrl = (): string => {
-  // In production, use the DigitalOcean backend URL
-  if (process.env.NODE_ENV === 'production') {
-    return process.env.REACT_APP_API_URL || 'https://zappayapp-ie9d2.ondigitalocean.app';
-  }
-  
-  // In development, use localhost backend
-  return process.env.REACT_APP_API_URL || 'http://localhost:3001';
+  // Always use the DigitalOcean backend URL for API calls
+  // This bypasses Netlify redirects and goes directly to the backend
+  return process.env.REACT_APP_API_URL || 'https://zappayapp-ie9d2.ondigitalocean.app';
 };
 
 // Get the WebSocket URL
