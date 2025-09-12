@@ -23,6 +23,8 @@ const getDatabaseConfig = () => {
         ssl: process.env.NODE_ENV === 'production' ? {
           require: true,
           rejectUnauthorized: false, // Set to false for DigitalOcean managed databases
+          // Additional SSL options for DigitalOcean compatibility
+          checkServerIdentity: false,
           // Use certificates if available, otherwise fall back to connection string SSL
           ...(process.env.DB_CA_CERT && {
             ca: process.env.DB_CA_CERT,
@@ -53,6 +55,8 @@ const getDatabaseConfig = () => {
       ssl: process.env.NODE_ENV === 'production' ? {
         require: true,
         rejectUnauthorized: false, // Set to false for DigitalOcean managed databases
+        // Additional SSL options for DigitalOcean compatibility
+        checkServerIdentity: false,
         // Use certificates if available, otherwise fall back to connection string SSL
         ...(process.env.DB_CA_CERT && {
           ca: process.env.DB_CA_CERT,
