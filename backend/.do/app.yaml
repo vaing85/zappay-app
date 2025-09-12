@@ -1,11 +1,11 @@
 name: zappay-api
 services:
 - name: api
-  source_dir: /
+  source_dir: /backend
   github:
     repo: vaing85/zappay-app
     branch: main
-  run_command: node minimal-server.js
+  run_command: npm install && node minimal-server.js
   environment_slug: node-js
   instance_count: 1
   instance_size_slug: basic-xxs
