@@ -47,6 +47,42 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
+# API redirects - route API calls to backend
+[[redirects]]
+  from = "/api/*"
+  to = "https://zappayapp-ie9d2.ondigitalocean.app/api/:splat"
+  status = 200
+  force = true
+  headers = {X-From = "Netlify"}
+
+[[redirects]]
+  from = "/health"
+  to = "https://zappayapp-ie9d2.ondigitalocean.app/health"
+  status = 200
+  force = true
+  headers = {X-From = "Netlify"}
+
+[[redirects]]
+  from = "/rapyd-health"
+  to = "https://zappayapp-ie9d2.ondigitalocean.app/rapyd-health"
+  status = 200
+  force = true
+  headers = {X-From = "Netlify"}
+
+[[redirects]]
+  from = "/email-test"
+  to = "https://zappayapp-ie9d2.ondigitalocean.app/email-test"
+  status = 200
+  force = true
+  headers = {X-From = "Netlify"}
+
+[[redirects]]
+  from = "/sms-test"
+  to = "https://zappayapp-ie9d2.ondigitalocean.app/sms-test"
+  status = 200
+  force = true
+  headers = {X-From = "Netlify"}
+
 # SPA redirects - explicit configuration for Netlify
 [[redirects]]
   from = "/static/*"
