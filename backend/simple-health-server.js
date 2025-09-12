@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 /**
- * Ultra Minimal Server
- * Absolute simplest server possible - no dependencies
+ * Simple Health Server
+ * Absolute simplest server with guaranteed working health check
  */
 
 const http = require('http');
@@ -10,7 +10,7 @@ const http = require('http');
 const PORT = process.env.PORT || process.env.DO_PORT || 3001;
 const HOST = process.env.HOST || '0.0.0.0';
 
-console.log('🚀 Starting Ultra Minimal Server...');
+console.log('🚀 Starting Simple Health Server...');
 console.log(`   Port: ${PORT}`);
 console.log(`   Host: ${HOST}`);
 console.log(`   Environment: ${process.env.NODE_ENV || 'development'}`);
@@ -28,53 +28,27 @@ const server = http.createServer((req, res) => {
     return;
   }
   
-  // Health check endpoint
+  // Health check endpoint - SIMPLEST POSSIBLE
   if (req.url === '/health') {
-    try {
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({
-        status: 'OK',
-        timestamp: new Date().toISOString(),
-        uptime: process.uptime(),
-        environment: process.env.NODE_ENV || 'unknown',
-        port: PORT,
-        message: 'Ultra minimal server is running'
-      }));
-    } catch (error) {
-      console.error('Health check error:', error);
-      res.writeHead(500, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({
-        status: 'ERROR',
-        error: error.message,
-        timestamp: new Date().toISOString()
-      }));
-    }
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('OK');
     return;
   }
   
   // Root endpoint
   if (req.url === '/') {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({
-      message: 'ZapPay API Server',
-      status: 'running',
-      timestamp: new Date().toISOString(),
-      version: 'ultra-minimal'
-    }));
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('ZapPay API Server - Running');
     return;
   }
   
   // 404 for everything else
-  res.writeHead(404, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify({
-    error: 'Not Found',
-    message: `Cannot ${req.method} ${req.url}`,
-    timestamp: new Date().toISOString()
-  }));
+  res.writeHead(404, { 'Content-Type': 'text/plain' });
+  res.end('Not Found');
 });
 
 server.listen(PORT, HOST, () => {
-  console.log(`✅ Ultra minimal server running on ${HOST}:${PORT}`);
+  console.log(`✅ Simple health server running on ${HOST}:${PORT}`);
   console.log(`   Health check: http://${HOST}:${PORT}/health`);
 });
 

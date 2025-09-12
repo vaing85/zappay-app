@@ -5,7 +5,7 @@ services:
   github:
     repo: vaing85/zappay-app
     branch: main
-  run_command: node ultra-minimal-server.js
+  run_command: node simple-health-server.js
   environment_slug: node-js
   instance_count: 1
   instance_size_slug: basic-xxs
