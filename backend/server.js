@@ -20,8 +20,6 @@ const authRoutes = require('./routes/auth-simple');
 const userRoutes = require('./routes/users');
 const userManagementRoutes = require('./routes/userManagement');
 const transactionRoutes = require('./routes/transactions');
-const paymentRoutes = require('./routes/payments');
-const paymentPublicRoutes = require('./routes/payments-public');
 const webhookRoutes = require('./routes/webhooks');
 const groupRoutes = require('./routes/groups');
 const budgetRoutes = require('./routes/budgets');
@@ -315,46 +313,6 @@ app.get('/sw.js', (req, res) => {
   res.status(204).end(); // No Content - prevents 404 errors
 });
 
-// Simple Stripe test endpoint
-app.get('/stripe-test', async (req, res) => {
-  try {
-    // Check if Stripe environment variables are set
-    const hasStripeKey = !!process.env.STRIPE_SECRET_KEY;
-    const hasStripePubKey = !!process.env.STRIPE_PUBLISHABLE_KEY;
-    
-    if (!hasStripeKey || !hasStripePubKey) {
-      return res.status(400).json({
-        success: false,
-        message: 'Stripe environment variables not set',
-        hasSecretKey: hasStripeKey,
-        hasPublishableKey: hasStripePubKey
-      });
-    }
-
-    const stripeService = require('./services/stripePaymentService');
-    const result = await stripeService.createPaymentIntent(1, 'usd', { test: true });
-
-    if (result.success) {
-      res.json({
-        success: true,
-        message: 'Stripe connection successful',
-        timestamp: new Date().toISOString()
-      });
-    } else {
-      res.status(400).json({
-        success: false,
-        message: `Stripe connection failed: ${result.error}`
-      });
-    }
-  } catch (error) {
-    console.error('Stripe test error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Stripe test failed',
-      error: error.message
-    });
-  }
-});
 
 // Simple SendGrid test endpoint
 app.get('/email-test', async (req, res) => {
@@ -455,7 +413,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', authMiddleware, userRoutes);
 app.use('/api/user-management', userManagementRoutes);
 app.use('/api/transactions', authMiddleware, transactionRoutes);
-app.use('/api/payments', conditionalAuth, paymentRoutes); // Payment routes with conditional auth
 app.use('/api', webhookRoutes); // Webhooks don't need auth middleware
 app.use('/api/payments/webhook', rapydWebhookRoutes); // Rapyd webhooks
 app.use('/api/groups', authMiddleware, groupRoutes);
@@ -482,32 +439,6 @@ io.on('connection', (socket) => {
 // Make io available to routes
 app.set('io', io);
 
-// Public Stripe test endpoint (moved here to avoid 404 handler)
-app.post('/api/stripe/test', async (req, res) => {
-  try {
-    const stripeService = require('./services/stripePaymentService');
-    const result = await stripeService.createPaymentIntent(1, 'usd', { test: true });
-
-    if (result.success) {
-      res.json({
-        success: true,
-        message: 'Stripe connection successful',
-        timestamp: new Date().toISOString()
-      });
-    } else {
-      res.status(400).json({
-        success: false,
-        message: `Stripe connection failed: ${result.error}`
-      });
-    }
-  } catch (error) {
-    console.error('Stripe test error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Stripe test failed'
-    });
-  }
-});
 
 // 404 handler
 app.use('*', (req, res) => {
@@ -541,7 +472,6 @@ const startServer = async () => {
       console.log(`  - PORT: ${process.env.PORT || 'not set (using default 3001)'}`);
       console.log(`  - DB_URL: ${process.env.DB_URL ? 'set' : 'not set'}`);
       console.log(`  - REDIS_URL: ${process.env.REDIS_URL ? 'set' : 'not set'}`);
-      console.log(`  - STRIPE_SECRET_KEY: ${process.env.STRIPE_SECRET_KEY ? 'set' : 'not set'}`);
     } else {
       console.log('📝 Environment: Production mode - security logging disabled');
     }
