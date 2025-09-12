@@ -2,7 +2,7 @@ const http = require('http');
 const PORT = process.env.PORT || 8080;
 const HOST = '0.0.0.0';
 
-console.log('🔍 Starting Debug Server...');
+console.log('🔍 Starting Debug Server v3 - FORCE DEPLOYMENT...');
 console.log('Port:', PORT);
 console.log('Host:', HOST);
 console.log('This is a debug server to test deployment');
@@ -48,7 +48,7 @@ const server = http.createServer((req, res) => {
   
   // Default response
   res.writeHead(200, { 'Content-Type': 'text/plain' });
-  res.end('Debug server is running!');
+  res.end('Debug server v3 is running! FORCE DEPLOYMENT SUCCESS!');
 });
 
 server.listen(PORT, HOST, () => {
