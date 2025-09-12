@@ -4,7 +4,7 @@
   "description": "ZapPay Backend API Server",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "echo 'Starting basic server v3...' && node basic-server.js",
     "dev": "nodemon server.js",
     "test": "jest",
     "build": "echo 'No build step required'",
