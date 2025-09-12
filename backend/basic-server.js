@@ -3,7 +3,7 @@ const http = require('http');
 const PORT = process.env.PORT || 8080;
 const HOST = '0.0.0.0';
 
-console.log('Starting basic server v2...');
+console.log('Starting basic server v3...');
 console.log('Port:', PORT);
 console.log('Host:', HOST);
 
