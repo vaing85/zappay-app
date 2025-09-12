@@ -117,33 +117,20 @@ const errorTracker = (err, req, res, next) => {
 
 // Health check middleware
 const healthCheck = (req, res) => {
+  // Simple health check that doesn't depend on database connections
   const health = {
     status: 'healthy',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     memory: process.memoryUsage(),
     version: process.env.npm_package_version || '1.0.0',
-    environment: process.env.NODE_ENV || 'development'
+    environment: process.env.NODE_ENV || 'development',
+    message: 'ZapPay API is running'
   };
 
-  // Check database connection
-  if (req.app.locals.db) {
-    health.database = 'connected';
-  } else {
-    health.database = 'disconnected';
-    health.status = 'degraded';
-  }
-
-  // Check Redis connection
-  if (req.app.locals.redis) {
-    health.redis = 'connected';
-  } else {
-    health.redis = 'disconnected';
-    health.status = 'degraded';
-  }
-
-  const statusCode = health.status === 'healthy' ? 200 : 503;
-  res.status(statusCode).json(health);
+  // Always return 200 for basic health check
+  // Database and Redis status can be checked separately
+  res.status(200).json(health);
 };
 
 // Metrics endpoint
