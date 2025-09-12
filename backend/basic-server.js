@@ -7,7 +7,7 @@ console.log('Starting enhanced basic server v3...');
 console.log('Port:', PORT);
 console.log('Host:', HOST);
 
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => {
   console.log('Request received:', req.method, req.url);
   
   // Set CORS headers for all responses
