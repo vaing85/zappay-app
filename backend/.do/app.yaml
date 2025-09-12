@@ -5,7 +5,7 @@ services:
   github:
     repo: vaing85/zappay-app
     branch: main
-  run_command: npm start
+  run_command: node start-production.js
   environment_slug: node-js
   instance_count: 1
   instance_size_slug: basic-xxs
@@ -58,6 +58,26 @@ services:
     value: "12"
   - key: DB_SSL_REJECT_UNAUTHORIZED
     value: "false"
+  - key: RAPYD_ACCESS_KEY
+    value: ${RAPYD_ACCESS_KEY}
+  - key: RAPYD_SECRET_KEY
+    value: ${RAPYD_SECRET_KEY}
+  - key: RAPYD_BASE_URL
+    value: https://api.rapyd.net
+  - key: RAPYD_WEBHOOK_SECRET
+    value: ${RAPYD_WEBHOOK_SECRET}
+  - key: RAPYD_MERCHANT_ACCOUNT
+    value: ${RAPYD_MERCHANT_ACCOUNT}
+  - key: RAPYD_P2P_ENABLED
+    value: "true"
+  - key: ALLOWED_ORIGINS
+    value: https://zappay.site,https://www.zappay.site,https://zappay.com,https://www.zappay.com
+  - key: RATE_LIMIT_WINDOW_MS
+    value: "900000"
+  - key: JWT_EXPIRES_IN
+    value: "7d"
+  - key: BCRYPT_ROUNDS
+    value: "12"
   health_check:
     http_path: /health
     initial_delay_seconds: 10
