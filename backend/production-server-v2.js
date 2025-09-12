@@ -4,7 +4,7 @@ const { Sequelize } = require('sequelize');
 const PORT = process.env.PORT || 8080;
 const HOST = '0.0.0.0';
 
-console.log('🚀 Starting ZapPay Production Server v2 with Database...');
+console.log('🚀 Starting ZapPay Production Server v2.1 with Database...');
 console.log('Port:', PORT);
 console.log('Host:', HOST);
 console.log('Environment:', process.env.NODE_ENV || 'production');
