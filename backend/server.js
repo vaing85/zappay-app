@@ -26,6 +26,10 @@ const budgetRoutes = require('./routes/budgets');
 const notificationRoutes = require('./routes/notifications');
 const apiRoutes = require('./routes/api');
 const rapydWebhookRoutes = require('./routes/rapyd-webhooks');
+const rapydPaymentRoutes = require('./routes/rapyd-payments');
+const stripePaymentRoutes = require('./routes/stripe-payments');
+const stripeWebhookRoutes = require('./routes/stripe-webhooks');
+const stripeSubscriptionRoutes = require('./routes/stripe-subscriptions');
 
 // Import middleware
 const errorHandler = require('./middleware/errorHandler');
@@ -133,13 +137,20 @@ const corsOptions = {
     const allowedOrigins = process.env.CORS_ORIGIN?.split(',') || [
       "http://localhost:3000",
       "https://zappay.site",
+      "https://www.zappay.site",
+      "https://zappay.com",
+      "https://www.zappay.com",
       "https://zappayapp.netlify.app",
       "https://zappay-app-frontend.netlify.app"
     ];
     
+    console.log(`🔍 CORS check - Origin: ${origin}, Allowed: ${allowedOrigins.join(', ')}`);
+    
     if (allowedOrigins.includes(origin)) {
+      console.log(`✅ CORS allowed for origin: ${origin}`);
       callback(null, true);
     } else {
+      console.log(`❌ CORS blocked origin: ${origin}`);
       callback(new Error('Not allowed by CORS'));
     }
   },
@@ -173,12 +184,25 @@ app.use(cors(corsOptions));
 
 // Additional CORS headers middleware for extra validation
 app.use((req, res, next) => {
-  // Set additional CORS headers
-  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, Date, If-Modified-Since, If-None-Match, X-CSRF-Token');
-  res.header('Access-Control-Max-Age', '86400');
+  const origin = req.headers.origin;
+  const allowedOrigins = process.env.CORS_ORIGIN?.split(',') || [
+    "http://localhost:3000",
+    "https://zappay.site",
+    "https://www.zappay.site",
+    "https://zappay.com",
+    "https://www.zappay.com",
+    "https://zappayapp.netlify.app",
+    "https://zappay-app-frontend.netlify.app"
+  ];
+  
+  // Only set CORS headers if origin is allowed
+  if (origin && allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, Date, If-Modified-Since, If-None-Match, X-CSRF-Token');
+    res.header('Access-Control-Max-Age', '86400');
+  }
   
   // Handle preflight requests
   if (req.method === 'OPTIONS') {
@@ -355,6 +379,57 @@ app.get('/email-test', async (req, res) => {
   }
 });
 
+// Stripe health check endpoint
+app.get('/stripe-health', async (req, res) => {
+  try {
+    // Check if Stripe environment variables are set
+    const hasSecretKey = !!process.env.STRIPE_SECRET_KEY;
+    const hasPublishableKey = !!process.env.STRIPE_PUBLISHABLE_KEY;
+    const hasWebhookSecret = !!process.env.STRIPE_WEBHOOK_SECRET;
+    
+    if (!hasSecretKey || !hasPublishableKey) {
+      return res.status(400).json({
+        success: false,
+        message: 'Stripe environment variables not set',
+        hasSecretKey,
+        hasPublishableKey,
+        hasWebhookSecret
+      });
+    }
+
+    // Test Stripe connection by creating a test payment intent
+    const stripePaymentService = require('./services/stripePaymentService');
+    const testResult = await stripePaymentService.createPaymentIntent({
+      amount: 0.50, // Minimum amount for testing
+      currency: 'usd',
+      description: 'Stripe health check test'
+    });
+
+    if (testResult.success) {
+      res.json({
+        success: true,
+        message: 'Stripe connection successful',
+        timestamp: new Date().toISOString(),
+        publishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
+        webhookConfigured: hasWebhookSecret
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: `Stripe connection failed: ${testResult.error}`,
+        details: testResult.details
+      });
+    }
+  } catch (error) {
+    console.error('Stripe health check error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Stripe health check failed',
+      error: error.message
+    });
+  }
+});
+
 // Simple Twilio SMS test endpoint
 app.post('/sms-test', async (req, res) => {
   try {
@@ -415,6 +490,9 @@ app.use('/api/user-management', userManagementRoutes);
 app.use('/api/transactions', authMiddleware, transactionRoutes);
 app.use('/api', webhookRoutes); // Webhooks don't need auth middleware
 app.use('/api/payments/webhook', rapydWebhookRoutes); // Rapyd webhooks
+app.use('/api/payments/webhook/stripe', stripeWebhookRoutes); // Stripe webhooks
+app.use('/api/payments', stripePaymentRoutes); // Stripe payment routes
+app.use('/api/subscriptions', stripeSubscriptionRoutes); // Stripe subscription routes
 app.use('/api/groups', authMiddleware, groupRoutes);
 app.use('/api/budgets', authMiddleware, budgetRoutes);
 app.use('/api/notifications', authMiddleware, notificationRoutes);
