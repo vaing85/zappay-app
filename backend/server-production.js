@@ -134,6 +134,16 @@ app.get('/health', (req, res) => {
   }
 });
 
+// Test endpoint to verify CORS headers
+app.get('/test-cors', (req, res) => {
+  res.json({
+    message: 'CORS test endpoint',
+    origin: req.headers.origin,
+    serverFile: 'server-production.js',
+    timestamp: new Date().toISOString()
+  });
+});
+
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', authMiddleware, userRoutes);
