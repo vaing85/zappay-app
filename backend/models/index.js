@@ -1,17 +1,22 @@
 const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
-// Create Sequelize instance with robust SSL handling
+// Create Sequelize instance with robust SSL handling for DigitalOcean
 const dbUrl = process.env.DB_URL || 'postgresql://zappay_user:password@localhost:5432/zappay_dev';
 const sequelize = new Sequelize(dbUrl, {
   dialect: 'postgres',
   dialectOptions: {
     ssl: process.env.NODE_ENV === 'production' ? {
       require: true,
-      rejectUnauthorized: false,
-      // Additional SSL options for DigitalOcean
-      checkServerIdentity: () => undefined,
-      secureProtocol: 'TLSv1_2_method'
+      rejectUnauthorized: process.env.DB_SSL_REJECT_UNAUTHORIZED !== 'false',
+      // Additional SSL options for DigitalOcean compatibility
+      checkServerIdentity: false,
+      // Use certificates if available
+      ...(process.env.DB_CA_CERT && {
+        ca: process.env.DB_CA_CERT,
+        cert: process.env.DB_CLIENT_CERT,
+        key: process.env.DB_CLIENT_KEY,
+      })
     } : false
   },
   logging: process.env.NODE_ENV === 'development' ? console.log : false,
@@ -58,46 +63,45 @@ Group.associate({ User, Transaction, Group, Budget, Notification });
 Budget.associate({ User, Transaction, Group, Budget, Notification });
 Notification.associate({ User, Transaction, Group, Budget, Notification });
 
-// Database connection function
+// Database connection function with error handling
 const connectDB = async () => {
   try {
-    // Check if we have a valid database URL
-    if (!process.env.DB_URL) {
-      console.warn('⚠️ No database URL provided, using mock authentication');
-      return null;
-    }
-    
     await sequelize.authenticate();
     console.log('✅ Database connection established successfully');
     
-    // Sync models with database
-    await sequelize.sync({ alter: false });
-    console.log('✅ Database models synchronized');
+    // Sync database in production (create tables if they don't exist)
+    if (process.env.NODE_ENV === 'production') {
+      await sequelize.sync({ alter: true });
+      console.log('✅ Database synchronized');
+    }
     
     return sequelize;
   } catch (error) {
-    console.error('❌ Unable to connect to the database:', error);
+    console.error('❌ Unable to connect to the database:', error.message);
     
-    // If it's an SSL certificate error, provide helpful message
-    if (error.message.includes('self-signed certificate') || error.message.includes('certificate')) {
+    // Log SSL/TLS connection issues for debugging
+    if (error.message.includes('self-signed certificate') || 
+        error.message.includes('certificate') || 
+        error.message.includes('SSL') ||
+        error.message.includes('TLS')) {
+      
       console.error('🔒 SSL Certificate Error: This is likely due to DigitalOcean database SSL configuration');
-      console.error('💡 The database connection will be retried automatically');
+      console.error('📝 For DigitalOcean managed databases, the connection string should include SSL parameters');
+      console.error('📝 Check that DB_URL includes sslmode=require or similar SSL configuration');
+      console.error('📝 If using individual variables, ensure DB_SSL_REJECT_UNAUTHORIZED is set correctly');
     }
     
-    // Don't throw the error immediately - let the app continue with mock auth
-    console.warn('⚠️ Continuing with mock authentication due to database connection issue');
-    return null;
+    throw error;
   }
 };
 
-// Close database connection function
+// Close database connection
 const closeDB = async () => {
   try {
     await sequelize.close();
-    console.log('🔌 Database connection closed');
+    console.log('✅ Database connection closed');
   } catch (error) {
-    console.error('❌ Error closing database connection:', error);
-    throw error;
+    console.error('❌ Error closing database connection:', error.message);
   }
 };
 
