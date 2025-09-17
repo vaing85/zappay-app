@@ -165,34 +165,13 @@ const corsOptions = {
   maxAge: 86400 // 24 hours
 };
 
-app.use(cors(corsOptions));
-
-// Additional CORS headers middleware for extra validation
+// TEMPORARILY DISABLE CORS FOR DEBUGGING - MANUAL HEADERS
 app.use((req, res, next) => {
-  const origin = req.headers.origin;
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
   
-  // Get allowed origins from environment or use defaults
-  const envOrigins = process.env.CORS_ORIGIN || process.env.ALLOWED_ORIGINS;
-  const allowedOrigins = envOrigins ? envOrigins.split(',').map(o => o.trim()) : [
-    "http://localhost:3000",
-    "https://zappay.site",
-    "https://www.zappay.site",
-    "https://zappay.com",
-    "https://www.zappay.com",
-    "https://zappayapp.netlify.app",
-    "https://zappay-app-frontend.netlify.app"
-  ];
-  
-  // Only set CORS headers if origin is allowed (case-insensitive)
-  if (origin && allowedOrigins.some(allowed => allowed.toLowerCase() === origin.toLowerCase())) {
-    res.header('Access-Control-Allow-Origin', origin);
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, Date, If-Modified-Since, If-None-Match, X-CSRF-Token');
-    res.header('Access-Control-Max-Age', '86400');
-  }
-  
-  // Handle preflight requests
   if (req.method === 'OPTIONS') {
     res.status(200).end();
     return;
@@ -200,6 +179,8 @@ app.use((req, res, next) => {
   
   next();
 });
+
+// app.use(cors(corsOptions));
 
 // Handle preflight requests explicitly
 app.options('*', cors(corsOptions));
@@ -244,10 +225,21 @@ app.get('/debug/cors', (req, res) => {
     allowedOrigins: process.env.ALLOWED_ORIGINS,
     requestOrigin: req.headers.origin,
     userAgent: req.headers['user-agent'],
+    serverFile: 'server.js',
     timestamp: new Date().toISOString()
   };
   
   res.json(debugData);
+});
+
+// Test endpoint to verify which server file is running
+app.get('/test-server', (req, res) => {
+  res.json({
+    message: 'Server test endpoint',
+    serverFile: 'server.js',
+    corsStatus: 'MANUAL_HEADERS_APPLIED',
+    timestamp: new Date().toISOString()
+  });
 });
 
 // Metrics endpoint (production only)
