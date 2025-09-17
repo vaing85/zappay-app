@@ -128,42 +128,16 @@ app.use(helmet({
   referrerPolicy: { policy: "strict-origin-when-cross-origin" }
 }));
 
-// CORS configuration
+// CORS configuration - TEMPORARILY ALLOW ALL ORIGINS FOR DEBUGGING
 const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    // Get allowed origins from environment or use defaults
-    const envOrigins = process.env.CORS_ORIGIN || process.env.ALLOWED_ORIGINS;
-    const allowedOrigins = envOrigins ? envOrigins.split(',').map(o => o.trim()) : [
-      "http://localhost:3000",
-      "https://zappay.site",
-      "https://www.zappay.site",
-      "https://zappay.com",
-      "https://www.zappay.com",
-      "https://zappayapp.netlify.app",
-      "https://zappay-app-frontend.netlify.app"
-    ];
-    
     console.log(`🔍 CORS check - Origin: "${origin}"`);
     console.log(`🔍 CORS check - Environment CORS_ORIGIN: "${process.env.CORS_ORIGIN}"`);
     console.log(`🔍 CORS check - Environment ALLOWED_ORIGINS: "${process.env.ALLOWED_ORIGINS}"`);
-    console.log(`🔍 CORS check - Allowed origins: [${allowedOrigins.map(o => `"${o}"`).join(', ')}]`);
     
-    // Check if origin is in allowed list (case-insensitive)
-    const isAllowed = allowedOrigins.some(allowed => 
-      allowed.toLowerCase() === origin.toLowerCase()
-    );
-    
-    if (isAllowed) {
-      console.log(`✅ CORS allowed for origin: ${origin}`);
-      callback(null, true);
-    } else {
-      console.log(`❌ CORS blocked origin: ${origin}`);
-      console.log(`❌ Available origins: ${allowedOrigins.join(', ')}`);
-      callback(new Error('Not allowed by CORS'));
-    }
+    // TEMPORARILY ALLOW ALL ORIGINS FOR DEBUGGING
+    console.log(`✅ CORS temporarily allowing all origins for debugging`);
+    callback(null, true);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
