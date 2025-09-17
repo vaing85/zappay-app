@@ -34,19 +34,22 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-// CORS configuration
-const corsOptions = {
-  origin: [
-    'https://zappay.site',
-    'https://www.zappay.site',
-    'https://zappay.com',
-    'https://www.zappay.com',
-    'https://zappayapp-ie9d2.ondigitalocean.app'
-  ],
-  credentials: true,
-  optionsSuccessStatus: 200
-};
-app.use(cors(corsOptions));
+// TEMPORARILY DISABLE CORS FOR DEBUGGING - MANUAL HEADERS
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+  
+  next();
+});
+
+// app.use(cors(corsOptions));
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
@@ -58,7 +61,19 @@ app.get('/health', (req, res) => {
     status: 'healthy',
     timestamp: new Date().toISOString(),
     version: '1.0.0',
-    environment: process.env.NODE_ENV || 'production'
+    environment: process.env.NODE_ENV || 'production',
+    serverFile: 'production-server.js',
+    corsStatus: 'MANUAL_HEADERS_APPLIED'
+  });
+});
+
+// Test endpoint to verify which server file is running
+app.get('/test-production', (req, res) => {
+  res.json({
+    message: 'Production server test endpoint',
+    serverFile: 'production-server.js',
+    corsStatus: 'MANUAL_HEADERS_APPLIED',
+    timestamp: new Date().toISOString()
   });
 });
 
