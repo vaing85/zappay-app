@@ -263,6 +263,19 @@ if (process.env.NODE_ENV === 'production') {
 // Health check endpoint
 app.get('/health', process.env.NODE_ENV === 'production' ? prodHealthCheck : healthCheck);
 
+// Debug endpoint for CORS troubleshooting
+app.get('/debug/cors', (req, res) => {
+  const debugData = {
+    corsOrigin: process.env.CORS_ORIGIN,
+    allowedOrigins: process.env.ALLOWED_ORIGINS,
+    requestOrigin: req.headers.origin,
+    userAgent: req.headers['user-agent'],
+    timestamp: new Date().toISOString()
+  };
+  
+  res.json(debugData);
+});
+
 // Metrics endpoint (production only)
 if (process.env.NODE_ENV === 'production') {
   app.get('/metrics', metrics);
