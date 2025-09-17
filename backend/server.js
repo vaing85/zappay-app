@@ -134,7 +134,9 @@ const corsOptions = {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     
-    const allowedOrigins = process.env.CORS_ORIGIN?.split(',') || [
+    // Get allowed origins from environment or use defaults
+    const envOrigins = process.env.CORS_ORIGIN || process.env.ALLOWED_ORIGINS;
+    const allowedOrigins = envOrigins ? envOrigins.split(',').map(o => o.trim()) : [
       "http://localhost:3000",
       "https://zappay.site",
       "https://www.zappay.site",
@@ -144,13 +146,22 @@ const corsOptions = {
       "https://zappay-app-frontend.netlify.app"
     ];
     
-    console.log(`🔍 CORS check - Origin: ${origin}, Allowed: ${allowedOrigins.join(', ')}`);
+    console.log(`🔍 CORS check - Origin: "${origin}"`);
+    console.log(`🔍 CORS check - Environment CORS_ORIGIN: "${process.env.CORS_ORIGIN}"`);
+    console.log(`🔍 CORS check - Environment ALLOWED_ORIGINS: "${process.env.ALLOWED_ORIGINS}"`);
+    console.log(`🔍 CORS check - Allowed origins: [${allowedOrigins.map(o => `"${o}"`).join(', ')}]`);
     
-    if (allowedOrigins.includes(origin)) {
+    // Check if origin is in allowed list (case-insensitive)
+    const isAllowed = allowedOrigins.some(allowed => 
+      allowed.toLowerCase() === origin.toLowerCase()
+    );
+    
+    if (isAllowed) {
       console.log(`✅ CORS allowed for origin: ${origin}`);
       callback(null, true);
     } else {
       console.log(`❌ CORS blocked origin: ${origin}`);
+      console.log(`❌ Available origins: ${allowedOrigins.join(', ')}`);
       callback(new Error('Not allowed by CORS'));
     }
   },
@@ -185,7 +196,10 @@ app.use(cors(corsOptions));
 // Additional CORS headers middleware for extra validation
 app.use((req, res, next) => {
   const origin = req.headers.origin;
-  const allowedOrigins = process.env.CORS_ORIGIN?.split(',') || [
+  
+  // Get allowed origins from environment or use defaults
+  const envOrigins = process.env.CORS_ORIGIN || process.env.ALLOWED_ORIGINS;
+  const allowedOrigins = envOrigins ? envOrigins.split(',').map(o => o.trim()) : [
     "http://localhost:3000",
     "https://zappay.site",
     "https://www.zappay.site",
@@ -195,8 +209,8 @@ app.use((req, res, next) => {
     "https://zappay-app-frontend.netlify.app"
   ];
   
-  // Only set CORS headers if origin is allowed
-  if (origin && allowedOrigins.includes(origin)) {
+  // Only set CORS headers if origin is allowed (case-insensitive)
+  if (origin && allowedOrigins.some(allowed => allowed.toLowerCase() === origin.toLowerCase())) {
     res.header('Access-Control-Allow-Origin', origin);
     res.header('Access-Control-Allow-Credentials', 'true');
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
