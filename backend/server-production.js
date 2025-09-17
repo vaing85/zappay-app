@@ -43,25 +43,15 @@ app.use(helmet({
   }
 }));
 
-// CORS configuration
+// CORS configuration - TEMPORARILY ALLOW ALL ORIGINS FOR DEBUGGING
 const corsOptions = {
   origin: function (origin, callback) {
-    const allowedOrigins = process.env.CORS_ORIGIN?.split(',') || [
-      'https://zappay.site',
-      'https://www.zappay.site',
-      'https://zappay.com',
-      'https://www.zappay.com'
-    ];
+    console.log(`🔍 CORS check - Origin: "${origin}"`);
+    console.log(`🔍 CORS check - Environment CORS_ORIGIN: "${process.env.CORS_ORIGIN}"`);
     
-    // Allow requests with no origin (mobile apps, etc.)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      console.warn(`🚫 CORS blocked origin: ${origin}`);
-      callback(new Error('Not allowed by CORS'));
-    }
+    // TEMPORARILY ALLOW ALL ORIGINS FOR DEBUGGING
+    console.log(`✅ CORS temporarily allowing all origins for debugging`);
+    callback(null, true);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
