@@ -17,16 +17,19 @@ router.use(paymentLimiter);
  */
 router.post('/kyc/validate', async (req, res) => {
   try {
-    const { customerData } = req.body;
+    const { customerData, customerId, firstName, lastName, email } = req.body;
     
-    if (!customerData) {
+    // Support both formats: customerData object or individual fields
+    const data = customerData || { customerId, firstName, lastName, email };
+    
+    if (!data.customerId && !data.firstName) {
       return res.status(400).json({
         success: false,
-        message: 'Customer data is required'
+        message: 'Customer data is required (customerId, firstName, lastName, email)'
       });
     }
 
-    const validation = await kycService.validateCustomerInfo(customerData);
+    const validation = await kycService.validateCustomerInfo(data);
     
     // Log validation attempt
     await auditService.logKYC(customerData.userId || 'unknown', 'customer_validation', {
@@ -186,6 +189,7 @@ router.post('/monitor-transaction', async (req, res) => {
 /**
  * Generate Compliance Report
  * POST /api/compliance/reports/generate
+ * GET /api/compliance/reports/generate
  */
 router.post('/reports/generate', async (req, res) => {
   try {
@@ -214,6 +218,44 @@ router.post('/reports/generate', async (req, res) => {
     logger.error('Compliance report generation error', {
       error: error.message,
       body: req.body
+    });
+
+    res.status(500).json({
+      success: false,
+      message: 'Compliance report generation failed',
+      error: error.message
+    });
+  }
+});
+
+// GET route for reports with query parameters
+router.get('/reports/generate', async (req, res) => {
+  try {
+    const { startDate, endDate, reportType = 'comprehensive' } = req.query;
+    
+    if (!startDate || !endDate) {
+      return res.status(400).json({
+        success: false,
+        message: 'Start date and end date are required as query parameters'
+      });
+    }
+
+    const result = await auditService.generateComplianceReport(startDate, endDate, reportType);
+    
+    // Log report generation
+    await auditService.logCompliance('report_generated', {
+      reportId: result.report?.id,
+      reportType,
+      startDate,
+      endDate
+    });
+
+    res.json(result);
+
+  } catch (error) {
+    logger.error('Compliance report generation error (GET)', {
+      error: error.message,
+      query: req.query
     });
 
     res.status(500).json({

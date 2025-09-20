@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { usePayment } from '../contexts/PaymentContext';
-import PaymentMethodsManager from '../components/PaymentMethodsManager';
+// PaymentMethodsManager removed - using Stripe Elements instead
 import { 
   PlusIcon, 
   CreditCardIcon, 
@@ -13,7 +13,7 @@ import {
 
 const PaymentSettings: React.FC = () => {
   const { user } = useAuth();
-  const { paymentMethods, createWallet, getPaymentMethods } = usePayment();
+  const { paymentMethods, getPaymentMethods } = usePayment();
   const [showAddForm, setShowAddForm] = useState(false);
 
   if (!user) {
@@ -22,20 +22,10 @@ const PaymentSettings: React.FC = () => {
 
   const handleQuickAdd = async () => {
     try {
-      // Create a wallet for the user
-      await createWallet({
-        firstName: user.firstName || 'John',
-        lastName: user.lastName || 'Doe',
-        email: user.email,
-        phoneNumber: user.phoneNumber || '',
-        country: user.address?.country || 'US',
-        currency: 'USD'
-      });
-      
       // Load available payment methods
-      await getPaymentMethods(user.address?.country || 'US');
+      await getPaymentMethods();
     } catch (error) {
-      console.error('Error setting up payment methods:', error);
+      console.error('Error loading payment methods:', error);
     }
   };
 
@@ -137,7 +127,16 @@ const PaymentSettings: React.FC = () => {
         transition={{ duration: 0.6, delay: 0.2 }}
         className="space-y-8"
       >
-        <PaymentMethodsManager />
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Payment Methods</h3>
+          <p className="text-gray-600 mb-4">
+            Manage your payment methods using Stripe Elements for secure processing.
+          </p>
+          <div className="text-sm text-gray-500">
+            Payment method management is handled through Stripe's secure payment processing.
+            All card data is tokenized and never stored on our servers for maximum security.
+          </div>
+        </div>
       </motion.div>
     </div>
   );

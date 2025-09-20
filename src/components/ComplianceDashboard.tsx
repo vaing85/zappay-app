@@ -4,7 +4,6 @@ import {
   Card,
   CardContent,
   Typography,
-  Grid,
   Table,
   TableBody,
   TableCell,
@@ -247,8 +246,8 @@ const ComplianceDashboard: React.FC = () => {
 
       {/* Metrics Cards */}
       {metrics && (
-        <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid item xs={12} sm={6} md={3}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-6">
+          <div>
             <Card>
               <CardContent>
                 <Box display="flex" alignItems="center">
@@ -262,8 +261,8 @@ const ComplianceDashboard: React.FC = () => {
                 </Box>
               </CardContent>
             </Card>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
+          </div>
+          <div className="col-span-1 sm:col-span-2 md:col-span-3">
             <Card>
               <CardContent>
                 <Box display="flex" alignItems="center">
@@ -277,8 +276,8 @@ const ComplianceDashboard: React.FC = () => {
                 </Box>
               </CardContent>
             </Card>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
+          </div>
+          <div className="col-span-1 sm:col-span-2 md:col-span-3">
             <Card>
               <CardContent>
                 <Box display="flex" alignItems="center">
@@ -292,8 +291,8 @@ const ComplianceDashboard: React.FC = () => {
                 </Box>
               </CardContent>
             </Card>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
+          </div>
+          <div className="col-span-1 sm:col-span-2 md:col-span-3">
             <Card>
               <CardContent>
                 <Box display="flex" alignItems="center">
@@ -307,8 +306,8 @@ const ComplianceDashboard: React.FC = () => {
                 </Box>
               </CardContent>
             </Card>
-          </Grid>
-        </Grid>
+          </div>
+        </div>
       )}
 
       {/* Tabs */}
@@ -447,32 +446,32 @@ const ComplianceDashboard: React.FC = () => {
               <Typography variant="h6" gutterBottom>
                 Activity Details
               </Typography>
-              <Grid container spacing={2}>
-                <Grid item xs={6}>
+              <div className="grid grid-cols-12 gap-6">
+                <div className="col-span-6">
                   <Typography variant="body2" color="text.secondary">
                     User ID
                   </Typography>
                   <Typography variant="body1">
                     {selectedActivity.userId}
                   </Typography>
-                </Grid>
-                <Grid item xs={6}>
+                </div>
+                <div className="col-span-6">
                   <Typography variant="body2" color="text.secondary">
                     Type
                   </Typography>
                   <Typography variant="body1">
                     {selectedActivity.type}
                   </Typography>
-                </Grid>
-                <Grid item xs={6}>
+                </div>
+                <div className="col-span-6">
                   <Typography variant="body2" color="text.secondary">
                     Amount
                   </Typography>
                   <Typography variant="body1">
                     {selectedActivity.currency} {selectedActivity.amount.toLocaleString()}
                   </Typography>
-                </Grid>
-                <Grid item xs={6}>
+                </div>
+                <div className="col-span-6">
                   <Typography variant="body2" color="text.secondary">
                     Risk Score
                   </Typography>
@@ -480,16 +479,16 @@ const ComplianceDashboard: React.FC = () => {
                     label={selectedActivity.riskScore}
                     color={getRiskColor(selectedActivity.riskScore)}
                   />
-                </Grid>
-                <Grid item xs={12}>
+                </div>
+                <div className="col-span-12">
                   <Typography variant="body2" color="text.secondary">
                     Description
                   </Typography>
                   <Typography variant="body1">
                     {selectedActivity.description}
                   </Typography>
-                </Grid>
-              </Grid>
+                </div>
+              </div>
             </Box>
           )}
         </DialogContent>

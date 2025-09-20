@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 
 const SendMoney: React.FC = () => {
   const { user } = useAuth();
-  const { paymentMethods, createPayment, isLoading } = usePayment();
+  const { paymentMethods, createPaymentIntent, isLoading } = usePayment();
   const [recipient, setRecipient] = useState('');
   const [amount, setAmount] = useState('');
   const [note, setNote] = useState('');
@@ -16,7 +16,7 @@ const SendMoney: React.FC = () => {
   // Set default payment method when available
   useEffect(() => {
     if (paymentMethods.length > 0 && !selectedPaymentMethod) {
-      const defaultMethod = paymentMethods.find(pm => pm.isDefault);
+      const defaultMethod = paymentMethods[0]; // Use first payment method as default
       if (defaultMethod) {
         setSelectedPaymentMethod(defaultMethod.id);
       } else {
@@ -47,16 +47,11 @@ const SendMoney: React.FC = () => {
     setLoading(true);
     
     try {
-      const result = await createPayment({
-        amount: sendAmount,
-        currency: 'USD',
-        paymentMethod: selectedPaymentMethod,
-        description: note || `Payment to ${recipient}`,
-        metadata: {
-          recipient: recipient,
-          type: 'send_money'
-        }
-      });
+      const result = await createPaymentIntent(
+        sendAmount,
+        'USD',
+        note || `Payment to ${recipient}`
+      );
 
       if (result.success) {
         toast.success(`⚡ $${sendAmount} zapped to ${recipient}`);
@@ -140,7 +135,7 @@ const SendMoney: React.FC = () => {
               >
                 {paymentMethods.map((method) => (
                   <option key={method.id} value={method.id}>
-                    {method.name} {method.last4 ? `(****${method.last4})` : ''} {method.isDefault ? '- Default' : ''}
+                    {method.billing_details.name || 'Card'} {method.card?.last4 ? `(****${method.card.last4})` : ''}
                   </option>
                 ))}
               </select>

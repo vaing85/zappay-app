@@ -24,7 +24,7 @@ import {
 import { getRecentTransactions } from '../services/mockData';
 import { getAriaLabel } from '../utils/accessibility';
 import RealtimeBalanceIndicator from '../components/RealtimeBalanceIndicator';
-import DepositWithdrawModal from '../components/DepositWithdrawModal';
+// DepositWithdrawModal removed - using Stripe for payments
 
 const Dashboard: React.FC = memo(() => {
   const { user } = useAuth();
@@ -489,17 +489,55 @@ const Dashboard: React.FC = memo(() => {
         </Link>
       </motion.div>
 
-      {/* Modals */}
-      <DepositWithdrawModal
-        isOpen={showDepositModal}
-        onClose={() => setShowDepositModal(false)}
-        type="deposit"
-      />
-      <DepositWithdrawModal
-        isOpen={showWithdrawModal}
-        onClose={() => setShowWithdrawModal(false)}
-        type="withdraw"
-      />
+      {/* Modals - Using Stripe for secure payments */}
+      {showDepositModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold mb-4">Deposit Funds</h3>
+            <p className="text-gray-600 mb-4">
+              Deposits are processed securely through Stripe. All payment data is encrypted and PCI compliant.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowDepositModal(false)}
+                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => setShowDepositModal(false)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Continue with Stripe
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {showWithdrawModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold mb-4">Withdraw Funds</h3>
+            <p className="text-gray-600 mb-4">
+              Withdrawals are processed securely through Stripe. Funds will be transferred to your linked account.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowWithdrawModal(false)}
+                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => setShowWithdrawModal(false)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Continue with Stripe
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 });

@@ -8,6 +8,7 @@ export interface User {
   profilePicture?: string;
   isVerified: boolean;
   createdAt: string;
+  token?: string;
   // Additional properties for Profile page
   occupation?: string;
   company?: string;
