@@ -85,7 +85,7 @@ const authLimiter = rateLimit(getRateLimitConfig(
 // Payment endpoints (very restrictive for financial security)
 const paymentLimiter = rateLimit(getRateLimitConfig(
   15 * 60 * 1000, // 15 minutes
-  20, // 20 payment requests per window
+  100, // 100 payment requests per window (increased from 20)
   'Too many payment requests, please try again later',
   {
     skipFailed: true, // Don't count failed payment attempts

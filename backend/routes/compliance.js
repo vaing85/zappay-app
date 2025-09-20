@@ -32,7 +32,7 @@ router.post('/kyc/validate', async (req, res) => {
     const validation = await kycService.validateCustomerInfo(data);
     
     // Log validation attempt
-    await auditService.logKYC(customerData.userId || 'unknown', 'customer_validation', {
+    await auditService.logKYC(data.customerId || 'unknown', 'customer_validation', {
       validationResult: validation.isValid,
       riskScore: validation.riskScore,
       verificationLevel: validation.verificationLevel
