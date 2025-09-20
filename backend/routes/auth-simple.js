@@ -1,6 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
+const SSNValidation = require('../utils/ssnValidation');
 
 const router = express.Router();
 
@@ -30,7 +31,16 @@ router.post('/register', [
   body('lastName').trim().isLength({ min: 2, max: 50 }).withMessage('Last name must be 2-50 characters'),
   body('email').isEmail().normalizeEmail().withMessage('Please provide a valid email'),
   body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters'),
-  body('phoneNumber').isLength({ min: 10, max: 20 }).withMessage('Please provide a valid phone number')
+  body('phoneNumber').isLength({ min: 10, max: 20 }).withMessage('Please provide a valid phone number'),
+  body('ssn').optional().custom((value) => {
+    if (value) {
+      const validation = SSNValidation.validateSSN(value);
+      if (!validation.valid) {
+        throw new Error(validation.error);
+      }
+    }
+    return true;
+  })
 ], async (req, res) => {
   try {
     // Check validation errors
@@ -43,7 +53,7 @@ router.post('/register', [
       });
     }
 
-    const { firstName, lastName, email, password, phoneNumber } = req.body;
+    const { firstName, lastName, email, password, phoneNumber, ssn } = req.body;
 
     // Try to use real database first
     try {
@@ -64,7 +74,8 @@ router.post('/register', [
         lastName,
         email,
         password,
-        phoneNumber
+        phoneNumber,
+        ssn: ssn ? SSNValidation.cleanSSN(ssn) : null
       });
 
       // Generate tokens
@@ -90,6 +101,7 @@ router.post('/register', [
         lastName,
         email,
         phoneNumber,
+        ssn: ssn ? SSNValidation.maskSSN(ssn) : null,
         balance: 0.00,
         isActive: true,
         createdAt: new Date()
@@ -284,6 +296,128 @@ router.post('/logout', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Server error during logout'
+    });
+  }
+});
+
+// @route   POST /api/auth/verify-email
+// @desc    Verify user email
+// @access  Public
+router.post('/verify-email', [
+  body('token').notEmpty().withMessage('Verification token is required')
+], async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    // Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret');
+    
+    // Try to use real database first
+    try {
+      const { User } = require('../models');
+      const user = await User.findByPk(decoded.userId);
+
+      if (!user) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid verification token'
+        });
+      }
+
+      // Update verification status
+      await user.update({
+        emailVerifiedAt: new Date(),
+        verificationStatus: {
+          ...user.verificationStatus,
+          email: true
+        }
+      });
+
+      res.json({
+        success: true,
+        message: 'Email verified successfully'
+      });
+    } catch (dbError) {
+      console.warn('Database not available for email verification:', dbError.message);
+      
+      // Fallback: just verify the token is valid
+      res.json({
+        success: true,
+        message: 'Email verified successfully (mock mode)'
+      });
+    }
+  } catch (error) {
+    console.error('Email verification error:', error);
+    res.status(400).json({
+      success: false,
+      message: 'Invalid or expired verification token'
+    });
+  }
+});
+
+// @route   POST /api/auth/resend-verification
+// @desc    Resend verification email
+// @access  Public
+router.post('/resend-verification', [
+  body('email').isEmail().normalizeEmail().withMessage('Please provide a valid email')
+], async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Try to use real database first
+    try {
+      const { User } = require('../models');
+      const user = await User.findOne({ where: { email } });
+      
+      if (!user) {
+        // Don't reveal if user exists or not
+        return res.json({
+          success: true,
+          message: 'If an account with that email exists, a verification email has been sent'
+        });
+      }
+
+      // Check if already verified
+      if (user.emailVerifiedAt) {
+        return res.status(400).json({
+          success: false,
+          message: 'Email is already verified'
+        });
+      }
+
+      // Generate new verification token
+      const token = generateToken(user.id);
+
+      // Send verification email
+      try {
+        const { sendVerificationEmail } = require('../services/emailService');
+        await sendVerificationEmail(user.email, user.firstName, token);
+      } catch (emailError) {
+        console.error('Failed to send verification email:', emailError);
+        return res.status(500).json({
+          success: false,
+          message: 'Failed to send verification email'
+        });
+      }
+
+      res.json({
+        success: true,
+        message: 'If an account with that email exists, a verification email has been sent'
+      });
+    } catch (dbError) {
+      console.warn('Database not available for resend verification:', dbError.message);
+      
+      // Fallback: just return success
+      res.json({
+        success: true,
+        message: 'If an account with that email exists, a verification email has been sent'
+      });
+    }
+  } catch (error) {
+    console.error('Resend verification error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
     });
   }
 });

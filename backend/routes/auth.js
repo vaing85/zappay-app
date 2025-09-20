@@ -284,6 +284,59 @@ router.post('/verify-email', [
   }
 });
 
+// @route   POST /api/auth/resend-verification
+// @desc    Resend verification email
+// @access  Public
+router.post('/resend-verification', authLimiter, [
+  body('email').isEmail().normalizeEmail().withMessage('Please provide a valid email')
+], async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      // Don't reveal if user exists or not
+      return res.json({
+        success: true,
+        message: 'If an account with that email exists, a verification email has been sent'
+      });
+    }
+
+    // Check if already verified
+    if (user.emailVerifiedAt) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email is already verified'
+      });
+    }
+
+    // Generate new verification token
+    const token = generateToken(user.id);
+
+    // Send verification email
+    try {
+      await sendVerificationEmail(user.email, user.firstName, token);
+    } catch (emailError) {
+      console.error('Failed to send verification email:', emailError);
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to send verification email'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'If an account with that email exists, a verification email has been sent'
+    });
+  } catch (error) {
+    console.error('Resend verification error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
+    });
+  }
+});
+
 // @route   POST /api/auth/forgot-password
 // @desc    Send password reset email
 // @access  Public

@@ -46,6 +46,18 @@ module.exports = (sequelize) => {
         notEmpty: true
       }
     },
+    ssn: {
+      type: DataTypes.STRING,
+      allowNull: true, // Optional during registration, required for verification
+      validate: {
+        len: [9, 11] // 9 digits or 9 digits with dashes
+      }
+    },
+    ssnEncrypted: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      comment: 'Encrypted SSN for secure storage'
+    },
     balance: {
       type: DataTypes.DECIMAL(10, 2),
       defaultValue: 0.00,
@@ -136,11 +148,21 @@ module.exports = (sequelize) => {
           const saltRounds = parseInt(process.env.BCRYPT_ROUNDS) || 12;
           user.password = await bcrypt.hash(user.password, saltRounds);
         }
+        if (user.ssn) {
+          const { encryptSSN } = require('../services/ssnEncryptionService');
+          user.ssnEncrypted = await encryptSSN(user.ssn);
+          user.ssn = null; // Don't store plain text SSN
+        }
       },
       beforeUpdate: async (user) => {
         if (user.changed('password')) {
           const saltRounds = parseInt(process.env.BCRYPT_ROUNDS) || 12;
           user.password = await bcrypt.hash(user.password, saltRounds);
+        }
+        if (user.changed('ssn') && user.ssn) {
+          const { encryptSSN } = require('../services/ssnEncryptionService');
+          user.ssnEncrypted = await encryptSSN(user.ssn);
+          user.ssn = null; // Don't store plain text SSN
         }
       }
     }
@@ -154,6 +176,8 @@ module.exports = (sequelize) => {
   User.prototype.toJSON = function() {
     const values = Object.assign({}, this.get());
     delete values.password;
+    delete values.ssn;
+    delete values.ssnEncrypted;
     return values;
   };
 

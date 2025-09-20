@@ -20,8 +20,8 @@ app.use(helmet({
       styleSrc: ["'self'", "'unsafe-inline'"],
       scriptSrc: ["'self'"],
       imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'", "https://sandboxapi.rapyd.net", "https://api.rapyd.net"],
-      frameSrc: ["'self'", "https://sandboxapi.rapyd.net", "https://api.rapyd.net"],
+      connectSrc: ["'self'", "https://api.stripe.com"],
+      frameSrc: ["'self'", "https://js.stripe.com"],
     },
   },
 }));

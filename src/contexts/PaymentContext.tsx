@@ -1,41 +1,72 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { useAuth } from './AuthContext';
-import { rapydPaymentService, RapydPaymentMethod, RapydPayment, RapydP2PTransfer, RapydWallet } from '../services/rapydPaymentService';
+
+// Stripe types
+interface StripePaymentMethod {
+  id: string;
+  type: string;
+  card?: {
+    brand: string;
+    last4: string;
+    exp_month: number;
+    exp_year: number;
+  };
+  billing_details: {
+    name?: string;
+    email?: string;
+  };
+}
+
+interface StripePaymentIntent {
+  id: string;
+  amount: number;
+  currency: string;
+  status: string;
+  client_secret: string;
+  description?: string;
+  metadata?: Record<string, any>;
+}
+
+interface StripeSubscription {
+  id: string;
+  status: string;
+  current_period_start: number;
+  current_period_end: number;
+  plan: {
+    id: string;
+    nickname: string;
+    amount: number;
+    currency: string;
+    interval: string;
+  };
+}
 
 interface PaymentContextType {
-  paymentMethods: RapydPaymentMethod[];
-  transactions: any[];
+  paymentMethods: StripePaymentMethod[];
+  subscriptions: StripeSubscription[];
   isLoading: boolean;
   error: string | null;
-  wallet: RapydWallet | null;
-  createWallet: (customerData: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    phoneNumber?: string;
-    country?: string;
-    currency?: string;
-  }) => Promise<{ success: boolean; data?: RapydWallet; error?: string }>;
-  createPayment: (paymentData: {
-    amount: number;
-    currency: string;
-    paymentMethod: string;
-    description?: string;
-    metadata?: Record<string, any>;
-    redirectUrl?: string;
-    cancelUrl?: string;
-  }) => Promise<{ success: boolean; data?: RapydPayment; error?: string }>;
-  createP2PPayment: (p2pData: {
-    toWalletId: string;
-    amount: number;
-    currency: string;
-    description?: string;
-    metadata?: Record<string, any>;
-  }) => Promise<{ success: boolean; data?: RapydP2PTransfer; error?: string }>;
-  getPaymentMethods: (country: string) => Promise<{ success: boolean; data?: RapydPaymentMethod[]; error?: string }>;
-  getWalletBalance: (walletId: string) => Promise<{ success: boolean; data?: any; error?: string }>;
-  getPaymentStatus: (paymentId: string) => Promise<{ success: boolean; data?: RapydPayment; error?: string }>;
-  refundPayment: (paymentId: string, amount: number, reason?: string) => Promise<{ success: boolean; data?: any; error?: string }>;
+  
+  // Payment Methods
+  getPaymentMethods: () => Promise<{ success: boolean; data?: StripePaymentMethod[]; error?: string }>;
+  addPaymentMethod: (paymentMethodId: string) => Promise<{ success: boolean; data?: StripePaymentMethod; error?: string }>;
+  removePaymentMethod: (paymentMethodId: string) => Promise<{ success: boolean; error?: string }>;
+  setDefaultPaymentMethod: (paymentMethodId: string) => Promise<{ success: boolean; error?: string }>;
+  
+  // Payment Intents
+  createPaymentIntent: (amount: number, currency: string, description?: string) => Promise<{ success: boolean; data?: StripePaymentIntent; error?: string }>;
+  confirmPaymentIntent: (paymentIntentId: string, paymentMethodId: string) => Promise<{ success: boolean; data?: StripePaymentIntent; error?: string }>;
+  
+  // Subscriptions
+  getSubscriptions: () => Promise<{ success: boolean; data?: StripeSubscription[]; error?: string }>;
+  createSubscription: (priceId: string, paymentMethodId?: string) => Promise<{ success: boolean; data?: StripeSubscription; error?: string }>;
+  cancelSubscription: (subscriptionId: string) => Promise<{ success: boolean; error?: string }>;
+  updateSubscription: (subscriptionId: string, priceId: string) => Promise<{ success: boolean; data?: StripeSubscription; error?: string }>;
+  
+  // Customer Portal
+  createCustomerPortalSession: (returnUrl: string) => Promise<{ success: boolean; data?: { url: string }; error?: string }>;
+  
+  // Utility
   testConnection: () => Promise<{ success: boolean; message?: string; error?: string }>;
   refreshData: () => Promise<void>;
 }
@@ -47,205 +78,368 @@ interface PaymentProviderProps {
 }
 
 export const PaymentProvider: React.FC<PaymentProviderProps> = ({ children }) => {
-  const [paymentMethods, setPaymentMethods] = useState<RapydPaymentMethod[]>([]);
-  const [transactions, setTransactions] = useState<any[]>([]);
-  const [wallet, setWallet] = useState<RapydWallet | null>(null);
+  const [paymentMethods, setPaymentMethods] = useState<StripePaymentMethod[]>([]);
+  const [subscriptions, setSubscriptions] = useState<StripeSubscription[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
 
-  const createWallet = useCallback(async (customerData: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    phoneNumber?: string;
-    country?: string;
-    currency?: string;
-  }) => {
-    try {
-      setError(null);
-      setIsLoading(true);
-      const result = await rapydPaymentService.createCustomerWallet(customerData);
-      if (result.success && result.data) {
-        setWallet(result.data);
-      }
-      return result;
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Wallet creation failed';
-      setError(errorMessage);
-      return { success: false, error: errorMessage };
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://zappayapp-ie9d2.ondigitalocean.app';
 
-  const createPayment = useCallback(async (paymentData: {
-    amount: number;
-    currency: string;
-    paymentMethod: string;
-    description?: string;
-    metadata?: Record<string, any>;
-    redirectUrl?: string;
-    cancelUrl?: string;
-  }) => {
-    try {
-      setError(null);
-      setIsLoading(true);
-      const result = await rapydPaymentService.createPayment(paymentData);
-      if (result.success) {
-        // Refresh transactions
-        await refreshData();
-      }
-      return result;
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Payment creation failed';
-      setError(errorMessage);
-      return { success: false, error: errorMessage };
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  const createP2PPayment = useCallback(async (p2pData: {
-    toWalletId: string;
-    amount: number;
-    currency: string;
-    description?: string;
-    metadata?: Record<string, any>;
-  }) => {
-    try {
-      setError(null);
-      setIsLoading(true);
-      const result = await rapydPaymentService.createP2PPayment(p2pData);
-      if (result.success) {
-        // Refresh transactions
-        await refreshData();
-      }
-      return result;
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'P2P payment creation failed';
-      setError(errorMessage);
-      return { success: false, error: errorMessage };
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  const getPaymentMethods = useCallback(async (country: string) => {
-    try {
-      setError(null);
-      const result = await rapydPaymentService.getPaymentMethods(country);
-      if (result.success && result.data) {
-        setPaymentMethods(result.data);
-      }
-      return result;
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load payment methods';
-      setError(errorMessage);
-      return { success: false, error: errorMessage };
-    }
-  }, []);
-
-  const getWalletBalance = useCallback(async (walletId: string) => {
-    try {
-      setError(null);
-      return await rapydPaymentService.getWalletBalance(walletId);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load wallet balance';
-      setError(errorMessage);
-      return { success: false, error: errorMessage };
-    }
-  }, []);
-
-  const getPaymentStatus = useCallback(async (paymentId: string) => {
-    try {
-      setError(null);
-      return await rapydPaymentService.getPaymentStatus(paymentId);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load payment status';
-      setError(errorMessage);
-      return { success: false, error: errorMessage };
-    }
-  }, []);
-
-  const refundPayment = useCallback(async (paymentId: string, amount: number, reason?: string) => {
-    try {
-      setError(null);
-      setIsLoading(true);
-      const result = await rapydPaymentService.refundPayment(paymentId, amount, reason);
-      if (result.success) {
-        // Refresh transactions
-        await refreshData();
-      }
-      return result;
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Refund failed';
-      setError(errorMessage);
-      return { success: false, error: errorMessage };
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
+  // Test Stripe connection
   const testConnection = useCallback(async () => {
     try {
-      setError(null);
-      return await rapydPaymentService.testConnection();
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Connection test failed';
+      const response = await fetch(`${API_BASE_URL}/stripe-health`);
+      const data = await response.json();
+      
+      if (data.success) {
+        return { success: true, message: 'Stripe connection successful' };
+      } else {
+        return { success: false, error: data.message || 'Stripe connection failed' };
+      }
+    } catch (error) {
+      return { success: false, error: 'Failed to connect to Stripe service' };
+    }
+  }, [API_BASE_URL]);
+
+  // Get payment methods
+  const getPaymentMethods = useCallback(async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/payments/payment-methods`, {
+        headers: {
+          'Authorization': `Bearer ${user?.token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        setPaymentMethods(data.paymentMethods || []);
+        return { success: true, data: data.paymentMethods || [] };
+      } else {
+        setError(data.error || 'Failed to fetch payment methods');
+        return { success: false, error: data.error || 'Failed to fetch payment methods' };
+      }
+    } catch (error) {
+      const errorMessage = 'Failed to fetch payment methods';
       setError(errorMessage);
       return { success: false, error: errorMessage };
     }
-  }, []);
+  }, [API_BASE_URL, user?.token]);
 
-  const refreshData = useCallback(async () => {
-    if (!user) return;
-
+  // Add payment method
+  const addPaymentMethod = useCallback(async (paymentMethodId: string) => {
     try {
-      setIsLoading(true);
-      setError(null);
+      const response = await fetch(`${API_BASE_URL}/api/payments/payment-methods`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${user?.token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ paymentMethodId }),
+      });
 
-      // Load payment methods for user's country (default to US)
-      const country = user.address?.country || 'US';
-      await getPaymentMethods(country);
-
-      // If user has a wallet, load balance
-      if (wallet?.id) {
-        await getWalletBalance(wallet.id);
+      const data = await response.json();
+      
+      if (data.success) {
+        await getPaymentMethods(); // Refresh payment methods
+        return { success: true, data: data.paymentMethod };
+      } else {
+        setError(data.error || 'Failed to add payment method');
+        return { success: false, error: data.error || 'Failed to add payment method' };
       }
-
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to refresh payment data';
+    } catch (error) {
+      const errorMessage = 'Failed to add payment method';
       setError(errorMessage);
+      return { success: false, error: errorMessage };
+    }
+  }, [API_BASE_URL, user?.token, getPaymentMethods]);
+
+  // Remove payment method
+  const removePaymentMethod = useCallback(async (paymentMethodId: string) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/payments/payment-methods/${paymentMethodId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${user?.token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        await getPaymentMethods(); // Refresh payment methods
+        return { success: true };
+      } else {
+        setError(data.error || 'Failed to remove payment method');
+        return { success: false, error: data.error || 'Failed to remove payment method' };
+      }
+    } catch (error) {
+      const errorMessage = 'Failed to remove payment method';
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
+    }
+  }, [API_BASE_URL, user?.token, getPaymentMethods]);
+
+  // Set default payment method
+  const setDefaultPaymentMethod = useCallback(async (paymentMethodId: string) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/payments/payment-methods/${paymentMethodId}/default`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${user?.token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        await getPaymentMethods(); // Refresh payment methods
+        return { success: true };
+      } else {
+        setError(data.error || 'Failed to set default payment method');
+        return { success: false, error: data.error || 'Failed to set default payment method' };
+      }
+    } catch (error) {
+      const errorMessage = 'Failed to set default payment method';
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
+    }
+  }, [API_BASE_URL, user?.token, getPaymentMethods]);
+
+  // Create payment intent
+  const createPaymentIntent = useCallback(async (amount: number, currency: string, description?: string) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/payments/payment-intents`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${user?.token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ amount, currency, description }),
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        return { success: true, data: data.paymentIntent };
+      } else {
+        setError(data.error || 'Failed to create payment intent');
+        return { success: false, error: data.error || 'Failed to create payment intent' };
+      }
+    } catch (error) {
+      const errorMessage = 'Failed to create payment intent';
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
+    }
+  }, [API_BASE_URL, user?.token]);
+
+  // Confirm payment intent
+  const confirmPaymentIntent = useCallback(async (paymentIntentId: string, paymentMethodId: string) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/payments/payment-intents/${paymentIntentId}/confirm`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${user?.token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ paymentMethodId }),
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        return { success: true, data: data.paymentIntent };
+      } else {
+        setError(data.error || 'Failed to confirm payment intent');
+        return { success: false, error: data.error || 'Failed to confirm payment intent' };
+      }
+    } catch (error) {
+      const errorMessage = 'Failed to confirm payment intent';
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
+    }
+  }, [API_BASE_URL, user?.token]);
+
+  // Get subscriptions
+  const getSubscriptions = useCallback(async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/subscriptions`, {
+        headers: {
+          'Authorization': `Bearer ${user?.token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        setSubscriptions(data.subscriptions || []);
+        return { success: true, data: data.subscriptions || [] };
+      } else {
+        setError(data.error || 'Failed to fetch subscriptions');
+        return { success: false, error: data.error || 'Failed to fetch subscriptions' };
+      }
+    } catch (error) {
+      const errorMessage = 'Failed to fetch subscriptions';
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
+    }
+  }, [API_BASE_URL, user?.token]);
+
+  // Create subscription
+  const createSubscription = useCallback(async (priceId: string, paymentMethodId?: string) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/subscriptions`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${user?.token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ priceId, paymentMethodId }),
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        await getSubscriptions(); // Refresh subscriptions
+        return { success: true, data: data.subscription };
+      } else {
+        setError(data.error || 'Failed to create subscription');
+        return { success: false, error: data.error || 'Failed to create subscription' };
+      }
+    } catch (error) {
+      const errorMessage = 'Failed to create subscription';
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
+    }
+  }, [API_BASE_URL, user?.token, getSubscriptions]);
+
+  // Cancel subscription
+  const cancelSubscription = useCallback(async (subscriptionId: string) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/subscriptions/${subscriptionId}/cancel`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${user?.token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        await getSubscriptions(); // Refresh subscriptions
+        return { success: true };
+      } else {
+        setError(data.error || 'Failed to cancel subscription');
+        return { success: false, error: data.error || 'Failed to cancel subscription' };
+      }
+    } catch (error) {
+      const errorMessage = 'Failed to cancel subscription';
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
+    }
+  }, [API_BASE_URL, user?.token, getSubscriptions]);
+
+  // Update subscription
+  const updateSubscription = useCallback(async (subscriptionId: string, priceId: string) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/subscriptions/${subscriptionId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${user?.token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ priceId }),
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        await getSubscriptions(); // Refresh subscriptions
+        return { success: true, data: data.subscription };
+      } else {
+        setError(data.error || 'Failed to update subscription');
+        return { success: false, error: data.error || 'Failed to update subscription' };
+      }
+    } catch (error) {
+      const errorMessage = 'Failed to update subscription';
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
+    }
+  }, [API_BASE_URL, user?.token, getSubscriptions]);
+
+  // Create customer portal session
+  const createCustomerPortalSession = useCallback(async (returnUrl: string) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/subscriptions/customer-portal`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${user?.token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ returnUrl }),
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        return { success: true, data: { url: data.url } };
+      } else {
+        setError(data.error || 'Failed to create customer portal session');
+        return { success: false, error: data.error || 'Failed to create customer portal session' };
+      }
+    } catch (error) {
+      const errorMessage = 'Failed to create customer portal session';
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
+    }
+  }, [API_BASE_URL, user?.token]);
+
+  // Refresh all data
+  const refreshData = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      await Promise.all([
+        getPaymentMethods(),
+        getSubscriptions(),
+      ]);
+    } catch (error) {
+      console.error('Error refreshing payment data:', error);
     } finally {
       setIsLoading(false);
     }
-  }, [user, wallet, getPaymentMethods, getWalletBalance]);
+  }, [getPaymentMethods, getSubscriptions]);
 
-  // Load data when user changes
+  // Load data on mount
   useEffect(() => {
-    if (user && user.id) {
+    if (user?.token) {
       refreshData();
-    } else {
-      setPaymentMethods([]);
-      setTransactions([]);
-      setWallet(null);
     }
-  }, [user, refreshData]);
+  }, [user?.token, refreshData]);
 
   const value: PaymentContextType = {
     paymentMethods,
-    transactions,
+    subscriptions,
     isLoading,
     error,
-    wallet,
-    createWallet,
-    createPayment,
-    createP2PPayment,
     getPaymentMethods,
-    getWalletBalance,
-    getPaymentStatus,
-    refundPayment,
+    addPaymentMethod,
+    removePaymentMethod,
+    setDefaultPaymentMethod,
+    createPaymentIntent,
+    confirmPaymentIntent,
+    getSubscriptions,
+    createSubscription,
+    cancelSubscription,
+    updateSubscription,
+    createCustomerPortalSession,
     testConnection,
     refreshData,
   };
@@ -257,7 +451,7 @@ export const PaymentProvider: React.FC<PaymentProviderProps> = ({ children }) =>
   );
 };
 
-export const usePayment = (): PaymentContextType => {
+export const usePayment = () => {
   const context = useContext(PaymentContext);
   if (context === undefined) {
     throw new Error('usePayment must be used within a PaymentProvider');

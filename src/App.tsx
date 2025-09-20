@@ -26,6 +26,10 @@ import './App.css';
 import Home from './pages/Home';
 import Login from './pages/Login';
 const Register = lazy(() => import('./pages/Register'));
+const VerifyEmail = lazy(() => import('./pages/VerifyEmail'));
+const KYCDocumentUpload = lazy(() => import('./components/KYCDocumentUpload'));
+const GDPRPrivacyDashboard = lazy(() => import('./components/GDPRPrivacyDashboard'));
+const ComplianceDashboard = lazy(() => import('./components/ComplianceDashboard'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const SendMoney = lazy(() => import('./pages/SendMoney'));
 const TransactionHistory = lazy(() => import('./pages/TransactionHistory'));
@@ -83,6 +87,10 @@ function App() {
                             <Route path="/" element={<Home />} />
                             <Route path="/login" element={<Login />} />
                             <Route path="/register" element={<Register />} />
+                            <Route path="/verify-email" element={<VerifyEmail />} />
+                            <Route path="/kyc-verification" element={<KYCDocumentUpload onVerificationComplete={() => {}} onClose={() => {}} />} />
+                            <Route path="/privacy-dashboard" element={<GDPRPrivacyDashboard />} />
+                            <Route path="/compliance-dashboard" element={<ComplianceDashboard />} />
                             <Route path="/dashboard" element={<Dashboard />} />
                             <Route path="/send" element={<SendMoney />} />
                             <Route path="/history" element={<TransactionHistory />} />

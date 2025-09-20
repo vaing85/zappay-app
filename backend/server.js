@@ -25,11 +25,11 @@ const groupRoutes = require('./routes/groups');
 const budgetRoutes = require('./routes/budgets');
 const notificationRoutes = require('./routes/notifications');
 const apiRoutes = require('./routes/api');
-const rapydWebhookRoutes = require('./routes/rapyd-webhooks');
-const rapydPaymentRoutes = require('./routes/rapyd-payments');
 const stripePaymentRoutes = require('./routes/stripe-payments');
 const stripeWebhookRoutes = require('./routes/stripe-webhooks');
 const stripeSubscriptionRoutes = require('./routes/stripe-subscriptions');
+const complianceRoutes = require('./routes/compliance');
+const { transactionLimitsMiddleware } = require('./middleware/transactionLimits');
 
 // Import middleware
 const errorHandler = require('./middleware/errorHandler');
@@ -112,8 +112,8 @@ app.use(helmet({
       styleSrc: ["'self'", "'unsafe-inline'"],
       scriptSrc: ["'self'"],
       imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'", "https://sandboxapi.rapyd.net", "https://api.rapyd.net"],
-      frameSrc: ["'self'", "https://sandboxapi.rapyd.net", "https://api.rapyd.net"],
+      connectSrc: ["'self'", "https://api.stripe.com"],
+      frameSrc: ["'self'", "https://js.stripe.com"],
       objectSrc: ["'none'"],
       upgradeInsecureRequests: [],
     },
@@ -247,52 +247,6 @@ if (process.env.NODE_ENV === 'production') {
   app.get('/metrics', metrics);
 }
 
-// Rapyd health check endpoint (public)
-app.get('/rapyd-health', async (req, res) => {
-  try {
-    // Check if Rapyd environment variables are set
-    const hasAccessKey = !!process.env.RAPYD_ACCESS_KEY;
-    const hasSecretKey = !!process.env.RAPYD_SECRET_KEY;
-    const hasBaseUrl = !!process.env.RAPYD_BASE_URL;
-    
-    if (!hasAccessKey || !hasSecretKey || !hasBaseUrl) {
-      return res.status(400).json({
-        success: false,
-        message: 'Rapyd environment variables not set',
-        hasAccessKey,
-        hasSecretKey,
-        hasBaseUrl
-      });
-    }
-
-    const rapydService = require('./services/rapydPaymentService');
-    const result = await rapydService.getPaymentMethods('US');
-
-    if (result.success) {
-      res.json({
-        success: true,
-        message: 'Rapyd connection successful',
-        timestamp: new Date().toISOString(),
-        availableMethods: result.paymentMethods?.length || 0,
-        status: 'healthy'
-      });
-    } else {
-      res.status(400).json({
-        success: false,
-        message: `Rapyd connection failed: ${result.error}`,
-        status: 'unhealthy'
-      });
-    }
-  } catch (error) {
-    console.error('Rapyd health check error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Rapyd health check failed',
-      error: error.message,
-      status: 'error'
-    });
-  }
-});
 
 // Favicon endpoint to prevent 404 errors
 app.get('/favicon.ico', (req, res) => {
@@ -480,12 +434,12 @@ app.post('/sms-test', async (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/users', authMiddleware, userRoutes);
 app.use('/api/user-management', userManagementRoutes);
-app.use('/api/transactions', authMiddleware, transactionRoutes);
+app.use('/api/transactions', authMiddleware, transactionLimitsMiddleware, transactionRoutes);
 app.use('/api', webhookRoutes); // Webhooks don't need auth middleware
-app.use('/api/payments/webhook', rapydWebhookRoutes); // Rapyd webhooks
 app.use('/api/payments/webhook/stripe', stripeWebhookRoutes); // Stripe webhooks
 app.use('/api/payments', stripePaymentRoutes); // Stripe payment routes
 app.use('/api/subscriptions', stripeSubscriptionRoutes); // Stripe subscription routes
+app.use('/api/compliance', complianceRoutes); // Compliance and regulatory routes
 app.use('/api/groups', authMiddleware, groupRoutes);
 app.use('/api/budgets', authMiddleware, budgetRoutes);
 app.use('/api/notifications', authMiddleware, notificationRoutes);

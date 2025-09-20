@@ -13,18 +13,60 @@ const Register: React.FC = () => {
     lastName: '',
     email: '',
     phoneNumber: '',
+    ssn: '',
     password: '',
     confirmPassword: '',
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showSSN, setShowSSN] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // Format SSN as user types (XXX-XX-XXXX)
+  const formatSSN = (value: string) => {
+    const cleaned = value.replace(/\D/g, '');
+    if (cleaned.length <= 3) return cleaned;
+    if (cleaned.length <= 5) return `${cleaned.slice(0, 3)}-${cleaned.slice(3)}`;
+    return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 5)}-${cleaned.slice(5, 9)}`;
+  };
+
+  // Validate SSN format
+  const validateSSN = (ssn: string) => {
+    if (!ssn) return { valid: true, error: '' };
+    
+    const cleaned = ssn.replace(/\D/g, '');
+    if (cleaned.length !== 9) {
+      return { valid: false, error: 'SSN must contain exactly 9 digits' };
+    }
+    
+    // Check for invalid patterns
+    if (cleaned === '000000000' || /^(\d)\1{8}$/.test(cleaned)) {
+      return { valid: false, error: 'Invalid SSN format' };
+    }
+    
+    const areaNumber = cleaned.substring(0, 3);
+    if (areaNumber === '000' || areaNumber === '666' || parseInt(areaNumber) >= 900) {
+      return { valid: false, error: 'Invalid SSN area number' };
+    }
+    
+    return { valid: true, error: '' };
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    
+    if (name === 'ssn') {
+      const formatted = formatSSN(value);
+      setFormData({
+        ...formData,
+        [name]: formatted,
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -40,6 +82,15 @@ const Register: React.FC = () => {
       return;
     }
 
+    // Validate SSN if provided
+    if (formData.ssn) {
+      const ssnValidation = validateSSN(formData.ssn);
+      if (!ssnValidation.valid) {
+        toast.error(ssnValidation.error);
+        return;
+      }
+    }
+
     setLoading(true);
 
     try {
@@ -48,10 +99,11 @@ const Register: React.FC = () => {
         lastName: formData.lastName,
         email: formData.email,
         phoneNumber: formData.phoneNumber,
+        ssn: formData.ssn,
         password: formData.password,
       });
-      toast.success('Welcome to ZapPay! ⚡ Your account has been created.');
-      navigate('/dashboard');
+      toast.success('Account created! Please check your email to verify your account.');
+      navigate(`/verify-email?email=${encodeURIComponent(formData.email)}`);
     } catch (error) {
       toast.error('Registration failed. Please try again.');
     } finally {
@@ -149,6 +201,39 @@ const Register: React.FC = () => {
                 className="mt-1 appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent focus:z-10 sm:text-sm"
                 placeholder="+1 (555) 123-4567"
               />
+            </div>
+
+            <div>
+              <label htmlFor="ssn" className="block text-sm font-medium text-gray-700">
+                Social Security Number <span className="text-gray-500">(Optional)</span>
+              </label>
+              <div className="mt-1 relative">
+                <input
+                  id="ssn"
+                  name="ssn"
+                  type={showSSN ? 'text' : 'password'}
+                  value={formData.ssn}
+                  onChange={handleChange}
+                  className="appearance-none relative block w-full px-3 py-3 pr-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent focus:z-10 sm:text-sm"
+                  placeholder="XXX-XX-XXXX"
+                  maxLength={11}
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center hover:text-gray-600 transition-colors"
+                  onClick={() => setShowSSN(!showSSN)}
+                  title={showSSN ? "Hide SSN" : "Show SSN"}
+                >
+                  {showSSN ? (
+                    <EyeSlashIcon className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                  ) : (
+                    <EyeIcon className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                  )}
+                </button>
+              </div>
+              <p className="mt-1 text-xs text-gray-500">
+                Required for payment processing and tax reporting. Your SSN is encrypted and securely stored.
+              </p>
             </div>
 
             <div>

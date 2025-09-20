@@ -107,8 +107,7 @@ const webhookLimiter = rateLimit(getRateLimitConfig(
       const userAgent = req.get('User-Agent') || '';
       return userAgent.includes('Stripe') || 
              userAgent.includes('Twilio') || 
-             userAgent.includes('SendGrid') ||
-             userAgent.includes('Rapyd');
+             userAgent.includes('SendGrid');
     }
   }
 ));

@@ -107,7 +107,6 @@ app.get('/health', (req, res) => {
     services: {
       database: 'unknown',
       redis: process.env.REDIS_URL ? 'configured' : 'disabled',
-      rapyd: process.env.RAPYD_ACCESS_KEY ? 'configured' : 'disabled',
       stripe: process.env.STRIPE_SECRET_KEY ? 'configured' : 'disabled',
       email: process.env.SENDGRID_API_KEY ? 'configured' : 'disabled',
       sms: process.env.TWILIO_ACCOUNT_SID ? 'configured' : 'disabled'

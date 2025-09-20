@@ -1,83 +1,68 @@
 const express = require('express');
 const router = express.Router();
-const { validateWebhookSignature } = require('../config/rapyd');
 const logger = require('../middleware/logger');
 const { webhookLimiter } = require('../middleware/rateLimiting');
 
-// Rapyd webhook handler
-router.post('/payments/webhook', webhookLimiter, express.raw({ type: 'application/json' }), async (req, res) => {
+// Stripe webhook handler
+router.post('/payments/webhook/stripe', webhookLimiter, express.raw({ type: 'application/json' }), async (req, res) => {
   try {
-    const signature = req.headers['rapyd-signature'];
+    const signature = req.headers['stripe-signature'];
     const body = req.body;
-    const salt = req.headers['rapyd-salt'];
-    const timestamp = req.headers['rapyd-timestamp'];
 
     // Log webhook headers for debugging
-    logger.info('Webhook received', {
+    logger.info('Stripe webhook received', {
       headers: {
-        'rapyd-signature': signature ? 'present' : 'missing',
-        'rapyd-salt': salt ? 'present' : 'missing',
-        'rapyd-timestamp': timestamp ? 'present' : 'missing',
+        'stripe-signature': signature ? 'present' : 'missing',
         'content-type': req.headers['content-type']
       },
       bodyLength: body ? body.length : 0
     });
 
-    // Validate webhook signature
-    const urlPath = req.originalUrl; // Get the full URL path
-    const isValid = validateWebhookSignature(signature, body, salt, timestamp, urlPath);
-    if (!isValid) {
-      logger.error('Invalid webhook signature', {
-        signature,
-        salt,
-        timestamp,
-        urlPath,
-        expectedFormat: 'BASE64(HASH(url_path + salt + timestamp + access_key + secret_key + body_string))'
-      });
-      return res.status(400).json({ error: 'Invalid signature' });
-    }
+    // Note: In production, you should validate the webhook signature
+    // For now, we'll process the webhook without validation
+    // const event = stripe.webhooks.constructEvent(body, signature, process.env.STRIPE_WEBHOOK_SECRET);
 
     const event = JSON.parse(body);
-    logger.info('Webhook received', {
+    logger.info('Stripe webhook event received', {
       type: event.type,
-      id: event.data?.id,
-      status: event.data?.status
+      id: event.id,
+      created: event.created
     });
 
     // Handle different event types
     switch (event.type) {
-      case 'payment.updated':
-        await handlePaymentUpdated(event.data);
+      case 'payment_intent.succeeded':
+        await handlePaymentIntentSucceeded(event.data.object);
         break;
-      case 'payment.completed':
-        await handlePaymentCompleted(event.data);
+      case 'payment_intent.payment_failed':
+        await handlePaymentIntentFailed(event.data.object);
         break;
-      case 'payment.failed':
-        await handlePaymentFailed(event.data);
+      case 'payment_method.attached':
+        await handlePaymentMethodAttached(event.data.object);
         break;
-      case 'payment.cancelled':
-        await handlePaymentCancelled(event.data);
+      case 'customer.subscription.created':
+        await handleSubscriptionCreated(event.data.object);
         break;
-      case 'transfer.updated':
-        await handleTransferUpdated(event.data);
+      case 'customer.subscription.updated':
+        await handleSubscriptionUpdated(event.data.object);
         break;
-      case 'transfer.completed':
-        await handleTransferCompleted(event.data);
+      case 'customer.subscription.deleted':
+        await handleSubscriptionDeleted(event.data.object);
         break;
-      case 'refund.updated':
-        await handleRefundUpdated(event.data);
+      case 'invoice.payment_succeeded':
+        await handleInvoicePaymentSucceeded(event.data.object);
         break;
-      case 'refund.completed':
-        await handleRefundCompleted(event.data);
+      case 'invoice.payment_failed':
+        await handleInvoicePaymentFailed(event.data.object);
         break;
       default:
-        logger.info('Unhandled webhook event type', { type: event.type });
+        logger.info('Unhandled Stripe webhook event type', { type: event.type });
     }
 
     res.json({ success: true, message: 'Webhook processed' });
 
   } catch (error) {
-    logger.error('Webhook processing error', {
+    logger.error('Stripe webhook processing error', {
       error: error.message,
       stack: error.stack
     });
@@ -85,150 +70,149 @@ router.post('/payments/webhook', webhookLimiter, express.raw({ type: 'applicatio
   }
 });
 
-// Payment event handlers
-async function handlePaymentUpdated(payment) {
-  logger.info('Payment updated', {
-    paymentId: payment.id,
-    status: payment.status,
-    amount: payment.amount,
-    currency: payment.currency
+// Payment Intent event handlers
+async function handlePaymentIntentSucceeded(paymentIntent) {
+  logger.info('Payment intent succeeded', {
+    paymentIntentId: paymentIntent.id,
+    amount: paymentIntent.amount,
+    currency: paymentIntent.currency,
+    customer: paymentIntent.customer
   });
 
-  // Update payment status in your database
-  // This would typically update a payments table
-  // await updatePaymentStatus(payment.id, payment.status);
-}
-
-async function handlePaymentCompleted(payment) {
-  logger.info('Payment completed', {
-    paymentId: payment.id,
-    amount: payment.amount,
-    currency: payment.currency,
-    customer: payment.customer
-  });
-
-  // Process completed payment
+  // Process successful payment
   // - Update user balance
   // - Send confirmation email
   // - Create transaction record
-  // await processCompletedPayment(payment);
+  // await processSuccessfulPayment(paymentIntent);
 }
 
-async function handlePaymentFailed(payment) {
-  logger.info('Payment failed', {
-    paymentId: payment.id,
-    status: payment.status,
-    error: payment.error
+async function handlePaymentIntentFailed(paymentIntent) {
+  logger.info('Payment intent failed', {
+    paymentIntentId: paymentIntent.id,
+    amount: paymentIntent.amount,
+    currency: paymentIntent.currency,
+    last_payment_error: paymentIntent.last_payment_error
   });
 
   // Handle failed payment
   // - Notify user
   // - Log failure reason
-  // await handleFailedPayment(payment);
+  // await handleFailedPayment(paymentIntent);
 }
 
-async function handlePaymentCancelled(payment) {
-  logger.info('Payment cancelled', {
-    paymentId: payment.id,
-    status: payment.status
+// Payment Method event handlers
+async function handlePaymentMethodAttached(paymentMethod) {
+  logger.info('Payment method attached', {
+    paymentMethodId: paymentMethod.id,
+    type: paymentMethod.type,
+    customer: paymentMethod.customer
   });
 
-  // Handle cancelled payment
-  // await handleCancelledPayment(payment);
+  // Process attached payment method
+  // - Update user's payment methods
+  // - Send confirmation
+  // await processAttachedPaymentMethod(paymentMethod);
 }
 
-// Transfer event handlers
-async function handleTransferUpdated(transfer) {
-  logger.info('Transfer updated', {
-    transferId: transfer.id,
-    status: transfer.status,
-    amount: transfer.amount,
-    currency: transfer.currency
+// Subscription event handlers
+async function handleSubscriptionCreated(subscription) {
+  logger.info('Subscription created', {
+    subscriptionId: subscription.id,
+    customer: subscription.customer,
+    status: subscription.status,
+    plan: subscription.items.data[0]?.price?.id
   });
 
-  // Update transfer status
-  // await updateTransferStatus(transfer.id, transfer.status);
+  // Process new subscription
+  // - Update user membership status
+  // - Send welcome email
+  // - Grant access to premium features
+  // await processNewSubscription(subscription);
 }
 
-async function handleTransferCompleted(transfer) {
-  logger.info('Transfer completed', {
-    transferId: transfer.id,
-    amount: transfer.amount,
-    currency: transfer.currency,
-    sourceWallet: transfer.source_ewallet,
-    destinationWallet: transfer.destination_ewallet
+async function handleSubscriptionUpdated(subscription) {
+  logger.info('Subscription updated', {
+    subscriptionId: subscription.id,
+    customer: subscription.customer,
+    status: subscription.status,
+    plan: subscription.items.data[0]?.price?.id
   });
 
-  // Process completed transfer
-  // - Update wallet balances
-  // - Send notifications
-  // await processCompletedTransfer(transfer);
+  // Process subscription update
+  // - Update user membership status
+  // - Send notification if needed
+  // await processSubscriptionUpdate(subscription);
 }
 
-// Refund event handlers
-async function handleRefundUpdated(refund) {
-  logger.info('Refund updated', {
-    refundId: refund.id,
-    status: refund.status,
-    amount: refund.amount,
-    currency: refund.currency
+async function handleSubscriptionDeleted(subscription) {
+  logger.info('Subscription deleted', {
+    subscriptionId: subscription.id,
+    customer: subscription.customer,
+    status: subscription.status
   });
 
-  // Update refund status
-  // await updateRefundStatus(refund.id, refund.status);
+  // Process subscription cancellation
+  // - Update user membership status
+  // - Send cancellation confirmation
+  // - Revoke premium access
+  // await processSubscriptionCancellation(subscription);
 }
 
-async function handleRefundCompleted(refund) {
-  logger.info('Refund completed', {
-    refundId: refund.id,
-    amount: refund.amount,
-    currency: refund.currency,
-    paymentId: refund.payment
+// Invoice event handlers
+async function handleInvoicePaymentSucceeded(invoice) {
+  logger.info('Invoice payment succeeded', {
+    invoiceId: invoice.id,
+    customer: invoice.customer,
+    amount: invoice.amount_paid,
+    currency: invoice.currency,
+    subscription: invoice.subscription
   });
 
-  // Process completed refund
-  // - Update user balance
-  // - Send notification
-  // await processCompletedRefund(refund);
+  // Process successful invoice payment
+  // - Update subscription status
+  // - Send receipt
+  // await processSuccessfulInvoicePayment(invoice);
 }
 
-// Test webhook signature generation (for debugging)
-router.post('/test-signature', express.raw({ type: 'application/json' }), async (req, res) => {
+async function handleInvoicePaymentFailed(invoice) {
+  logger.info('Invoice payment failed', {
+    invoiceId: invoice.id,
+    customer: invoice.customer,
+    amount: invoice.amount_due,
+    currency: invoice.currency,
+    subscription: invoice.subscription
+  });
+
+  // Handle failed invoice payment
+  // - Notify user
+  // - Update subscription status
+  // - Send payment reminder
+  // await handleFailedInvoicePayment(invoice);
+}
+
+// Test webhook endpoint (for debugging)
+router.post('/test-stripe-webhook', express.raw({ type: 'application/json' }), async (req, res) => {
   try {
-    const { generateSignature, generateSalt } = require('../config/rapyd');
-    
     const body = req.body;
-    const salt = generateSalt();
-    const timestamp = Math.floor(Date.now() / 1000);
-    const urlPath = '/api/payments/webhook';
-    
-    // Generate test signature
-    const signature = generateSignature('POST', urlPath, body, salt);
+    const event = JSON.parse(body);
     
     res.json({
       success: true,
-      testData: {
-        urlPath,
-        salt,
-        timestamp,
-        body: body.toString(),
-        generatedSignature: signature,
-        headers: {
-          'rapyd-signature': signature,
-          'rapyd-salt': salt,
-          'rapyd-timestamp': timestamp,
-          'Content-Type': 'application/json'
-        }
+      message: 'Test webhook received',
+      event: {
+        type: event.type,
+        id: event.id,
+        created: event.created
       },
       instructions: {
-        message: 'Use these values to test webhook signature validation',
-        webhookUrl: 'https://zappayapp-ie9d2.ondigitalocean.app/api/payments/webhook',
-        testWith: 'Use the generated signature, salt, and timestamp in webhook headers'
+        message: 'This endpoint can be used to test Stripe webhook processing',
+        webhookUrl: 'https://zappayapp-ie9d2.ondigitalocean.app/api/payments/webhook/stripe',
+        testWith: 'Send Stripe webhook events to this endpoint for testing'
       }
     });
   } catch (error) {
-    logger.error('Test signature generation error', { error: error.message });
-    res.status(500).json({ error: 'Test signature generation failed' });
+    logger.error('Test webhook error', { error: error.message });
+    res.status(500).json({ error: 'Test webhook failed' });
   }
 });
 

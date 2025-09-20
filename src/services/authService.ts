@@ -54,6 +54,7 @@ class AuthService {
     lastName: string;
     email: string;
     phoneNumber: string;
+    ssn?: string;
     password: string;
   }): Promise<RegisterResponse> {
     try {

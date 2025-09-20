@@ -32,6 +32,7 @@ interface RegisterData {
   lastName: string;
   email: string;
   phoneNumber: string;
+  ssn?: string;
   password: string;
 }
 

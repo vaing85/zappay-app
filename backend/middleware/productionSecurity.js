@@ -14,8 +14,7 @@ const productionSecurity = (app) => {
         connectSrc: [
           "'self'", 
           "https://api.stripe.com",
-          "https://sandboxapi.rapyd.net", 
-          "https://api.rapyd.net",
+          "https://js.stripe.com",
           "wss://api.zappay.com"
         ],
         fontSrc: ["'self'", "https://fonts.gstatic.com"],
