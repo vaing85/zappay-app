@@ -1,0 +1,59 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "lib": ["es2017", "dom"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": false,
+    "forceConsistentCasingInFileNames": false,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["ZapPayMobile/src/*"]
+    },
+    "typeRoots": ["./node_modules/@types", "./ZapPayMobile/node_modules/@types"],
+    "types": ["react", "react-native"],
+    "maxNodeModuleJsDepth": 0,
+    "noImplicitAny": false,
+    "noImplicitReturns": false,
+    "noImplicitThis": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "ignoreDeprecations": "5.0",
+    "suppressImplicitAnyIndexErrors": true,
+    "suppressExcessPropertyErrors": true,
+    "noImplicitOverride": false,
+    "noPropertyAccessFromIndexSignature": false,
+    "noUncheckedIndexedAccess": false,
+    "exactOptionalPropertyTypes": false,
+    "noFallthroughCasesInSwitch": false,
+    "allowUnusedLabels": true,
+    "allowUnreachableCode": true
+  },
+  "include": [
+    "./ZapPayMobile/src/**/*.ts",
+    "./ZapPayMobile/src/**/*.tsx",
+    "./ZapPayMobile/App.tsx",
+    "./App.tsx"
+  ],
+  "exclude": [
+    "**/node_modules",
+    "**/__tests__",
+    "**/*.test.*",
+    "**/*.spec.*",
+    "ZapPayExpo",
+    "ZapPayFresh",
+    "ZapPayWorking",
+    "ZapPayClean",
+    "**/node_modules/@react-navigation/**",
+    "**/ZapPayMobile/node_modules/@react-navigation/**"
+  ]
+}

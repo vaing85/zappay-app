@@ -1,6 +1,6 @@
 import React from 'react';
 import { StatusBar, Platform } from 'react-native';
-import AppNavigator from './src/navigation/AppNavigator';
+import AppNavigator from './ZapPayMobile/src/navigation/AppNavigator';
 
 const App: React.FC = () => {
   return (

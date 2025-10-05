@@ -1,3 +1,0 @@
-[33mceae445[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m feat: implement withdrawal fees, ACH deposits, and enhanced user profile
-[33mc8267dd[m Fix navbar branding and add Profile page navigation - update ZapCash to ZapPay in navbar and add Profile links to both desktop and mobile menus
-[33m14ab5af[m Fix remaining branding issues - update Home and Login pages from ZapCash to ZapPay
