@@ -188,6 +188,74 @@ class User {
       return { success: false, error: error.message };
     }
   }
+
+  // Find users with query, projection, sort, skip, and limit
+  async find(query = {}, options = {}) {
+    try {
+      const {
+        projection = {},
+        sort = {},
+        skip = 0,
+        limit = 0
+      } = options;
+
+      let cursor = this.collection.find(query, { projection });
+      
+      if (Object.keys(sort).length > 0) {
+        cursor = cursor.sort(sort);
+      }
+      
+      if (skip > 0) {
+        cursor = cursor.skip(skip);
+      }
+      
+      if (limit > 0) {
+        cursor = cursor.limit(limit);
+      }
+      
+      return await cursor.toArray();
+    } catch (error) {
+      console.error('Error finding users:', error);
+      throw error;
+    }
+  }
+
+  // Count documents with query
+  async count(query = {}) {
+    try {
+      return await this.collection.countDocuments(query);
+    } catch (error) {
+      console.error('Error counting users:', error);
+      throw error;
+    }
+  }
+
+  // Update user by ID
+  async updateById(id, updateData) {
+    try {
+      const result = await this.collection.findOneAndUpdate(
+        { _id: new ObjectId(id) },
+        { $set: updateData },
+        { returnDocument: 'after' }
+      );
+      
+      return result;
+    } catch (error) {
+      console.error('Error updating user by ID:', error);
+      throw error;
+    }
+  }
+
+  // Delete user by ID
+  async deleteById(id) {
+    try {
+      const result = await this.collection.findOneAndDelete({ _id: new ObjectId(id) });
+      return result;
+    } catch (error) {
+      console.error('Error deleting user by ID:', error);
+      throw error;
+    }
+  }
 }
 
 module.exports = User;

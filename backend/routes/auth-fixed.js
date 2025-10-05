@@ -72,7 +72,7 @@ router.post('/register', [
       const { User } = await getModels();
       
       // Check if user already exists
-      const existingUser = await User.findOne({ where: { email } });
+      const existingUser = await User.findOne({ email });
       if (existingUser) {
         return res.status(400).json({
           success: false,
@@ -171,7 +171,7 @@ router.post('/login', [
       const { User } = await getModels();
       
       // Find user by email
-      const user = await User.findOne({ where: { email } });
+      const user = await User.findOne({ email });
       if (!user) {
         return res.status(401).json({
           success: false,
