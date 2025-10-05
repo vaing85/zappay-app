@@ -2,7 +2,7 @@ const { MongoClient } = require('mongodb');
 require('dotenv').config();
 
 // MongoDB Atlas connection string
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://villaaing_db_user:w8IiTCl5d5gzR7Jk@cluster0.8zftps3.mongodb.net/zappay?retryWrites=true&w=majority&appName=Cluster0';
+const MONGODB_URI = process.env.MONGODB_URI;
 
 // Database name
 const DB_NAME = process.env.MONGODB_DB_NAME || 'zappay';
@@ -20,6 +20,10 @@ let db;
 // Connect to MongoDB Atlas
 const connectMongoDB = async () => {
   try {
+    if (!MONGODB_URI) {
+      throw new Error('MONGODB_URI environment variable is required');
+    }
+    
     if (!client) {
       client = new MongoClient(MONGODB_URI, options);
       await client.connect();
