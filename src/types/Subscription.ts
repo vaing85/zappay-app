@@ -1,6 +1,6 @@
 // Subscription Types and Interfaces
 
-export type SubscriptionTier = 'free' | 'pro' | 'business' | 'enterprise';
+export type SubscriptionTier = 'free' | 'starter' | 'basic' | 'pro' | 'business' | 'enterprise';
 
 export interface SubscriptionFeature {
   id: string;

@@ -1,5 +1,6 @@
 const stripe = require('stripe');
 const logger = require('../middleware/logger');
+const feeService = require('./feeService');
 
 /**
  * Stripe Payment Service
@@ -13,7 +14,7 @@ class StripePaymentService {
   }
 
   /**
-   * Create a payment intent
+   * Create a payment intent with fee calculation
    * @param {Object} paymentData - Payment details
    * @returns {Promise<Object>} Payment intent response
    */
@@ -26,13 +27,29 @@ class StripePaymentService {
         description,
         metadata = {},
         paymentMethodId,
-        confirm = false
+        confirm = false,
+        paymentType = 'card',
+        isInternal = false
       } = paymentData;
 
-      // Validate amount (Stripe uses cents)
-      const amountInCents = Math.round(amount * 100);
+      // Calculate fees based on transaction type
+      let feeCalculation;
+      if (isInternal) {
+        feeCalculation = feeService.calculateInternalFee(amount);
+      } else {
+        feeCalculation = feeService.calculateExternalFee(amount, paymentType);
+      }
+
+      if (!feeCalculation.success) {
+        throw new Error(feeCalculation.error);
+      }
+
+      // Total amount including fees
+      const totalAmount = feeCalculation.transaction.totalAmount;
+      const amountInCents = Math.round(totalAmount * 100);
+      
       if (amountInCents < 50) { // Minimum $0.50
-        throw new Error('Amount must be at least $0.50');
+        throw new Error('Total amount must be at least $0.50');
       }
 
       const paymentIntentData = {
@@ -41,6 +58,10 @@ class StripePaymentService {
         description: description || 'ZapPay Payment',
         metadata: {
           app: 'zappay',
+          originalAmount: amount,
+          feeAmount: feeCalculation.fee.amount,
+          paymentType: paymentType,
+          isInternal: isInternal,
           ...metadata
         }
       };
@@ -60,8 +81,12 @@ class StripePaymentService {
 
       logger.info('Payment intent created successfully', {
         paymentIntentId: paymentIntent.id,
-        amount: paymentData.amount,
+        originalAmount: amount,
+        feeAmount: feeCalculation.fee.amount,
+        totalAmount: totalAmount,
         currency: paymentData.currency,
+        paymentType: paymentType,
+        isInternal: isInternal,
         status: paymentIntent.status
       });
 
@@ -75,7 +100,8 @@ class StripePaymentService {
           status: paymentIntent.status,
           description: paymentIntent.description,
           metadata: paymentIntent.metadata
-        }
+        },
+        feeCalculation: feeCalculation
       };
 
     } catch (error) {

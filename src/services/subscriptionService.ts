@@ -19,21 +19,13 @@ class SubscriptionService {
           description: 'Send and receive money',
           icon: '💳',
           included: true,
-          limit: 10
+          limit: 3
         },
         {
-          id: 'qr_payments',
-          name: 'QR Code Payments',
-          description: 'Generate and scan QR codes',
+          id: 'mobile_app',
+          name: 'Mobile App',
+          description: 'Access via mobile app',
           icon: '📱',
-          included: true,
-          limit: 5
-        },
-        {
-          id: 'basic_analytics',
-          name: 'Basic Analytics',
-          description: 'Transaction history and basic insights',
-          icon: '📊',
           included: true
         },
         {
@@ -44,31 +36,143 @@ class SubscriptionService {
           included: true
         },
         {
-          id: 'withdrawal_fees',
-          name: 'Withdrawal Fees',
-          description: 'Standard withdrawal fees apply',
-          icon: '💰',
+          id: 'standard_security',
+          name: 'Standard Security',
+          description: 'Basic security features',
+          icon: '🔒',
           included: true
         }
       ],
       limits: {
-        monthlyTransactions: 50,
-        dailyWithdrawal: 500,
-        monthlyWithdrawal: 2000,
-        dailyDeposit: 1000,
-        monthlyDeposit: 5000
+        monthlyTransactions: 3,
+        dailyWithdrawal: 100,
+        monthlyWithdrawal: 100,
+        dailyDeposit: 100,
+        monthlyDeposit: 100
       },
       benefits: [
-        'Up to 50 transactions per month',
+        'Up to 3 transactions per month',
         'Basic payment features',
         'Email support',
         'Standard security features'
       ]
     },
     {
+      id: 'starter',
+      name: 'Starter',
+      price: 4.99,
+      billingCycle: 'monthly',
+      description: 'Essential features for individuals',
+      color: 'blue',
+      features: [
+        {
+          id: 'basic_payments',
+          name: 'Basic Payments',
+          description: 'Send and receive money',
+          icon: '💳',
+          included: true,
+          limit: 10
+        },
+        {
+          id: 'mobile_app',
+          name: 'Mobile App',
+          description: 'Access via mobile app',
+          icon: '📱',
+          included: true
+        },
+        {
+          id: 'transaction_history',
+          name: 'Transaction History',
+          description: 'View past transactions',
+          icon: '📋',
+          included: true
+        },
+        {
+          id: 'email_support',
+          name: 'Email Support',
+          description: 'Email support within 48 hours',
+          icon: '📧',
+          included: true
+        }
+      ],
+      limits: {
+        monthlyTransactions: 10,
+        dailyWithdrawal: 500,
+        monthlyWithdrawal: 500,
+        dailyDeposit: 500,
+        monthlyDeposit: 500
+      },
+      benefits: [
+        'Up to 10 transactions per month',
+        'Transaction history',
+        'Email support',
+        'Standard security features'
+      ]
+    },
+    {
+      id: 'basic',
+      name: 'Basic',
+      price: 9.99,
+      billingCycle: 'monthly',
+      description: 'Great for small businesses and freelancers',
+      color: 'green',
+      features: [
+        {
+          id: 'advanced_payments',
+          name: 'Advanced Payments',
+          description: 'Send and receive money with enhanced features',
+          icon: '💳',
+          included: true,
+          limit: 25
+        },
+        {
+          id: 'mobile_app',
+          name: 'Mobile App',
+          description: 'Access via mobile app',
+          icon: '📱',
+          included: true
+        },
+        {
+          id: 'transaction_history',
+          name: 'Transaction History',
+          description: 'View past transactions',
+          icon: '📋',
+          included: true
+        },
+        {
+          id: 'basic_analytics',
+          name: 'Basic Analytics',
+          description: 'Transaction insights and reports',
+          icon: '📊',
+          included: true
+        },
+        {
+          id: 'email_support',
+          name: 'Email Support',
+          description: 'Email support within 48 hours',
+          icon: '📧',
+          included: true
+        }
+      ],
+      limits: {
+        monthlyTransactions: 25,
+        dailyWithdrawal: 2000,
+        monthlyWithdrawal: 2000,
+        dailyDeposit: 2000,
+        monthlyDeposit: 2000
+      },
+      benefits: [
+        'Up to 25 transactions per month',
+        'Basic analytics',
+        'Enhanced security',
+        'Email support'
+      ],
+      popular: true
+    },
+    {
       id: 'pro',
       name: 'Pro',
-      price: 9.99,
+      price: 19.99,
       billingCycle: 'monthly',
       description: 'Enhanced features for power users',
       color: 'blue',

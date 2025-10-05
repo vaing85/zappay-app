@@ -10,42 +10,116 @@ require('dotenv').config();
 
 const MEMBERSHIP_PLANS = [
   {
+    id: 'free',
+    name: 'ZapPay Free',
+    description: 'Perfect for personal use - Up to 25 transactions per month',
+    price: 0.00,
+    currency: 'usd',
+    interval: 'month',
+    features: [
+      'Up to 25 transactions per month',
+      'Basic payment processing',
+      'Email support',
+      'Standard security',
+      'Mobile app access'
+    ],
+    metadata: {
+      plan_type: 'free',
+      max_transactions: '25',
+      support_level: 'email'
+    }
+  },
+  {
+    id: 'starter',
+    name: 'ZapPay Starter',
+    description: 'Essential features for individuals - Up to 250 transactions per month',
+    price: 4.99,
+    currency: 'usd',
+    interval: 'month',
+    features: [
+      'Up to 250 transactions per month',
+      'Basic payment processing',
+      'Email support',
+      'Standard security',
+      'Mobile app access',
+      'Transaction history'
+    ],
+    metadata: {
+      plan_type: 'starter',
+      max_transactions: '250',
+      support_level: 'email'
+    }
+  },
+  {
     id: 'basic',
     name: 'ZapPay Basic',
-    description: 'Essential features for individuals - Up to 5 transactions per month',
+    description: 'Great for small businesses - Up to 500 transactions per month',
     price: 9.99,
     currency: 'usd',
     interval: 'month',
     features: [
-      'Up to 5 transactions per month',
-      'Basic payment processing',
+      'Up to 500 transactions per month',
+      'Advanced payment processing',
       'Email support',
-      'Standard security'
+      'Enhanced security',
+      'Mobile app access',
+      'Transaction history',
+      'Basic analytics'
     ],
     metadata: {
       plan_type: 'basic',
-      max_transactions: '5',
+      max_transactions: '500',
       support_level: 'email'
     }
   },
   {
     id: 'pro',
     name: 'ZapPay Pro',
-    description: 'Advanced features for growing businesses - Up to 50 transactions per month',
-    price: 29.99,
+    description: 'Advanced features for growing businesses - Up to 1000 transactions per month',
+    price: 19.99,
     currency: 'usd',
     interval: 'month',
     features: [
-      'Up to 50 transactions per month',
+      'Up to 1000 transactions per month',
       'Advanced payment processing',
       'Priority support',
       'Enhanced security',
-      'Analytics dashboard',
-      'API access'
+      'Mobile app access',
+      'Transaction history',
+      'Advanced analytics',
+      'API access',
+      'QR code payments'
     ],
     metadata: {
       plan_type: 'pro',
-      max_transactions: '50',
+      max_transactions: '1000',
+      support_level: 'priority'
+    }
+  },
+  {
+    id: 'business',
+    name: 'ZapPay Business',
+    description: 'Comprehensive features for established businesses - Up to 2500 transactions per month',
+    price: 49.99,
+    currency: 'usd',
+    interval: 'month',
+    features: [
+      'Up to 2500 transactions per month',
+      'Premium payment processing',
+      'Priority support',
+      'Maximum security',
+      'Mobile app access',
+      'Transaction history',
+      'Advanced analytics',
+      'Full API access',
+      'QR code payments',
+      'Group payments',
+      'Team management',
+      'Custom branding'
+    ],
+    metadata: {
+      plan_type: 'business',
+      max_transactions: '2500',
       support_level: 'priority'
     }
   },
@@ -61,10 +135,17 @@ const MEMBERSHIP_PLANS = [
       'Premium payment processing',
       '24/7 phone support',
       'Maximum security',
+      'Mobile app access',
+      'Transaction history',
       'Advanced analytics',
       'Full API access',
+      'QR code payments',
+      'Group payments',
+      'Team management',
+      'Custom branding',
       'Custom integrations',
-      'Dedicated account manager'
+      'Dedicated account manager',
+      'White-label options'
     ],
     metadata: {
       plan_type: 'enterprise',
