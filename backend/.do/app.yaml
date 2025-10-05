@@ -15,13 +15,13 @@ services:
   - key: NODE_ENV
     value: production
   - key: PORT
-    value: "3001"
+    value: "5000"
   - key: HOST
     value: "0.0.0.0"
-  - key: DB_URL
-    value: ${db.DATABASE_URL}
   - key: REDIS_URL
-    value: ${redis.DATABASE_URL}
+    value: redis://default:${REDIS_PASSWORD}@zappay-redis-do-user-24731503-0.k.db.ondigitalocean.com:25061
+  - key: REDIS_PASSWORD
+    value: ${REDIS_PASSWORD}
   - key: JWT_SECRET
     value: ${JWT_SECRET}
   - key: REFRESH_TOKEN_SECRET
@@ -29,7 +29,7 @@ services:
   - key: SENDGRID_API_KEY
     value: ${SENDGRID_API_KEY}
   - key: FROM_EMAIL
-    value: noreply@zappay.com
+    value: noreply@zappay.site
   - key: FROM_NAME
     value: ZapPay
   - key: TWILIO_ACCOUNT_SID
@@ -50,8 +50,6 @@ services:
     value: "10485760"
   - key: BCRYPT_ROUNDS
     value: "12"
-  - key: DB_SSL_REJECT_UNAUTHORIZED
-    value: "false"
   - key: RAPYD_ACCESS_KEY
     value: ${RAPYD_ACCESS_KEY}
   - key: RAPYD_SECRET_KEY
@@ -70,8 +68,18 @@ services:
     value: "900000"
   - key: JWT_EXPIRES_IN
     value: "7d"
-  - key: BCRYPT_ROUNDS
-    value: "12"
+  - key: MONGODB_URI
+    value: mongodb+srv://villaaing_db_user:w8IiTCl5d5gzR7Jk@cluster0.8zftps3.mongodb.net/zappay?retryWrites=true&w=majority&appName=Cluster0
+  - key: MONGODB_DB_NAME
+    value: zappay
+  - key: SSN_ENCRYPTION__KEY
+    value: ${SSN_ENCRYPTION__KEY}
+  - key: STRIPE_PUBLISHABLE_KEY
+    value: pk_test_51S81D7PFGMTp6wyHqRpdhl9yGm2RtvyHAGYOVVqyMg9HCQilnOU8TzdBvVtIOp53p45QVzVbfor1USguk7fJUcMG00boL74m0G
+  - key: STRIPE_SECRET_KEY
+    value: ${STRIPE_SECRET_KEY}
+  - key: STRIPE_WEBHOOK_SECRET
+    value: ${STRIPE_WEBHOOK_SECRET}
   health_check:
     http_path: /health
     initial_delay_seconds: 10
@@ -97,13 +105,6 @@ services:
     value: 0.05
 
 databases:
-- name: db
-  engine: PG
-  version: "15"
-  size: db-s-1vcpu-1gb
-  num_nodes: 1
-  region: nyc1
-
 - name: redis
   engine: REDIS
   version: "7"
