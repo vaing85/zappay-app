@@ -1,0 +1,61 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": "vite",
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://zappayapp-ie9d2.ondigitalocean.app/api/$1"
+    },
+    {
+      "source": "/health",
+      "destination": "https://zappayapp-ie9d2.ondigitalocean.app/health"
+    },
+    {
+      "source": "/rapyd-health",
+      "destination": "https://zappayapp-ie9d2.ondigitalocean.app/rapyd-health"
+    },
+    {
+      "source": "/email-test",
+      "destination": "https://zappayapp-ie9d2.ondigitalocean.app/email-test"
+    },
+    {
+      "source": "/sms-test",
+      "destination": "https://zappayapp-ie9d2.ondigitalocean.app/sms-test"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        }
+      ]
+    },
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
+  ]
+}

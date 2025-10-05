@@ -1,0 +1,73 @@
+{
+  "short_name": "ZapPay",
+  "name": "ZapPay - Lightning Fast Payments",
+  "description": "Send, receive, and manage money instantly with ZapPay. Fast, secure, and easy peer-to-peer payments.",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "32x32",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo192.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo512.svg",
+      "type": "image/svg+xml",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#f59e0b",
+  "background_color": "#fef3c7",
+  "categories": ["finance", "productivity", "utilities"],
+  "lang": "en",
+  "dir": "ltr",
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "Send Money",
+      "short_name": "Send",
+      "description": "Quickly send money to contacts",
+      "url": "/send",
+      "icons": [
+        {
+          "src": "favicon.svg",
+          "sizes": "32x32"
+        }
+      ]
+    },
+    {
+      "name": "Analytics",
+      "short_name": "Analytics",
+      "description": "View spending analytics and insights",
+      "url": "/analytics",
+      "icons": [
+        {
+          "src": "favicon.svg",
+          "sizes": "32x32"
+        }
+      ]
+    },
+    {
+      "name": "QR Pay",
+      "short_name": "QR",
+      "description": "Generate or scan QR codes for payments",
+      "url": "/qr",
+      "icons": [
+        {
+          "src": "favicon.svg",
+          "sizes": "32x32"
+        }
+      ]
+    }
+  ]
+}

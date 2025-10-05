@@ -1,0 +1,10 @@
+# API redirects - route API calls to backend
+/api/* https://zappayapp-ie9d2.ondigitalocean.app/api/:splat 200
+/health https://zappayapp-ie9d2.ondigitalocean.app/health 200
+/rapyd-health https://zappayapp-ie9d2.ondigitalocean.app/rapyd-health 200
+/email-test https://zappayapp-ie9d2.ondigitalocean.app/email-test 200
+/sms-test https://zappayapp-ie9d2.ondigitalocean.app/sms-test 200
+
+# SPA redirects
+/static/* /static/:splat 200
+/* /index.html 200
