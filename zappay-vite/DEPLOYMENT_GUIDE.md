@@ -63,15 +63,15 @@ vercel --prod
 Create these environment variables in your hosting platform:
 
 ```env
-# API Configuration
-VITE_API_BASE_URL=https://zappayapp-ie9d2.ondigitalocean.app/api
+# API Configuration (Primary Domain)
+VITE_API_BASE_URL=https://api.zappay.site/api
 
 # Stripe Configuration
 VITE_STRIPE_PUBLISHABLE_KEY=pk_live_your_live_stripe_key
 VITE_STRIPE_SECRET_KEY=sk_live_your_live_stripe_key
 
 # WebSocket Configuration
-VITE_WEBSOCKET_URL=wss://zappayapp-ie9d2.ondigitalocean.app
+VITE_WEBSOCKET_URL=wss://api.zappay.site
 ```
 
 ## 🚀 **Quick Deployment Commands:**

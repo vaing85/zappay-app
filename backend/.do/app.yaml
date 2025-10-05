@@ -39,7 +39,7 @@ services:
   - key: TWILIO_PHONE_NUMBER
     value: ${TWILIO_PHONE_NUMBER}
   - key: CORS_ORIGIN
-    value: https://zappay.site,https://www.zappay.site,https://zappay.com,https://www.zappay.com
+    value: https://zappay.site,https://www.zappay.site,https://api.zappay.site,https://zappay.com,https://www.zappay.com
   - key: FRONTEND_URL
     value: https://zappay.site
   - key: LOG_LEVEL
@@ -65,7 +65,7 @@ services:
   - key: RAPYD_P2P_ENABLED
     value: "true"
   - key: ALLOWED_ORIGINS
-    value: https://zappay.site,https://www.zappay.site,https://zappay.com,https://www.zappay.com
+    value: https://zappay.site,https://www.zappay.site,https://api.zappay.site,https://zappay.com,https://www.zappay.com
   - key: RATE_LIMIT_WINDOW_MS
     value: "900000"
   - key: JWT_EXPIRES_IN
