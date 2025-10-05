@@ -1,7 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
-const { User } = require('../models');
+// MongoDB models will be imported dynamically
 const authMiddleware = require('../middleware/auth');
 const { sendVerificationEmail } = require('../services/emailService');
 const { sendSMS } = require('../services/smsService');

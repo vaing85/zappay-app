@@ -114,9 +114,9 @@ app.get('/health', (req, res) => {
   };
 
   try {
-    // Try to test database connection
-    const { sequelize } = require('./config/database');
-    sequelize.authenticate()
+    // Try to test MongoDB connection
+    const { connectMongoDB } = require('./config/mongodb');
+    connectMongoDB()
       .then(() => {
         healthCheck.services.database = 'connected';
         res.status(200).json(healthCheck);

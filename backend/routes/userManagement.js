@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const { User } = require('../models');
+// MongoDB models will be imported dynamically
 const authenticateToken = require('../middleware/auth');
 const { body, validationResult } = require('express-validator');
-const { Op } = require('sequelize');
+// Sequelize removed - using MongoDB only
 
 // Simple admin check middleware
 const requireAdmin = (req, res, next) => {

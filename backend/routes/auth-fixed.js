@@ -68,7 +68,8 @@ router.post('/register', [
 
     // Try to use real database first
     try {
-      const { User } = require('../models');
+      const { getModels } = require('../models/mongodb');
+      const { User } = await getModels();
       
       // Check if user already exists
       const existingUser = await User.findOne({ where: { email } });
@@ -166,7 +167,8 @@ router.post('/login', [
 
     // Try to use real database first
     try {
-      const { User } = require('../models');
+      const { getModels } = require('../models/mongodb');
+      const { User } = await getModels();
       
       // Find user by email
       const user = await User.findOne({ where: { email } });

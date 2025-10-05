@@ -1,12 +1,12 @@
 const jwt = require('jsonwebtoken');
 
-// Import models with error handling
+// Import MongoDB models with error handling
 let models;
 try {
-  const dbConfig = require('../config/database');
-  models = dbConfig.models;
+  const { getModels } = require('../models/mongodb');
+  models = getModels;
 } catch (error) {
-  console.warn('⚠️ Database models not available:', error.message);
+  console.warn('⚠️ MongoDB models not available:', error.message);
   models = null;
 }
 

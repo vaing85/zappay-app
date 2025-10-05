@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { User } = require('../models');
+// MongoDB models will be imported dynamically
 
 // JWT Authentication Middleware
 const authenticateToken = async (req, res, next) => {

@@ -1,4 +1,4 @@
-const { connectDB, User, closeDB } = require('./models');
+const { connectMongoDB, getCollection } = require('./config/mongodb');
 
 async function seedUsers() {
   console.log('🌱 Seeding Users...');
