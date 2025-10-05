@@ -42,6 +42,7 @@ Write-Host "✅ Generated secure JWT_SECRET and SSN_ENCRYPTION__KEY" -Foreground
 
 Write-Host "`n📋 Next Steps:" -ForegroundColor Cyan
 Write-Host "1. Edit backend\.env and replace ********** with your actual values:" -ForegroundColor White
+Write-Host "   - MONGODB_PASSWORD" -ForegroundColor Gray
 Write-Host "   - REDIS_PASSWORD" -ForegroundColor Gray
 Write-Host "   - STRIPE_SECRET_KEY" -ForegroundColor Gray
 Write-Host "   - STRIPE_WEBHOOK_SECRET" -ForegroundColor Gray

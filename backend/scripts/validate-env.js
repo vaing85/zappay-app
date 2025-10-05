@@ -19,6 +19,7 @@ const requiredEnvVars = {
   // MongoDB Configuration (Primary Database)
   MONGODB_URI: { required: true, type: 'string', secret: true },
   MONGODB_DB_NAME: { required: true, type: 'string' },
+  MONGODB_PASSWORD: { required: true, type: 'string', secret: true },
 
   // Redis Configuration
   REDIS_URL: { required: true, type: 'string', secret: true },

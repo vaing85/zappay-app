@@ -69,9 +69,11 @@ services:
   - key: JWT_EXPIRES_IN
     value: "7d"
   - key: MONGODB_URI
-    value: mongodb+srv://villaaing_db_user:w8IiTCl5d5gzR7Jk@cluster0.8zftps3.mongodb.net/zappay?retryWrites=true&w=majority&appName=Cluster0
+    value: mongodb+srv://villaaing_db_user:${MONGODB_PASSWORD}@cluster0.8zftps3.mongodb.net/zappay?retryWrites=true&w=majority&appName=Cluster0
   - key: MONGODB_DB_NAME
     value: zappay
+  - key: MONGODB_PASSWORD
+    value: ${MONGODB_PASSWORD}
   - key: SSN_ENCRYPTION__KEY
     value: ${SSN_ENCRYPTION__KEY}
   - key: STRIPE_PUBLISHABLE_KEY

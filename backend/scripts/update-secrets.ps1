@@ -2,6 +2,7 @@
 # This script safely updates the .env file with actual secret values
 
 param(
+    [string]$MongoDBPassword,
     [string]$RedisPassword,
     [string]$JWTSecret,
     [string]$StripeSecretKey,
@@ -24,6 +25,11 @@ if (-not (Test-Path $envFile)) {
 $content = Get-Content $envFile
 
 # Update secrets if provided
+if ($MongoDBPassword) {
+    $content = $content -replace 'MONGODB_PASSWORD=.*', "MONGODB_PASSWORD=$MongoDBPassword"
+    Write-Host "✅ Updated MONGODB_PASSWORD" -ForegroundColor Green
+}
+
 if ($RedisPassword) {
     $content = $content -replace 'REDIS_PASSWORD=.*', "REDIS_PASSWORD=$RedisPassword"
     Write-Host "✅ Updated REDIS_PASSWORD" -ForegroundColor Green
@@ -61,4 +67,4 @@ Write-Host "`n✅ Environment secrets updated successfully!" -ForegroundColor Gr
 Write-Host "🔍 Run validation: node backend\scripts\validate-env.js" -ForegroundColor Blue
 
 Write-Host "`n📋 Usage Example:" -ForegroundColor Cyan
-Write-Host ".\update-secrets.ps1 -RedisPassword 'your_redis_password' -JWTSecret 'your_jwt_secret'" -ForegroundColor Gray
+Write-Host ".\update-secrets.ps1 -MongoDBPassword 'your_mongodb_password' -RedisPassword 'your_redis_password' -JWTSecret 'your_jwt_secret'" -ForegroundColor Gray

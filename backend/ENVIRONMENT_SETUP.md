@@ -15,8 +15,9 @@ HOST=0.0.0.0
 
 ### MongoDB Configuration (Primary Database)
 ```bash
-MONGODB_URI=mongodb+srv://villaaing_db_user:RZoPO0WdKuH3GmUC@cluster0.8zftps3.mongodb.net/zappay?retryWrites=true&w=majority&appName=Cluster0
+MONGODB_URI=mongodb+srv://villaaing_db_user:${MONGODB_PASSWORD}@cluster0.8zftps3.mongodb.net/zappay?retryWrites=true&w=majority&appName=Cluster0
 MONGODB_DB_NAME=zappay
+MONGODB_PASSWORD=**********
 ```
 
 ### Redis Configuration (DigitalOcean)
@@ -93,6 +94,7 @@ The environment variables are already configured in `backend/.do/app.yaml`. To d
    ```
 
 2. Set the secret environment variables in DigitalOcean dashboard:
+   - `MONGODB_PASSWORD`
    - `REDIS_PASSWORD`
    - `JWT_SECRET`
    - `STRIPE_SECRET_KEY`
