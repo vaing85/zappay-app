@@ -6,16 +6,16 @@
  */
 
 // Lazy load Stripe service to avoid initialization errors
-let getStripeSubscriptionService();
+let stripeSubscriptionService;
 const getStripeSubscriptionService = () => {
-  if (!getStripeSubscriptionService()) {
+  if (!stripeSubscriptionService) {
     try {
-      getStripeSubscriptionService() = require('./services/getStripeSubscriptionService()');
+      stripeSubscriptionService = require('./services/stripeSubscriptionService');
     } catch (error) {
       throw new Error(`Stripe service initialization failed: ${error.message}`);
     }
   }
-  return getStripeSubscriptionService();
+  return stripeSubscriptionService;
 };
 require('dotenv').config();
 

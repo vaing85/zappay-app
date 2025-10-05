@@ -4,16 +4,16 @@ const { webhookLimiter } = require('../middleware/rateLimiting');
 const logger = require('../middleware/logger');
 
 // Lazy load Stripe service to avoid initialization errors
-let getStripePaymentService();
+let stripePaymentService;
 const getStripePaymentService = () => {
-  if (!getStripePaymentService()) {
+  if (!stripePaymentService) {
     try {
-      getStripePaymentService() = require('../services/getStripePaymentService()');
+      stripePaymentService = require('../services/stripePaymentService');
     } catch (error) {
       throw new Error(`Stripe service initialization failed: ${error.message}`);
     }
   }
-  return getStripePaymentService();
+  return stripePaymentService;
 };
 
 // Apply rate limiting to webhook routes
