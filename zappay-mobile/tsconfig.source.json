@@ -32,8 +32,7 @@
   "include": [
     "./ZapPayMobile/src/**/*.ts",
     "./ZapPayMobile/src/**/*.tsx",
-    "./ZapPayMobile/App.tsx",
-    "./App.tsx"
+    "./ZapPayMobile/App.tsx"
   ],
   "exclude": [
     "**/node_modules",
