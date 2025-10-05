@@ -24,7 +24,7 @@
     "@types/qrcode": "^1.5.5",
     "axios": "^1.11.0",
     "chart.js": "^4.5.0",
-    "expo": "~51.0.28",
+    "expo": "~54.0.12",
     "expo-status-bar": "~1.12.1",
     "framer-motion": "^10.16.4",
     "jsqr": "^1.4.0",
