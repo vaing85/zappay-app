@@ -8,22 +8,37 @@ class SchedulerService {
   }
 
   startDailyReport() {
-    // Run daily report at 9:00 AM every day
-    const dailyReportJob = cron.schedule('0 9 * * *', async () => {
-      console.log('🕘 Running scheduled daily report...');
+    // Run daily report at 9:00 AM Central Time every day
+    const morningReportJob = cron.schedule('0 9 * * *', async () => {
+      console.log('🌅 Running scheduled morning daily report...');
       try {
         await this.dailyReportService.generateDailyReport();
-        console.log('✅ Daily report completed successfully');
+        console.log('✅ Morning daily report completed successfully');
       } catch (error) {
-        console.error('❌ Daily report failed:', error.message);
+        console.error('❌ Morning daily report failed:', error.message);
       }
     }, {
       scheduled: false,
-      timezone: 'America/New_York' // Adjust to your timezone
+      timezone: 'America/Chicago' // Central Time
     });
 
-    this.jobs.push(dailyReportJob);
-    return dailyReportJob;
+    // Run daily report at 9:00 PM Central Time every day
+    const eveningReportJob = cron.schedule('0 21 * * *', async () => {
+      console.log('🌙 Running scheduled evening daily report...');
+      try {
+        await this.dailyReportService.generateDailyReport();
+        console.log('✅ Evening daily report completed successfully');
+      } catch (error) {
+        console.error('❌ Evening daily report failed:', error.message);
+      }
+    }, {
+      scheduled: false,
+      timezone: 'America/Chicago' // Central Time
+    });
+
+    this.jobs.push(morningReportJob);
+    this.jobs.push(eveningReportJob);
+    return { morningReportJob, eveningReportJob };
   }
 
   startHealthCheck() {
