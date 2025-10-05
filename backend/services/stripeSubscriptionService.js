@@ -7,6 +7,11 @@ const logger = require('../middleware/logger');
  */
 class StripeSubscriptionService {
   constructor() {
+    // Validate Stripe configuration
+    if (!process.env.STRIPE_SECRET_KEY) {
+      throw new Error('STRIPE_SECRET_KEY environment variable is required');
+    }
+    
     this.stripe = stripe(process.env.STRIPE_SECRET_KEY);
     this.webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
   }

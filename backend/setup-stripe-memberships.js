@@ -5,7 +5,18 @@
  * This script sets up the membership products and prices in Stripe for ZapPay
  */
 
-const stripeSubscriptionService = require('./services/stripeSubscriptionService');
+// Lazy load Stripe service to avoid initialization errors
+let getStripeSubscriptionService();
+const getStripeSubscriptionService = () => {
+  if (!getStripeSubscriptionService()) {
+    try {
+      getStripeSubscriptionService() = require('./services/getStripeSubscriptionService()');
+    } catch (error) {
+      throw new Error(`Stripe service initialization failed: ${error.message}`);
+    }
+  }
+  return getStripeSubscriptionService();
+};
 require('dotenv').config();
 
 const MEMBERSHIP_PLANS = [
@@ -169,7 +180,7 @@ async function setupMembershipPlans() {
     
     try {
       // Create product
-      const productResult = await stripeSubscriptionService.createProduct({
+      const productResult = await getStripeSubscriptionService().createProduct({
         name: plan.name,
         description: plan.description,
         metadata: {
@@ -186,7 +197,7 @@ async function setupMembershipPlans() {
         // Create price for the product
         console.log(`  💰 Creating price: $${plan.price}/${plan.interval}`);
         
-        const priceResult = await stripeSubscriptionService.createPrice({
+        const priceResult = await getStripeSubscriptionService().createPrice({
           productId: productResult.product.id,
           unitAmount: plan.price,
           currency: plan.currency,
@@ -266,11 +277,11 @@ async function verifySetup() {
   
   try {
     // Test getting membership plans
-    const plans = stripeSubscriptionService.getMembershipPlans();
+    const plans = getStripeSubscriptionService().getMembershipPlans();
     console.log(`✅ Membership plans service: ${plans.length} plans available`);
     
     // Test Stripe connection
-    const testResult = await stripeSubscriptionService.createProduct({
+    const testResult = await getStripeSubscriptionService().createProduct({
       name: 'Test Product',
       description: 'Test product for verification',
       metadata: { test: true }
@@ -281,6 +292,9 @@ async function verifySetup() {
       
       // Clean up test product
       try {
+        if (!process.env.STRIPE_SECRET_KEY) {
+          throw new Error('STRIPE_SECRET_KEY not configured');
+        }
         const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
         await stripe.products.del(testResult.product.id);
         console.log('✅ Test cleanup: Completed');

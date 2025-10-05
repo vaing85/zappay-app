@@ -1,8 +1,20 @@
 const express = require('express');
 const router = express.Router();
-const stripeSubscriptionService = require('../services/stripeSubscriptionService');
 const { paymentLimiter } = require('../middleware/rateLimiting');
 const logger = require('../middleware/logger');
+
+// Lazy load Stripe service to avoid initialization errors
+let getStripeSubscriptionService();
+const getStripeSubscriptionService = () => {
+  if (!getStripeSubscriptionService()) {
+    try {
+      getStripeSubscriptionService() = require('../services/getStripeSubscriptionService()');
+    } catch (error) {
+      throw new Error(`Stripe service initialization failed: ${error.message}`);
+    }
+  }
+  return getStripeSubscriptionService();
+};
 
 // Apply rate limiting to all subscription routes
 router.use(paymentLimiter);
@@ -13,7 +25,7 @@ router.use(paymentLimiter);
  */
 router.get('/plans', async (req, res) => {
   try {
-    const plans = stripeSubscriptionService.getMembershipPlans();
+    const plans = getStripeSubscriptionService().getMembershipPlans();
     
     res.json({
       success: true,
@@ -49,7 +61,7 @@ router.post('/products', async (req, res) => {
       });
     }
     
-    const result = await stripeSubscriptionService.createProduct({
+    const result = await getStripeSubscriptionService().createProduct({
       name,
       description,
       metadata,
@@ -100,7 +112,7 @@ router.post('/prices', async (req, res) => {
       });
     }
     
-    const result = await stripeSubscriptionService.createPrice({
+    const result = await getStripeSubscriptionService().createPrice({
       productId,
       unitAmount,
       currency,
@@ -158,7 +170,7 @@ router.post('/', async (req, res) => {
       });
     }
     
-    const result = await stripeSubscriptionService.createSubscription({
+    const result = await getStripeSubscriptionService().createSubscription({
       customerId,
       priceId,
       paymentMethodId,
@@ -202,7 +214,7 @@ router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     
-    const result = await stripeSubscriptionService.getSubscription(id);
+    const result = await getStripeSubscriptionService().getSubscription(id);
     
     if (result.success) {
       res.json({
@@ -247,7 +259,7 @@ router.put('/:id', async (req, res) => {
       });
     }
     
-    const result = await stripeSubscriptionService.updateSubscription(id, {
+    const result = await getStripeSubscriptionService().updateSubscription(id, {
       priceId,
       quantity,
       prorationBehavior,
@@ -292,7 +304,7 @@ router.delete('/:id', async (req, res) => {
     const { id } = req.params;
     const { immediately = false } = req.query;
     
-    const result = await stripeSubscriptionService.cancelSubscription(id, immediately === 'true');
+    const result = await getStripeSubscriptionService().cancelSubscription(id, immediately === 'true');
     
     if (result.success) {
       res.json({
@@ -330,7 +342,7 @@ router.post('/:id/resume', async (req, res) => {
   try {
     const { id } = req.params;
     
-    const result = await stripeSubscriptionService.resumeSubscription(id);
+    const result = await getStripeSubscriptionService().resumeSubscription(id);
     
     if (result.success) {
       res.json({
@@ -369,7 +381,7 @@ router.get('/customer/:customerId', async (req, res) => {
     const { customerId } = req.params;
     const { limit = 10, startingAfter, endingBefore, status = 'all' } = req.query;
     
-    const result = await stripeSubscriptionService.listCustomerSubscriptions(customerId, {
+    const result = await getStripeSubscriptionService().listCustomerSubscriptions(customerId, {
       limit: parseInt(limit),
       startingAfter,
       endingBefore,
@@ -413,7 +425,7 @@ router.get('/status/:customerId', async (req, res) => {
   try {
     const { customerId } = req.params;
     
-    const result = await stripeSubscriptionService.getUserSubscriptionStatus(customerId);
+    const result = await getStripeSubscriptionService().getUserSubscriptionStatus(customerId);
     
     if (result.success) {
       res.json({
@@ -458,7 +470,7 @@ router.post('/portal', async (req, res) => {
       });
     }
     
-    const result = await stripeSubscriptionService.createCustomerPortalSession(customerId, returnUrl);
+    const result = await getStripeSubscriptionService().createCustomerPortalSession(customerId, returnUrl);
     
     if (result.success) {
       res.json({
@@ -510,7 +522,7 @@ router.post('/checkout', async (req, res) => {
       });
     }
     
-    const result = await stripeSubscriptionService.createCheckoutSession({
+    const result = await getStripeSubscriptionService().createCheckoutSession({
       customerId,
       priceId,
       successUrl,

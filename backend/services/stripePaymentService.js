@@ -8,6 +8,11 @@ const feeService = require('./feeService');
  */
 class StripePaymentService {
   constructor() {
+    // Validate Stripe configuration
+    if (!process.env.STRIPE_SECRET_KEY) {
+      throw new Error('STRIPE_SECRET_KEY environment variable is required');
+    }
+    
     this.stripe = stripe(process.env.STRIPE_SECRET_KEY);
     this.webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
     this.publishableKey = process.env.STRIPE_PUBLISHABLE_KEY;

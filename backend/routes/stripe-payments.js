@@ -1,8 +1,20 @@
 const express = require('express');
 const router = express.Router();
-const stripePaymentService = require('../services/stripePaymentService');
 const { paymentLimiter } = require('../middleware/rateLimiting');
 const logger = require('../middleware/logger');
+
+// Lazy load Stripe service to avoid initialization errors
+let getStripePaymentService();
+const getStripePaymentService = () => {
+  if (!getStripePaymentService()) {
+    try {
+      getStripePaymentService() = require('../services/getStripePaymentService()');
+    } catch (error) {
+      throw new Error(`Stripe service initialization failed: ${error.message}`);
+    }
+  }
+  return getStripePaymentService();
+};
 
 // Apply rate limiting to all payment routes
 router.use(paymentLimiter);
@@ -13,7 +25,7 @@ router.use(paymentLimiter);
  */
 router.get('/methods', async (req, res) => {
   try {
-    const paymentMethods = stripePaymentService.getSupportedPaymentMethods();
+    const paymentMethods = getStripePaymentService().getSupportedPaymentMethods();
     
     res.json({
       success: true,
@@ -40,7 +52,7 @@ router.get('/methods', async (req, res) => {
  */
 router.get('/currencies', async (req, res) => {
   try {
-    const currencies = stripePaymentService.getSupportedCurrencies();
+    const currencies = getStripePaymentService().getSupportedCurrencies();
     
     res.json({
       success: true,
@@ -76,7 +88,7 @@ router.post('/customers', async (req, res) => {
       });
     }
     
-    const result = await stripePaymentService.createCustomer({
+    const result = await getStripePaymentService().createCustomer({
       email,
       name,
       phone,
@@ -135,7 +147,7 @@ router.post('/payment-methods', async (req, res) => {
       });
     }
     
-    const result = await stripePaymentService.createPaymentMethod({
+    const result = await getStripePaymentService().createPaymentMethod({
       type,
       card,
       billingDetails
@@ -192,7 +204,7 @@ router.post('/intents', async (req, res) => {
       });
     }
     
-    const result = await stripePaymentService.createPaymentIntent({
+    const result = await getStripePaymentService().createPaymentIntent({
       amount,
       currency,
       customerId,
@@ -246,7 +258,7 @@ router.post('/intents/:id/confirm', async (req, res) => {
       });
     }
     
-    const result = await stripePaymentService.confirmPaymentIntent(id, paymentMethodId);
+    const result = await getStripePaymentService().confirmPaymentIntent(id, paymentMethodId);
     
     if (result.success) {
       res.json({
@@ -285,7 +297,7 @@ router.get('/intents/:id', async (req, res) => {
   try {
     const { id } = req.params;
     
-    const result = await stripePaymentService.getPaymentIntent(id);
+    const result = await getStripePaymentService().getPaymentIntent(id);
     
     if (result.success) {
       res.json({
@@ -322,7 +334,7 @@ router.post('/intents/:id/cancel', async (req, res) => {
   try {
     const { id } = req.params;
     
-    const result = await stripePaymentService.cancelPaymentIntent(id);
+    const result = await getStripePaymentService().cancelPaymentIntent(id);
     
     if (result.success) {
       res.json({
@@ -372,7 +384,7 @@ router.post('/refunds', async (req, res) => {
       });
     }
     
-    const result = await stripePaymentService.createRefund({
+    const result = await getStripePaymentService().createRefund({
       paymentIntentId,
       amount,
       reason,
@@ -422,7 +434,7 @@ router.get('/intents', async (req, res) => {
       });
     }
     
-    const result = await stripePaymentService.listPaymentIntents(customerId, {
+    const result = await getStripePaymentService().listPaymentIntents(customerId, {
       limit: parseInt(limit),
       startingAfter,
       endingBefore

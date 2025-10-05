@@ -1,8 +1,20 @@
 const express = require('express');
 const router = express.Router();
-const stripePaymentService = require('../services/stripePaymentService');
 const { webhookLimiter } = require('../middleware/rateLimiting');
 const logger = require('../middleware/logger');
+
+// Lazy load Stripe service to avoid initialization errors
+let getStripePaymentService();
+const getStripePaymentService = () => {
+  if (!getStripePaymentService()) {
+    try {
+      getStripePaymentService() = require('../services/getStripePaymentService()');
+    } catch (error) {
+      throw new Error(`Stripe service initialization failed: ${error.message}`);
+    }
+  }
+  return getStripePaymentService();
+};
 
 // Apply rate limiting to webhook routes
 router.use(webhookLimiter);
@@ -27,7 +39,7 @@ router.post('/', express.raw({ type: 'application/json' }), async (req, res) => 
     }
 
     // Verify webhook signature
-    const verification = stripePaymentService.verifyWebhookSignature(payload, signature);
+    const verification = getStripePaymentService().verifyWebhookSignature(payload, signature);
     
     if (!verification.success) {
       logger.error('Stripe webhook signature verification failed', {
