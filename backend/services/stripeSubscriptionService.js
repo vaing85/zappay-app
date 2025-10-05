@@ -563,44 +563,136 @@ class StripeSubscriptionService {
   getMembershipPlans() {
     return [
       {
+        id: 'free',
+        name: 'Free Plan',
+        description: 'Perfect for personal use and small transactions',
+        price: 0.00,
+        currency: 'usd',
+        interval: 'month',
+        features: [
+          'Up to 3 transactions per month',
+          'Basic payment processing',
+          'Email support',
+          'Standard security',
+          'Mobile app access'
+        ],
+        limits: {
+          monthlyTransactions: 3,
+          maxAmount: 100,
+          dailyWithdrawal: 100,
+          monthlyWithdrawal: 100,
+          supportLevel: 'email'
+        },
+        popular: false
+      },
+      {
+        id: 'starter',
+        name: 'Starter Plan',
+        description: 'Essential features for individuals',
+        price: 4.99,
+        currency: 'usd',
+        interval: 'month',
+        features: [
+          'Up to 10 transactions per month',
+          'Basic payment processing',
+          'Email support',
+          'Standard security',
+          'Mobile app access',
+          'Transaction history'
+        ],
+        limits: {
+          monthlyTransactions: 10,
+          maxAmount: 500,
+          dailyWithdrawal: 500,
+          monthlyWithdrawal: 500,
+          supportLevel: 'email'
+        },
+        popular: false
+      },
+      {
         id: 'basic',
         name: 'Basic Plan',
-        description: 'Essential features for individuals',
+        description: 'Great for small businesses and freelancers',
         price: 9.99,
         currency: 'usd',
         interval: 'month',
         features: [
-          'Up to 5 transactions per month',
-          'Basic payment processing',
+          'Up to 25 transactions per month',
+          'Advanced payment processing',
           'Email support',
-          'Standard security'
+          'Enhanced security',
+          'Mobile app access',
+          'Transaction history',
+          'Basic analytics'
         ],
         limits: {
-          monthlyTransactions: 5,
-          maxAmount: 1000,
+          monthlyTransactions: 25,
+          maxAmount: 2000,
+          dailyWithdrawal: 2000,
+          monthlyWithdrawal: 2000,
           supportLevel: 'email'
-        }
+        },
+        popular: true
       },
       {
         id: 'pro',
         name: 'Pro Plan',
         description: 'Advanced features for growing businesses',
-        price: 29.99,
+        price: 19.99,
         currency: 'usd',
         interval: 'month',
         features: [
-          'Up to 50 transactions per month',
+          'Up to 100 transactions per month',
           'Advanced payment processing',
           'Priority support',
           'Enhanced security',
-          'Analytics dashboard',
-          'API access'
+          'Mobile app access',
+          'Transaction history',
+          'Advanced analytics',
+          'API access',
+          'QR code payments'
         ],
         limits: {
-          monthlyTransactions: 50,
+          monthlyTransactions: 100,
           maxAmount: 10000,
+          dailyWithdrawal: 10000,
+          monthlyWithdrawal: 10000,
+          apiCalls: 10000,
           supportLevel: 'priority'
-        }
+        },
+        popular: false
+      },
+      {
+        id: 'business',
+        name: 'Business Plan',
+        description: 'Comprehensive features for established businesses',
+        price: 49.99,
+        currency: 'usd',
+        interval: 'month',
+        features: [
+          'Up to 2500 transactions per month',
+          'Premium payment processing',
+          'Priority support',
+          'Maximum security',
+          'Mobile app access',
+          'Transaction history',
+          'Advanced analytics',
+          'Full API access',
+          'QR code payments',
+          'Group payments',
+          'Team management',
+          'Custom branding'
+        ],
+        limits: {
+          monthlyTransactions: 500,
+          maxAmount: 50000,
+          dailyWithdrawal: 50000,
+          monthlyWithdrawal: 50000,
+          teamMembers: 10,
+          apiCalls: 50000,
+          supportLevel: 'priority'
+        },
+        popular: false
       },
       {
         id: 'enterprise',
@@ -614,16 +706,28 @@ class StripeSubscriptionService {
           'Premium payment processing',
           '24/7 phone support',
           'Maximum security',
+          'Mobile app access',
+          'Transaction history',
           'Advanced analytics',
           'Full API access',
+          'QR code payments',
+          'Group payments',
+          'Team management',
+          'Custom branding',
           'Custom integrations',
-          'Dedicated account manager'
+          'Dedicated account manager',
+          'White-label options'
         ],
         limits: {
           monthlyTransactions: -1, // Unlimited
           maxAmount: 100000,
+          dailyWithdrawal: 100000,
+          monthlyWithdrawal: 100000,
+          teamMembers: -1, // Unlimited
+          apiCalls: -1, // Unlimited
           supportLevel: 'dedicated'
-        }
+        },
+        popular: false
       }
     ];
   }

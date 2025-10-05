@@ -16,7 +16,7 @@ const { Server } = require('socket.io');
 require('dotenv').config();
 
 // Import routes
-const authRoutes = require('./routes/auth-simple');
+const authRoutes = require('./routes/auth-fixed');
 const userRoutes = require('./routes/users');
 const userManagementRoutes = require('./routes/userManagement');
 const transactionRoutes = require('./routes/transactions');
@@ -29,6 +29,12 @@ const stripePaymentRoutes = require('./routes/stripe-payments');
 const stripeWebhookRoutes = require('./routes/stripe-webhooks');
 const stripeSubscriptionRoutes = require('./routes/stripe-subscriptions');
 const complianceRoutes = require('./routes/compliance');
+const paymentValidationRoutes = require('./routes/payment-validation');
+
+// Import MongoDB routes
+const mongoUserRoutes = require('./routes/mongodb-users-simple');
+const mongoTransactionRoutes = require('./routes/mongodb-transactions');
+const feeRoutes = require('./routes/fees');
 const { transactionLimitsMiddleware } = require('./middleware/transactionLimits');
 
 // Import middleware
@@ -38,6 +44,9 @@ const conditionalAuth = require('./middleware/conditionalAuth');
 const logger = require('./middleware/logger');
 const { performanceMonitor, healthCheck, errorTracker } = require('./middleware/monitoring');
 const productionSecurity = require('./middleware/productionSecurity');
+
+// Import scheduler for daily reports
+const SchedulerService = require('./services/scheduler');
 const { 
   performanceMonitor: prodPerformanceMonitor, 
   errorTracker: prodErrorTracker, 
@@ -47,15 +56,15 @@ const {
   securityLogger
 } = require('./middleware/productionMonitoring');
 
-// Import database connections with error handling
-let connectDB, connectRedis;
+// Import MongoDB Atlas connection
+let connectMongoDB;
 try {
-  const { connectDB: dbConnect } = require('./models');
-  connectDB = dbConnect;
+  const { connectMongoDB: mongoConnect } = require('./config/mongodb');
+  connectMongoDB = mongoConnect;
 } catch (error) {
-  console.warn('⚠️ Database models not available:', error.message);
-  connectDB = async () => {
-    console.warn('⚠️ Database connection skipped');
+  console.warn('⚠️ MongoDB config not available:', error.message);
+  connectMongoDB = async () => {
+    console.warn('⚠️ MongoDB connection skipped');
     return null;
   };
 }
@@ -326,6 +335,33 @@ app.get('/email-test', async (req, res) => {
   }
 });
 
+// MongoDB Atlas health check endpoint
+app.get('/mongodb-health', async (req, res) => {
+  try {
+    // Test MongoDB connection directly
+    const { connectMongoDB, healthCheck } = require('./config/mongodb');
+    
+    // Connect to MongoDB
+    await connectMongoDB();
+    const health = await healthCheck();
+    
+    res.json({
+      success: true,
+      message: 'MongoDB Atlas connection successful',
+      health,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('MongoDB Atlas health check error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'MongoDB Atlas connection failed',
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
 // Stripe health check endpoint
 app.get('/stripe-health', async (req, res) => {
   try {
@@ -438,11 +474,17 @@ app.use('/api/transactions', authMiddleware, transactionLimitsMiddleware, transa
 app.use('/api', webhookRoutes); // Webhooks don't need auth middleware
 app.use('/api/payments/webhook/stripe', stripeWebhookRoutes); // Stripe webhooks
 app.use('/api/payments', stripePaymentRoutes); // Stripe payment routes
+app.use('/api/payments', paymentValidationRoutes); // Payment validation routes
 app.use('/api/subscriptions', stripeSubscriptionRoutes); // Stripe subscription routes
 app.use('/api/compliance', complianceRoutes); // Compliance and regulatory routes
 app.use('/api/groups', authMiddleware, groupRoutes);
 app.use('/api/budgets', authMiddleware, budgetRoutes);
 app.use('/api/notifications', authMiddleware, notificationRoutes);
+
+// MongoDB Atlas API routes
+app.use('/api/mongo/users', mongoUserRoutes);
+app.use('/api/mongo/transactions', mongoTransactionRoutes);
+app.use('/api/fees', feeRoutes);
 
 // External API routes for developers
 app.use('/api/v1', apiRoutes);
@@ -501,12 +543,12 @@ const startServer = async () => {
       console.log('📝 Environment: Production mode - security logging disabled');
     }
     
-    // Try to connect to databases, but don't fail if they don't exist yet
+    // Try to connect to MongoDB Atlas, but don't fail if it doesn't exist yet
     try {
-      await connectDB();
-      console.log('✅ Database connected');
+      await connectMongoDB();
+      console.log('✅ MongoDB Atlas connected');
     } catch (dbError) {
-      console.warn('⚠️ Database connection failed (will retry later):', dbError.message);
+      console.warn('⚠️ MongoDB Atlas connection failed (will retry later):', dbError.message);
     }
     
     try {
@@ -524,6 +566,11 @@ const startServer = async () => {
       console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
       console.log(`🔗 Health check: http://${HOST}:${PORT}/health`);
       console.log('✅ Server started successfully!');
+      
+      // Start scheduled jobs for daily reports
+      const scheduler = new SchedulerService();
+      scheduler.startAll();
+      console.log('📧 Daily report scheduler started');
     });
 
     // Handle server errors gracefully
